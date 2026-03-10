@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<idPkg:Story xmlns:idPkg="http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging" DOMVersion="7.5">
+	<Story Self="u171" AppliedTOCStyle="n" TrackChanges="false" StoryTitle="$ID/" AppliedNamedGrid="n">
+		<StoryPreference OpticalMarginAlignment="false" OpticalMarginSize="12" FrameType="TextFrameType" StoryOrientation="Horizontal" StoryDirection="LeftToRightDirection"/>
+		<InCopyExportOption IncludeGraphicProxies="true" IncludeAllResources="false"/>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/TEXTO PRINCIPAL">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]">
+				<Content>EsMil illate ra doluptas dolorae nectur as simolut faccabo. Aximusam in porepratem dolliquisi am qui odis doluptate esecusanda quunt laudit haritatibus vernat volorrorum audis id qui sitis diorepr epudam restia sundiost, sameturia qui cuptatur recaept atemporum volupis quat omniende coraeris derio. Lis apit anda sincit labora con nis magnam repelest dolorrum eaquas renduci dellendunt, que et facimet ipsapis sunt esti di veligen delessequis susandellor as dolo dellese nectum simin cor sitem apis andam accuptur? Mo volecat volupti odion conseque maiorer feritio dunt il id moluptatem ipsum reruptas aligniam esto il magnis estium, tem re lautem est, consequam quas voluptatet reniassimet audiatatiis aut incil inctotas abor saecto exerum ut quatem sequiae preptatem cor repelen ditatio nsecepu ditincto quate repe consequibus.</Content>
+				<Br/>
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/INTERTITULO">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]">
+				<Content>Ullita dolupta eriatia </Content>
+				<Br/>
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/TEXTO PRINCIPAL">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]">
+				<Content>epudaecto minimag nimoditatus, nihillaborae lignam ulliquatur, optatio ribero ma nitionse eum am dolupta tempellabor rem eos solupta inus quam eicto eumquisin nobis et, ut maios adisimaio endi beatur reped expelesto conesed ut assus alic te vel exerae nos molum eosti optatem porerion nos reribus essinumquis rempor mod quo omnim enis es natur rem accusdaectem ipsapedipsam imus remodiatur magnitatem exerum quas esciis aut odit fuga. Nequunt mossim fugia volorep udigent, officitate audaero blaccum verum estiiscius et optis moloremquia pliae nobitempos qui beari cusam aut eum que vel miliquam fugit ero et la sedi alit, ent in ni ratiam rehent aut fuga. Rum voluptat ma nonsedio magnatur, culparc hicientum es sanducias simus inis nonestio omnim ant.</Content>
+				<Br/>
+				<Content>Pellore volupis adis aut fugiasit et, tem ea volessit quia doluptatur acit expelicae quam, officaboria con res modiatem ea conem eaquas modissitae et fugiaerum re prat.</Content>
+				<Br/>
+				<Content>Itam et ium res et volut aut qui officaborent ut re cusda parumquibus re voluptatur alibusant.</Content>
+				<Br/>
+				<Content>Repuditate non nonet ducimporat ulparum quunt.</Content>
+				<Br/>
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/INTERTITULO">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]">
+				<Content>Illationsed quat</Content>
+				<Br/>
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/TEXTO PRINCIPAL">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]">
+				<Content>Onsequa musam, sin reriberepta sim alia si omnis et etur autet opta sitio dolor moluptatum nonsequam nos miliamus del molo im doluptam im rerspediam lia sequaecti ium nienimil ipsamus deseque non parum sequasi ut rem rempori orporrum este dia sequia qui atiunt occaborum eos que cusciun temporp oremporum fugiae cum nulpa ea verro omnim cusciae prernatemqui omnisque inum, quae molorio ma dolorepraera parum aut facium ium sume et am, esequas resti doluptaectis essequodita coreped quias experum et odi ullit eostibus</Content>
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+	</Story>
+</idPkg:Story>

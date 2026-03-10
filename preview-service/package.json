@@ -1,0 +1,11 @@
+{
+  "name": "idml-preview-service",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "convert": "node convert.js"
+  },
+  "dependencies": {
+    "idmltools": "^3.7.1"
+  }
+}

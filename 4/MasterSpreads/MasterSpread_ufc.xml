@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<idPkg:MasterSpread xmlns:idPkg="http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging" DOMVersion="7.5">
+	<MasterSpread Self="ufc" ItemTransform="1 0 0 1 0 0" OverriddenPageItemProps="" Name="B-Master" NamePrefix="B" BaseName="Master" ShowMasterItems="true" PageCount="1">
+		<Properties>
+			<PageColor type="enumeration">UseMasterColor</PageColor>
+		</Properties>
+		<Page Self="u103" GeometricBounds="0 0 1133.8582677165357 807.8740157480315" ItemTransform="1 0 0 1 -403.93700787401576 -566.9291338582678" Name="B" AppliedTrapPreset="TrapPreset/$ID/kDefaultTrapStyleName" OverrideList="" AppliedMaster="n" MasterPageTransform="1 0 0 1 0 0" TabOrder="" GridStartingPoint="TopOutside" UseMasterGrid="true">
+			<Properties>
+				<PageColor type="enumeration">UseMasterColor</PageColor>
+			</Properties>
+			<MarginPreference ColumnCount="10" ColumnGutter="14.173228346456693" Top="42.51968503937008" Bottom="42.51968503937008" Left="28.346456692913385" Right="28.346456692913385" ColumnDirection="Horizontal" ColumnsPositions="0 62.36220472440946 76.53543307086615 138.8976377952756 153.0708661417323 215.43307086614175 229.60629921259843 291.9685039370079 306.1417322834646 368.5039370078741 382.6771653543308 445.03937007874026 459.212598425197 521.5748031496064 535.748031496063 598.1102362204725 612.2834645669292 674.6456692913387 688.8188976377953 751.1811023622048"/>
+			<GridDataInformation FontStyle="$ID/Roman" PointSize="9.21259842519685" CharacterAki="0" LineAki="6.909448818897637" HorizontalScale="100" VerticalScale="100" LineAlignment="LeftOrTopLineJustify" GridAlignment="AlignEmCenter" CharacterAlignment="AlignEmCenter">
+				<Properties>
+					<AppliedFont type="string">Times</AppliedFont>
+				</Properties>
+			</GridDataInformation>
+		</Page>
+	</MasterSpread>
+</idPkg:MasterSpread>

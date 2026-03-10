@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?aid style="50" type="document" readerVersion="6.0" featureSet="257" product="7.5(142)" ?>
+<Document xmlns:idPkg="http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging" DOMVersion="7.5" Self="d" StoryList="u117 u143 u15a u188 u19f u1c4 u1db u171 u237 u265 u27c u2aa u209 u2c3 u24e u2ec u305 u83" ZeroPoint="312.00000000000006 1212" ActiveLayer="uf7" CMYKProfile="$ID/" RGBProfile="$ID/" SolidColorIntent="UseColorSettings" AfterBlendingIntent="UseColorSettings" DefaultImageIntent="UseColorSettings" RGBPolicy="PreserveEmbeddedProfiles" CMYKPolicy="CombinationOfPreserveAndSafeCmyk" AccurateLABSpots="false">
+	<Properties>
+		<Label>
+			<KeyValuePair Key="kAdobeDPS_Version" Value="2"/>
+		</Label>
+	</Properties>
+	<Language Self="Language/$ID/Spanish%3a Castilian" Name="$ID/Spanish: Castilian" SingleQuotes="‘’" DoubleQuotes="“”" PrimaryLanguageName="$ID/Spanish" SublanguageName="$ID/Castilian" Id="294" HyphenationVendor="Proximity" SpellingVendor="Proximity"/>
+	<Language Self="Language/$ID/English%3a UK" Name="$ID/English: UK" SingleQuotes="‘’" DoubleQuotes="“”" PrimaryLanguageName="$ID/English" SublanguageName="$ID/UK" Id="525" HyphenationVendor="Proximity" SpellingVendor="Proximity"/>
+	<idPkg:Graphic src="Resources/Graphic.xml"/>
+	<idPkg:Fonts src="Resources/Fonts.xml"/>
+	<KinsokuTable Self="KinsokuTable/$ID/kHardKinsokuName" Name="$ID/kHardKinsokuName"/>
+	<KinsokuTable Self="KinsokuTable/$ID/kSoftKinsokuName" Name="$ID/kSoftKinsokuName"/>
+	<KinsokuTable Self="KinsokuTable/$ID/kKoreanKinsokuName" Name="$ID/kKoreanKinsokuName"/>
+	<KinsokuTable Self="KinsokuTable/$ID/kSimpChineseKinsokuName" Name="$ID/kSimpChineseKinsokuName"/>
+	<KinsokuTable Self="KinsokuTable/$ID/kTradChineseKinsokuName" Name="$ID/kTradChineseKinsokuName"/>
+	<KinsokuTable Self="KinsokuTable/kHardKinsokuName" Name="kHardKinsokuName" CantBeginLineChars="!),.:;?]}¢—’”‰℃℉、。々〉》」』】〕〟ぁぃぅぇぉっゃゅょゎ゛゜ゝゞァィゥェォッャュョヮヵヶ・ーヽヾ！％），．：；？］｝" CantEndLineChars="([{£§‘“〈《「『【〒〔〝＃＄（＠［｛￥" HangingPunctuationChars="、。，．" CantBeSeparatedChars="—‥…"/>
+	<KinsokuTable Self="KinsokuTable/Word_Kinsoku" Name="Word_Kinsoku" CantBeginLineChars="" CantEndLineChars="" HangingPunctuationChars="" CantBeSeparatedChars=""/>
+	<MojikumiTable Self="MojikumiTable/$ID/kMojikumiDefaultName1" Name="$ID/kMojikumiDefaultName1"/>
+	<MojikumiTable Self="MojikumiTable/$ID/kMojikumiDefaultName2" Name="$ID/kMojikumiDefaultName2"/>
+	<MojikumiTable Self="MojikumiTable/$ID/kMojikumiDefaultName3" Name="$ID/kMojikumiDefaultName3"/>
+	<MojikumiTable Self="MojikumiTable/$ID/kMojikumiDefaultName4" Name="$ID/kMojikumiDefaultName4"/>
+	<MojikumiTable Self="MojikumiTable/$ID/kMojikumiDefaultName5" Name="$ID/kMojikumiDefaultName5"/>
+	<MojikumiTable Self="MojikumiTable/$ID/kMojikumiDefaultName6" Name="$ID/kMojikumiDefaultName6"/>
+	<MojikumiTable Self="MojikumiTable/$ID/kMojikumiDefaultName7" Name="$ID/kMojikumiDefaultName7"/>
+	<MojikumiTable Self="MojikumiTable/$ID/kMojikumiDefaultName8" Name="$ID/kMojikumiDefaultName8"/>
+	<MojikumiTable Self="MojikumiTable/$ID/kMojikumiDefaultName9" Name="$ID/kMojikumiDefaultName9"/>
+	<MojikumiTable Self="MojikumiTable/$ID/kMojikumiDefaultName10" Name="$ID/kMojikumiDefaultName10"/>
+	<MojikumiTable Self="MojikumiTable/$ID/kMojikumiDefaultName11" Name="$ID/kMojikumiDefaultName11"/>
+	<MojikumiTable Self="MojikumiTable/$ID/kMojikumiDefaultName12" Name="$ID/kMojikumiDefaultName12"/>
+	<MojikumiTable Self="MojikumiTable/$ID/kMojikumiDefaultName13" Name="$ID/kMojikumiDefaultName13"/>
+	<MojikumiTable Self="MojikumiTable/$ID/kMojikumiDefaultName14" Name="$ID/kMojikumiDefaultName14"/>
+	<MojikumiTable Self="MojikumiTable/$ID/kMojikumiDefaultName15" Name="$ID/kMojikumiDefaultName15"/>
+	<MojikumiTable Self="MojikumiTable/$ID/kMojikumiDefaultName16" Name="$ID/kMojikumiDefaultName16"/>
+	<idPkg:Styles src="Resources/Styles.xml"/>
+	<NumberingList Self="NumberingList/$ID/[Default]" Name="$ID/[Default]" ContinueNumbersAcrossStories="false" ContinueNumbersAcrossDocuments="false"/>
+	<NumberingList Self="NumberingList/Lista importada de Word 1" Name="Lista importada de Word 1" ContinueNumbersAcrossStories="false" ContinueNumbersAcrossDocuments="false"/>
+	<NumberingList Self="NumberingList/Lista importada de Word 2" Name="Lista importada de Word 2" ContinueNumbersAcrossStories="false" ContinueNumbersAcrossDocuments="false"/>
+	<NumberingList Self="NumberingList/Lista importada de Word 3" Name="Lista importada de Word 3" ContinueNumbersAcrossStories="false" ContinueNumbersAcrossDocuments="false"/>
+	<NamedGrid Self="NamedGrid/$ID/[Page Grid]" Name="$ID/[Page Grid]">
+		<GridDataInformation FontStyle="$ID/Roman" PointSize="9.21259842519685" CharacterAki="0" LineAki="6.909448818897637" HorizontalScale="100" VerticalScale="100" LineAlignment="LeftOrTopLineJustify" GridAlignment="AlignEmCenter" CharacterAlignment="AlignEmCenter">
+			<Properties>
+				<AppliedFont type="string">Times</AppliedFont>
+			</Properties>
+		</GridDataInformation>
+	</NamedGrid>
+	<idPkg:Preferences src="Resources/Preferences.xml"/>
+	<LinkedStoryOption UpdateWhileSaving="false" WarnOnUpdateOfEditedStory="true" RemoveForcedLineBreaks="false"/>
+	<TaggedPDFPreference StructureOrder="UseXMLStructure"/>
+	<WatermarkPreference WatermarkVisibility="false" WatermarkDoPrint="false" WatermarkDrawInBack="true" WatermarkText="" WatermarkFontFamily="Minion Pro" WatermarkFontStyle="Regular" WatermarkFontPointSize="48" WatermarkOpacity="50" WatermarkRotation="0" WatermarkHorizontalPosition="WatermarkHCenter" WatermarkHorizontalOffset="0" WatermarkVerticalPosition="WatermarkVCenter" WatermarkVerticalOffset="0">
+		<Properties>
+			<WatermarkFontColor type="enumeration">DarkGreen</WatermarkFontColor>
+		</Properties>
+	</WatermarkPreference>
+	<ConditionalTextPreference ShowConditionIndicators="ShowIndicators" ActiveConditionSet="n"/>
+	<idPkg:Tags src="XML/Tags.xml"/>
+	<Layer Self="ua4" Name="Master Por defecto" Visible="true" Locked="false" IgnoreWrap="false" ShowGuides="true" LockGuides="false" UI="true" Expendable="true" Printable="true">
+		<Properties>
+			<LayerColor type="enumeration">LightBlue</LayerColor>
+		</Properties>
+	</Layer>
+	<Layer Self="uf7" Name="Por defecto" Visible="true" Locked="false" IgnoreWrap="false" ShowGuides="true" LockGuides="false" UI="true" Expendable="true" Printable="true">
+		<Properties>
+			<LayerColor type="enumeration">Red</LayerColor>
+		</Properties>
+	</Layer>
+	<idPkg:MasterSpread src="MasterSpreads/MasterSpread_ua5.xml"/>
+	<idPkg:MasterSpread src="MasterSpreads/MasterSpread_ufc.xml"/>
+	<idPkg:Spread src="Spreads/Spread_u104.xml"/>
+	<Section Self="u9b" Length="1" Name="" ContinueNumbering="true" IncludeSectionPrefix="false" Marker="Section 1" PageStart="u10b" SectionPrefix="">
+		<Properties>
+			<PageNumberStyle type="enumeration">Arabic</PageNumberStyle>
+		</Properties>
+	</Section>
+	<DocumentUser Self="dDocumentUser0" UserName="EDER">
+		<Properties>
+			<UserColor type="enumeration">Gold</UserColor>
+		</Properties>
+	</DocumentUser>
+	<DocumentUser Self="dDocumentUser1" UserName="$ID/Unknown User Name">
+		<Properties>
+			<UserColor type="enumeration">Gold</UserColor>
+		</Properties>
+	</DocumentUser>
+	<DocumentUser Self="dDocumentUser2" UserName="$ID/Unknown User Name">
+		<Properties>
+			<UserColor type="enumeration">Gold</UserColor>
+		</Properties>
+	</DocumentUser>
+	<DocumentUser Self="dDocumentUser3" UserName="1">
+		<Properties>
+			<UserColor type="enumeration">Gold</UserColor>
+		</Properties>
+	</DocumentUser>
+	<DocumentUser Self="dDocumentUser4" UserName="sociales">
+		<Properties>
+			<UserColor type="enumeration">LightBlue</UserColor>
+		</Properties>
+	</DocumentUser>
+	<DocumentUser Self="dDocumentUser5" UserName="diana diagramadora">
+		<Properties>
+			<UserColor type="enumeration">Yellow</UserColor>
+		</Properties>
+	</DocumentUser>
+	<DocumentUser Self="dDocumentUser6" UserName="Redaccion">
+		<Properties>
+			<UserColor type="enumeration">Gold</UserColor>
+		</Properties>
+	</DocumentUser>
+	<DocumentUser Self="dDocumentUser7" UserName="economica">
+		<Properties>
+			<UserColor type="enumeration">Gold</UserColor>
+		</Properties>
+	</DocumentUser>
+	<DocumentUser Self="dDocumentUser8" UserName="Ensayo">
+		<Properties>
+			<UserColor type="enumeration">Gold</UserColor>
+		</Properties>
+	</DocumentUser>
+	<CrossReferenceFormat Self="u31f" Name="Párrafo completo y número de página" AppliedCharacterStyle="n">
+		<BuildingBlock Self="u31fBuildingBlock0" BlockType="CustomStringBuildingBlock" AppliedCharacterStyle="n" CustomText="&quot;" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+		<BuildingBlock Self="u31fBuildingBlock1" BlockType="FullParagraphBuildingBlock" AppliedCharacterStyle="n" CustomText="$ID/" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+		<BuildingBlock Self="u31fBuildingBlock2" BlockType="CustomStringBuildingBlock" AppliedCharacterStyle="n" CustomText="&quot; en la página " AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+		<BuildingBlock Self="u31fBuildingBlock3" BlockType="PageNumberBuildingBlock" AppliedCharacterStyle="n" CustomText="$ID/" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+	</CrossReferenceFormat>
+	<CrossReferenceFormat Self="u320" Name="Párrafo completo" AppliedCharacterStyle="n">
+		<BuildingBlock Self="u320BuildingBlock0" BlockType="CustomStringBuildingBlock" AppliedCharacterStyle="n" CustomText="&quot;" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+		<BuildingBlock Self="u320BuildingBlock1" BlockType="FullParagraphBuildingBlock" AppliedCharacterStyle="n" CustomText="$ID/" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+		<BuildingBlock Self="u320BuildingBlock2" BlockType="CustomStringBuildingBlock" AppliedCharacterStyle="n" CustomText="&quot;" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+	</CrossReferenceFormat>
+	<CrossReferenceFormat Self="u321" Name="Texto de párrafo y número de página" AppliedCharacterStyle="n">
+		<BuildingBlock Self="u321BuildingBlock0" BlockType="CustomStringBuildingBlock" AppliedCharacterStyle="n" CustomText="&quot;" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+		<BuildingBlock Self="u321BuildingBlock1" BlockType="ParagraphTextBuildingBlock" AppliedCharacterStyle="n" CustomText="$ID/" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+		<BuildingBlock Self="u321BuildingBlock2" BlockType="CustomStringBuildingBlock" AppliedCharacterStyle="n" CustomText="en la página " AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+		<BuildingBlock Self="u321BuildingBlock3" BlockType="PageNumberBuildingBlock" AppliedCharacterStyle="n" CustomText="$ID/" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+	</CrossReferenceFormat>
+	<CrossReferenceFormat Self="u322" Name="Texto de párrafo" AppliedCharacterStyle="n">
+		<BuildingBlock Self="u322BuildingBlock0" BlockType="CustomStringBuildingBlock" AppliedCharacterStyle="n" CustomText="&quot;" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+		<BuildingBlock Self="u322BuildingBlock1" BlockType="ParagraphTextBuildingBlock" AppliedCharacterStyle="n" CustomText="$ID/" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+		<BuildingBlock Self="u322BuildingBlock2" BlockType="CustomStringBuildingBlock" AppliedCharacterStyle="n" CustomText="&quot;" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+	</CrossReferenceFormat>
+	<CrossReferenceFormat Self="u323" Name="Número de párrafo y número de página" AppliedCharacterStyle="n">
+		<BuildingBlock Self="u323BuildingBlock0" BlockType="ParagraphNumberBuildingBlock" AppliedCharacterStyle="n" CustomText="$ID/" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+		<BuildingBlock Self="u323BuildingBlock1" BlockType="CustomStringBuildingBlock" AppliedCharacterStyle="n" CustomText=" en la página " AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+		<BuildingBlock Self="u323BuildingBlock2" BlockType="PageNumberBuildingBlock" AppliedCharacterStyle="n" CustomText="$ID/" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+	</CrossReferenceFormat>
+	<CrossReferenceFormat Self="u324" Name="Número de párrafo" AppliedCharacterStyle="n">
+		<BuildingBlock Self="u324BuildingBlock0" BlockType="ParagraphNumberBuildingBlock" AppliedCharacterStyle="n" CustomText="$ID/" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+	</CrossReferenceFormat>
+	<CrossReferenceFormat Self="u325" Name="Nombre de anclaje de texto y número de página" AppliedCharacterStyle="n">
+		<BuildingBlock Self="u325BuildingBlock0" BlockType="CustomStringBuildingBlock" AppliedCharacterStyle="n" CustomText="&quot;" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+		<BuildingBlock Self="u325BuildingBlock1" BlockType="BookmarkNameBuildingBlock" AppliedCharacterStyle="n" CustomText="$ID/" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+		<BuildingBlock Self="u325BuildingBlock2" BlockType="CustomStringBuildingBlock" AppliedCharacterStyle="n" CustomText="&quot; en la página " AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+		<BuildingBlock Self="u325BuildingBlock3" BlockType="PageNumberBuildingBlock" AppliedCharacterStyle="n" CustomText="$ID/" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+	</CrossReferenceFormat>
+	<CrossReferenceFormat Self="u326" Name="Nombre de anclaje de texto" AppliedCharacterStyle="n">
+		<BuildingBlock Self="u326BuildingBlock0" BlockType="CustomStringBuildingBlock" AppliedCharacterStyle="n" CustomText="&quot;" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+		<BuildingBlock Self="u326BuildingBlock1" BlockType="BookmarkNameBuildingBlock" AppliedCharacterStyle="n" CustomText="$ID/" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+		<BuildingBlock Self="u326BuildingBlock2" BlockType="CustomStringBuildingBlock" AppliedCharacterStyle="n" CustomText="&quot;" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+	</CrossReferenceFormat>
+	<CrossReferenceFormat Self="u327" Name="Número de página" AppliedCharacterStyle="n">
+		<BuildingBlock Self="u327BuildingBlock0" BlockType="CustomStringBuildingBlock" AppliedCharacterStyle="n" CustomText="página " AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+		<BuildingBlock Self="u327BuildingBlock1" BlockType="PageNumberBuildingBlock" AppliedCharacterStyle="n" CustomText="$ID/" AppliedDelimiter="$ID/" IncludeDelimiter="false"/>
+	</CrossReferenceFormat>
+	<Index Self="u328">
+		<Topic Self="u328Topicn40" SortOrder="" Name="40"/>
+	</Index>
+	<idPkg:BackingStory src="XML/BackingStory.xml"/>
+	<idPkg:Story src="Stories/Story_u305.xml"/>
+	<idPkg:Story src="Stories/Story_u2ec.xml"/>
+	<idPkg:Story src="Stories/Story_u24e.xml"/>
+	<idPkg:Story src="Stories/Story_u2c3.xml"/>
+	<idPkg:Story src="Stories/Story_u209.xml"/>
+	<idPkg:Story src="Stories/Story_u2aa.xml"/>
+	<idPkg:Story src="Stories/Story_u27c.xml"/>
+	<idPkg:Story src="Stories/Story_u265.xml"/>
+	<idPkg:Story src="Stories/Story_u237.xml"/>
+	<idPkg:Story src="Stories/Story_u171.xml"/>
+	<idPkg:Story src="Stories/Story_u1db.xml"/>
+	<idPkg:Story src="Stories/Story_u1c4.xml"/>
+	<idPkg:Story src="Stories/Story_u19f.xml"/>
+	<idPkg:Story src="Stories/Story_u188.xml"/>
+	<idPkg:Story src="Stories/Story_u15a.xml"/>
+	<idPkg:Story src="Stories/Story_u143.xml"/>
+	<idPkg:Story src="Stories/Story_u117.xml"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//correo.sena.edu.co/exchweb/bin/redir.asp?URL=http%3a//www.sena.edu.co/downloads/comunicaciones/fusion.pdf" DestinationUniqueKey="14687" Name="http://correo.sena.edu.co/exchweb/bin/redir.asp?URL=http://www.sena.edu.co/downloads/comunicaciones/fusion.pdf" DestinationURL="http://correo.sena.edu.co/exchweb/bin/redir.asp?URL=http://www.sena.edu.co/downloads/comunicaciones/fusion.pdf" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.parquesoft.com/" DestinationUniqueKey="18088" Name="http://www.parquesoft.com/" DestinationURL="http://www.parquesoft.com/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3amcarvajal@fastecdecolombia.com" DestinationUniqueKey="18190" Name="mailto:mcarvajal@fastecdecolombia.com" DestinationURL="mailto:mcarvajal@fastecdecolombia.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3acomunicaciones@parquesoftpereira.com" DestinationUniqueKey="18191" Name="mailto:comunicaciones@parquesoftpereira.com" DestinationURL="mailto:comunicaciones@parquesoftpereira.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3aacadavid@parquesoftpereira.com" DestinationUniqueKey="18192" Name="mailto:acadavid@parquesoftpereira.com" DestinationURL="mailto:acadavid@parquesoftpereira.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/URL 6" DestinationUniqueKey="18355" Name="URL 6" DestinationURL="http://www.parquesoft.com/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3aPaola.rueda@scitechmedia.com" DestinationUniqueKey="18596" Name="mailto:Paola.rueda@scitechmedia.com" DestinationURL="mailto:Paola.rueda@scitechmedia.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3ajuany@scitechmedia.com" DestinationUniqueKey="18597" Name="mailto:juany@scitechmedia.com" DestinationURL="mailto:juany@scitechmedia.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3aAdriana.yepes@scitechmedia.com" DestinationUniqueKey="18598" Name="mailto:Adriana.yepes@scitechmedia.com" DestinationURL="mailto:Adriana.yepes@scitechmedia.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.dhl.com" DestinationUniqueKey="20978" Name="http://www.dhl.com" DestinationURL="http://www.dhl.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3ambarbosa@comsa.com.co" DestinationUniqueKey="20979" Name="mailto:mbarbosa@comsa.com.co" DestinationURL="mailto:mbarbosa@comsa.com.co" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//ofertaeducativa.sena.edu.co" DestinationUniqueKey="22156" Name="http://ofertaeducativa.sena.edu.co" DestinationURL="http://ofertaeducativa.sena.edu.co" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/URL 13" DestinationUniqueKey="22157" Name="URL 13" DestinationURL="http://ofertaeducativa.sena.edu.co" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.proteccion.com.co/periodistas" DestinationUniqueKey="25550" Name="http://www.proteccion.com.co/periodistas" DestinationURL="http://www.proteccion.com.co/periodistas" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/URL 15" DestinationUniqueKey="25551" Name="URL 15" DestinationURL="mailto:juany@scitechmedia.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3aadriana.yepes@scitechmedia.com" DestinationUniqueKey="25552" Name="mailto:adriana.yepes@scitechmedia.com" DestinationURL="mailto:adriana.yepes@scitechmedia.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.sena.edu.co" DestinationUniqueKey="25879" Name="http://www.sena.edu.co" DestinationURL="http://www.sena.edu.co" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3abbeltran@sistole.com.co" DestinationUniqueKey="27463" Name="mailto:bbeltran@sistole.com.co" DestinationURL="mailto:bbeltran@sistole.com.co" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3afgarzon@sistole.com.co" DestinationUniqueKey="27464" Name="mailto:fgarzon@sistole.com.co" DestinationURL="mailto:fgarzon@sistole.com.co" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3aBeltrán@sistole.com.co" DestinationUniqueKey="27602" Name="mailto:Beltrán@sistole.com.co" DestinationURL="mailto:Beltrán@sistole.com.co" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/URL 21" DestinationUniqueKey="27603" Name="URL 21" DestinationURL="mailto:fgarzon@sistole.com.co" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/URL 22" DestinationUniqueKey="29783" Name="URL 22" DestinationURL="mailto:mcarvajal@fastecdecolombia.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/URL 23" DestinationUniqueKey="29784" Name="URL 23" DestinationURL="mailto:comunicaciones@parquesoftpereira.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/URL 24" DestinationUniqueKey="29901" Name="URL 24" DestinationURL="mailto:mcarvajal@fastecdecolombia.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/URL 25" DestinationUniqueKey="29902" Name="URL 25" DestinationURL="mailto:comunicaciones@parquesoftpereira.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.triathlon.org/?call=TVRFdw==&amp;id=MTIxMA==&amp;keep=sh" DestinationUniqueKey="209655" Name="http://www.triathlon.org/?call=TVRFdw==&amp;id=MTIxMA==&amp;keep=sh" DestinationURL="http://www.triathlon.org/?call=TVRFdw==&amp;id=MTIxMA==&amp;keep=sh" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/URL 27" DestinationUniqueKey="209816" Name="URL 27" DestinationURL="http://www.triathlon.org/?call=TVRFdw==&amp;id=MTIxMA==&amp;keep=sh" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.tropicanafm.com/" DestinationUniqueKey="211203" Name="http://www.tropicanafm.com/" DestinationURL="http://www.tropicanafm.com/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3afestivalesdeportivos@gmail.com" DestinationUniqueKey="214417" Name="mailto:festivalesdeportivos@gmail.com" DestinationURL="mailto:festivalesdeportivos@gmail.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3amauroh06@gmail.com" DestinationUniqueKey="214418" Name="mailto:mauroh06@gmail.com" DestinationURL="mailto:mauroh06@gmail.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/URL 31" DestinationUniqueKey="214419" Name="URL 31" DestinationURL="mailto:festivalesdeportivos@gmail.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/URL 32" DestinationUniqueKey="215160" Name="URL 32" DestinationURL="mailto:festivalesdeportivos@gmail.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/URL 33" DestinationUniqueKey="215161" Name="URL 33" DestinationURL="mailto:mauroh06@gmail.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/URL 34" DestinationUniqueKey="215162" Name="URL 34" DestinationURL="mailto:festivalesdeportivos@gmail.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=309114/index.html" DestinationUniqueKey="382534" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309114/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309114/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=315599/index.html" DestinationUniqueKey="382535" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315599/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315599/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=315602/index.html" DestinationUniqueKey="382536" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315602/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315602/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=309124/index.html" DestinationUniqueKey="382537" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309124/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309124/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=309122/index.html" DestinationUniqueKey="382538" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309122/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309122/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=315605/index.html" DestinationUniqueKey="382539" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315605/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315605/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=315606/index.html" DestinationUniqueKey="382540" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315606/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315606/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=309128/index.html" DestinationUniqueKey="382541" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309128/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309128/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=315634/index.html" DestinationUniqueKey="382542" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315634/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315634/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=315636/index.html" DestinationUniqueKey="382543" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315636/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315636/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=309138/index.html" DestinationUniqueKey="382544" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309138/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309138/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=315611/index.html" DestinationUniqueKey="382545" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315611/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315611/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=309144/index.html" DestinationUniqueKey="382546" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309144/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309144/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=309146/index.html" DestinationUniqueKey="382547" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309146/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309146/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=315614/index.html" DestinationUniqueKey="382548" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315614/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315614/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=309150/index.html" DestinationUniqueKey="382549" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309150/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309150/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=315621/index.html" DestinationUniqueKey="382550" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315621/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315621/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=309154/index.html" DestinationUniqueKey="382551" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309154/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309154/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=315622/index.html" DestinationUniqueKey="382552" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315622/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=315622/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.fifa.com/worldfootball/statisticsandrecords/players/player=309158/index.html" DestinationUniqueKey="382553" Name="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309158/index.html" DestinationURL="http://es.fifa.com/worldfootball/statisticsandrecords/players/player=309158/index.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.tuboleta.com" DestinationUniqueKey="382558" Name="http://www.tuboleta.com" DestinationURL="http://www.tuboleta.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.deportivopereira.com.co/" DestinationUniqueKey="382559" Name="http://www.deportivopereira.com.co/" DestinationURL="http://www.deportivopereira.com.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.futbolred.com/copa-america-2011/fotos/noticias/colombia-practica-sus-estrategias-contra-argentina/9809804" DestinationUniqueKey="382571" Name="http://www.futbolred.com/copa-america-2011/fotos/noticias/colombia-practica-sus-estrategias-contra-argentina/9809804" DestinationURL="http://www.futbolred.com/copa-america-2011/fotos/noticias/colombia-practica-sus-estrategias-contra-argentina/9809804" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.futbolred.com/copa-america-2011/fotos/noticias/argentina-intentara-corregir-errores-en-su-partido-contra-colombia/9808484" DestinationUniqueKey="382572" Name="http://www.futbolred.com/copa-america-2011/fotos/noticias/argentina-intentara-corregir-errores-en-su-partido-contra-colombia/9808484" DestinationURL="http://www.futbolred.com/copa-america-2011/fotos/noticias/argentina-intentara-corregir-errores-en-su-partido-contra-colombia/9808484" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.futbolred.com/copa-america-2011/fotos/noticias/colombia-practica-sus-estrategias-contra-argentina/9809804 59" DestinationUniqueKey="382574" Name="http://www.futbolred.com/copa-america-2011/fotos/noticias/colombia-practica-sus-estrategias-contra-argentina/9809804 59" DestinationURL="http://www.futbolred.com/copa-america-2011/fotos/noticias/colombia-practica-sus-estrategias-contra-argentina/9809804" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.futbolred.com/copa-america-2011/fotos/noticias/argentina-intentara-corregir-errores-en-su-partido-contra-colombia/9808484 60" DestinationUniqueKey="382575" Name="http://www.futbolred.com/copa-america-2011/fotos/noticias/argentina-intentara-corregir-errores-en-su-partido-contra-colombia/9808484 60" DestinationURL="http://www.futbolred.com/copa-america-2011/fotos/noticias/argentina-intentara-corregir-errores-en-su-partido-contra-colombia/9808484" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3aligarisaraldensedemotociclismo@hotmail.com" DestinationUniqueKey="382579" Name="mailto:ligarisaraldensedemotociclismo@hotmail.com" DestinationURL="mailto:ligarisaraldensedemotociclismo@hotmail.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3aareadeportes2011@hotmail.com" DestinationUniqueKey="382580" Name="mailto:areadeportes2011@hotmail.com" DestinationURL="mailto:areadeportes2011@hotmail.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//www.facebook.com/jesusovidio.gomezbuitrago" DestinationUniqueKey="382586" Name="https://www.facebook.com/jesusovidio.gomezbuitrago" DestinationURL="https://www.facebook.com/jesusovidio.gomezbuitrago" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.dosquebradas.gov.co/estratego" DestinationUniqueKey="382588" Name="http://www.dosquebradas.gov.co/estratego" DestinationURL="http://www.dosquebradas.gov.co/estratego" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//www.facebook.com/seceducacion.dosquebradas,twitter" DestinationUniqueKey="382589" Name="https://www.facebook.com/seceducacion.dosquebradas,twitter" DestinationURL="https://www.facebook.com/seceducacion.dosquebradas,twitter" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//twitter.com/SecEducacion1" DestinationUniqueKey="382590" Name="https://twitter.com/SecEducacion1" DestinationURL="https://twitter.com/SecEducacion1" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//educacion.dosquebradas.gov.co/" DestinationUniqueKey="382591" Name="http://educacion.dosquebradas.gov.co/" DestinationURL="http://educacion.dosquebradas.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.semdosquebradas.gov.co/" DestinationUniqueKey="382592" Name="http://www.semdosquebradas.gov.co/" DestinationURL="http://www.semdosquebradas.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//www.facebook.com/seceducacion.dosquebradas" DestinationUniqueKey="382593" Name="https://www.facebook.com/seceducacion.dosquebradas" DestinationURL="https://www.facebook.com/seceducacion.dosquebradas" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//twitter.com/SecEducacion1 1" DestinationUniqueKey="382594" Name="https://twitter.com/SecEducacion1 1" DestinationURL="https://twitter.com/SecEducacion1" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//educacion.dosquebradas.gov.co/ 1" DestinationUniqueKey="382595" Name="http://educacion.dosquebradas.gov.co/ 1" DestinationURL="http://educacion.dosquebradas.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.semdosquebradas.gov.co/ 1" DestinationUniqueKey="382596" Name="http://www.semdosquebradas.gov.co/ 1" DestinationURL="http://www.semdosquebradas.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.jauw.org/english/e_2015internationalfellowship.html" DestinationUniqueKey="382597" Name="http://www.jauw.org/english/e_2015internationalfellowship.html" DestinationURL="http://www.jauw.org/english/e_2015internationalfellowship.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.msmt.cz/" DestinationUniqueKey="382598" Name="http://www.msmt.cz/" DestinationURL="http://www.msmt.cz/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.raci.org.ar/convocatorias/asociacion-japonesa-de-mujeres-universitarias-becas-de-estudio-2015/" DestinationUniqueKey="382599" Name="http://www.raci.org.ar/convocatorias/asociacion-japonesa-de-mujeres-universitarias-becas-de-estudio-2015/" DestinationURL="http://www.raci.org.ar/convocatorias/asociacion-japonesa-de-mujeres-universitarias-becas-de-estudio-2015/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.educacion.dosquebradas.gov.co/" DestinationUniqueKey="382600" Name="http://www.educacion.dosquebradas.gov.co/" DestinationURL="http://www.educacion.dosquebradas.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.semdosquebradas.gov.co/ 2" DestinationUniqueKey="382601" Name="http://www.semdosquebradas.gov.co/ 2" DestinationURL="http://www.semdosquebradas.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.educacion.dosquebradas.gov.co/ 1" DestinationUniqueKey="382602" Name="http://www.educacion.dosquebradas.gov.co/ 1" DestinationURL="http://www.educacion.dosquebradas.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.semdosquebradas.gov.co/ 3" DestinationUniqueKey="382603" Name="http://www.semdosquebradas.gov.co/ 3" DestinationURL="http://www.semdosquebradas.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3adosquebradasdiversa@dosquebradas.gov.co" DestinationUniqueKey="382604" Name="mailto:dosquebradasdiversa@dosquebradas.gov.co" DestinationURL="mailto:dosquebradasdiversa@dosquebradas.gov.co" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3adosquebradasdiversa@dosquebradas.gov.co 1" DestinationUniqueKey="382605" Name="mailto:dosquebradasdiversa@dosquebradas.gov.co 1" DestinationURL="mailto:dosquebradasdiversa@dosquebradas.gov.co" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.dosquebradas.gov.co/" DestinationUniqueKey="382606" Name="http://www.dosquebradas.gov.co/" DestinationURL="http://www.dosquebradas.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//www.google.com/url?rct=j&amp;sa=t&amp;url=http%3a//www.caracol.com.co/noticias/regionales/seis-casas-inundadas-por-colapso-de-tuberia-a-raiz-del-sismo-en-risaralda/20150310/nota/2667752.aspx&amp;ct=ga&amp;cd=CAEYACoUMTI1MzY5NzczNDAyNDI1MTExMjQyGmQxYjg3NjY5NWQ1YjQ1N" DestinationUniqueKey="382607" Name="https://www.google.com/url?rct=j&amp;sa=t&amp;url=http://www.caracol.com.co/noticias/regionales/seis-casas-inundadas-por-colapso-de-tuberia-a-raiz-del-sismo-en-risaralda/20150310/nota/2667752.aspx&amp;ct=ga&amp;cd=CAEYACoUMTI1MzY5NzczNDAyNDI1MTExMjQyGmQxYjg3NjY5NWQ1YjQ1N" DestinationURL="https://www.google.com/url?rct=j&amp;sa=t&amp;url=http://www.caracol.com.co/noticias/regionales/seis-casas-inundadas-por-colapso-de-tuberia-a-raiz-del-sismo-en-risaralda/20150310/nota/2667752.aspx&amp;ct=ga&amp;cd=CAEYACoUMTI1MzY5NzczNDAyNDI1MTExMjQyGmQxYjg3NjY5NWQ1YjQ1NmY6Y29tOmVzOlVT&amp;usg=AFQjCNF4TZqJrJun1eUGGkVarq3giR_rDQ" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.caracol.com.co/temas/pereira/temas/1109.aspx" DestinationUniqueKey="382609" Name="http://www.caracol.com.co/temas/pereira/temas/1109.aspx" DestinationURL="http://www.caracol.com.co/temas/pereira/temas/1109.aspx" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.caracol.com.co/temas/risaralda/temas/1169.aspx" DestinationUniqueKey="382610" Name="http://www.caracol.com.co/temas/risaralda/temas/1169.aspx" DestinationURL="http://www.caracol.com.co/temas/risaralda/temas/1169.aspx" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.caracol.com.co/temas/bucaramanga/temas/534.aspx" DestinationUniqueKey="382611" Name="http://www.caracol.com.co/temas/bucaramanga/temas/534.aspx" DestinationURL="http://www.caracol.com.co/temas/bucaramanga/temas/534.aspx" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3amatoro@dosquebradas.gov.co" DestinationUniqueKey="382612" Name="mailto:matoro@dosquebradas.gov.co" DestinationURL="mailto:matoro@dosquebradas.gov.co" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.dosquebradas.gov.co/ 1" DestinationUniqueKey="382613" Name="http://www.dosquebradas.gov.co/ 1" DestinationURL="http://www.dosquebradas.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3adosquebradasdiversa@dosquebradas.gov.co 2" DestinationUniqueKey="382614" Name="mailto:dosquebradasdiversa@dosquebradas.gov.co 2" DestinationURL="mailto:dosquebradasdiversa@dosquebradas.gov.co" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3aallondono@dosquebradas.gov.co" DestinationUniqueKey="382615" Name="mailto:allondono@dosquebradas.gov.co" DestinationURL="mailto:allondono@dosquebradas.gov.co" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//www.facebook.com/dosquebradas.diversalgbti" DestinationUniqueKey="382616" Name="https://www.facebook.com/dosquebradas.diversalgbti" DestinationURL="https://www.facebook.com/dosquebradas.diversalgbti" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3aallondono@dosquebradas.gov.co 1" DestinationUniqueKey="382617" Name="mailto:allondono@dosquebradas.gov.co 1" DestinationURL="mailto:allondono@dosquebradas.gov.co" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.tomacafe.com.co/" DestinationUniqueKey="382618" Name="http://www.tomacafe.com.co/" DestinationURL="http://www.tomacafe.com.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.wikipedia.org/wiki/Corazón" DestinationUniqueKey="382620" Name="http://es.wikipedia.org/wiki/Corazón" DestinationURL="http://es.wikipedia.org/wiki/Corazón" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.wikipedia.org/wiki/Pulmones" DestinationUniqueKey="382621" Name="http://es.wikipedia.org/wiki/Pulmones" DestinationURL="http://es.wikipedia.org/wiki/Pulmones" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//es.wikipedia.org/wiki/Riñón" DestinationUniqueKey="382622" Name="http://es.wikipedia.org/wiki/Riñón" DestinationURL="http://es.wikipedia.org/wiki/Riñón" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.semdosquebradas.gov.co/ 4" DestinationUniqueKey="382623" Name="http://www.semdosquebradas.gov.co/ 4" DestinationURL="http://www.semdosquebradas.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.semdosquebradas.gov.co/ 5" DestinationUniqueKey="382624" Name="http://www.semdosquebradas.gov.co/ 5" DestinationURL="http://www.semdosquebradas.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.colombiaaprende.edu.co/bilinguismo" DestinationUniqueKey="382625" Name="http://www.colombiaaprende.edu.co/bilinguismo" DestinationURL="http://www.colombiaaprende.edu.co/bilinguismo" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.colombiaaprende.edu.co/bilinguismo 1" DestinationUniqueKey="382626" Name="http://www.colombiaaprende.edu.co/bilinguismo 1" DestinationURL="http://www.colombiaaprende.edu.co/bilinguismo" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.idm.gov.co/" DestinationUniqueKey="382627" Name="http://www.idm.gov.co/" DestinationURL="http://www.idm.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.sena.edu.co/" DestinationUniqueKey="382628" Name="http://www.sena.edu.co/" DestinationURL="http://www.sena.edu.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//senasofiaplus.edu.co/" DestinationUniqueKey="382629" Name="http://senasofiaplus.edu.co/" DestinationURL="http://senasofiaplus.edu.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.sena.edu.co/ 1" DestinationUniqueKey="382631" Name="http://www.sena.edu.co/ 1" DestinationURL="http://www.sena.edu.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//senasofiaplus.edu.co/ 1" DestinationUniqueKey="382632" Name="http://senasofiaplus.edu.co/ 1" DestinationURL="http://senasofiaplus.edu.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/tel%3a314 682 7864" DestinationUniqueKey="382633" Name="tel:314 682 7864" DestinationURL="tel:314 682 7864" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.semdosquebradas.gov.co/ 6" DestinationUniqueKey="382634" Name="http://www.semdosquebradas.gov.co/ 6" DestinationURL="http://www.semdosquebradas.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.latarde.com/noticias/area-metropolitana/150125-consejo-territorial-de-planeacion-recibio-el-pot-de-dosquebradas" DestinationUniqueKey="382635" Name="http://www.latarde.com/noticias/area-metropolitana/150125-consejo-territorial-de-planeacion-recibio-el-pot-de-dosquebradas" DestinationURL="http://www.latarde.com/noticias/area-metropolitana/150125-consejo-territorial-de-planeacion-recibio-el-pot-de-dosquebradas" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.eldiario.com.co/seccion/DOSQUEBRADAS/8-proyectos-se-ejecutar-n-en-dosquebradas-con-presupuesto-participativo-1505.html" DestinationUniqueKey="382636" Name="http://www.eldiario.com.co/seccion/DOSQUEBRADAS/8-proyectos-se-ejecutar-n-en-dosquebradas-con-presupuesto-participativo-1505.html" DestinationURL="http://www.eldiario.com.co/seccion/DOSQUEBRADAS/8-proyectos-se-ejecutar-n-en-dosquebradas-con-presupuesto-participativo-1505.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.semdosquebradas.gov.co/ 7" DestinationUniqueKey="382637" Name="http://www.semdosquebradas.gov.co/ 7" DestinationURL="http://www.semdosquebradas.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.latarde.com/noticias/area-metropolitana/150125-consejo-territorial-de-planeacion-recibio-el-pot-de-dosquebradas 1" DestinationUniqueKey="382638" Name="http://www.latarde.com/noticias/area-metropolitana/150125-consejo-territorial-de-planeacion-recibio-el-pot-de-dosquebradas 1" DestinationURL="http://www.latarde.com/noticias/area-metropolitana/150125-consejo-territorial-de-planeacion-recibio-el-pot-de-dosquebradas" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.eldiario.com.co/seccion/DOSQUEBRADAS/8-proyectos-se-ejecutar-n-en-dosquebradas-con-presupuesto-participativo-1505.html 1" DestinationUniqueKey="382639" Name="http://www.eldiario.com.co/seccion/DOSQUEBRADAS/8-proyectos-se-ejecutar-n-en-dosquebradas-con-presupuesto-participativo-1505.html 1" DestinationURL="http://www.eldiario.com.co/seccion/DOSQUEBRADAS/8-proyectos-se-ejecutar-n-en-dosquebradas-con-presupuesto-participativo-1505.html" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3adosquebradasdiversa@dosquebradas.gov.co 3" DestinationUniqueKey="382640" Name="mailto:dosquebradasdiversa@dosquebradas.gov.co 3" DestinationURL="mailto:dosquebradasdiversa@dosquebradas.gov.co" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3adosquebradasdiversa@dosquebradas.gov.co 4" DestinationUniqueKey="382641" Name="mailto:dosquebradasdiversa@dosquebradas.gov.co 4" DestinationURL="mailto:dosquebradasdiversa@dosquebradas.gov.co" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.premiocompartir.org/" DestinationUniqueKey="382642" Name="http://www.premiocompartir.org/" DestinationURL="http://www.premiocompartir.org/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3aeduardohenaomonsalve@gmail.com" DestinationUniqueKey="382643" Name="mailto:eduardohenaomonsalve@gmail.com" DestinationURL="mailto:eduardohenaomonsalve@gmail.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3aeduardohenaomonsalve@gmail.com 1" DestinationUniqueKey="382644" Name="mailto:eduardohenaomonsalve@gmail.com 1" DestinationURL="mailto:eduardohenaomonsalve@gmail.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.mineducacion.gov.co/" DestinationUniqueKey="382645" Name="http://www.mineducacion.gov.co/" DestinationURL="http://www.mineducacion.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.colombiaaprende.edu.co/fen2015" DestinationUniqueKey="382646" Name="http://www.colombiaaprende.edu.co/fen2015" DestinationURL="http://www.colombiaaprende.edu.co/fen2015" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//docs.google.com/a/dosquebradas.gov.co/forms/d/1qaE7N6NxliM_uaoZr8vvaKTETTaPCgoFSQDCJsXZqig/viewform" DestinationUniqueKey="382647" Name="https://docs.google.com/a/dosquebradas.gov.co/forms/d/1qaE7N6NxliM_uaoZr8vvaKTETTaPCgoFSQDCJsXZqig/viewform" DestinationURL="https://docs.google.com/a/dosquebradas.gov.co/forms/d/1qaE7N6NxliM_uaoZr8vvaKTETTaPCgoFSQDCJsXZqig/viewform" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//es.wikipedia.org/wiki/Pit_bull_terrier_americano" DestinationUniqueKey="382648" Name="https://es.wikipedia.org/wiki/Pit_bull_terrier_americano" DestinationURL="https://es.wikipedia.org/wiki/Pit_bull_terrier_americano" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//es.wikipedia.org/wiki/Rottweiler" DestinationUniqueKey="382649" Name="https://es.wikipedia.org/wiki/Rottweiler" DestinationURL="https://es.wikipedia.org/wiki/Rottweiler" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//es.wikipedia.org/wiki/Dóberman" DestinationUniqueKey="382650" Name="https://es.wikipedia.org/wiki/Dóberman" DestinationURL="https://es.wikipedia.org/wiki/Dóberman" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//es.wikipedia.org/wiki/Pit_bull_terrier_americano 1" DestinationUniqueKey="382651" Name="https://es.wikipedia.org/wiki/Pit_bull_terrier_americano 1" DestinationURL="https://es.wikipedia.org/wiki/Pit_bull_terrier_americano" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//es.wikipedia.org/wiki/Rottweiler 1" DestinationUniqueKey="382652" Name="https://es.wikipedia.org/wiki/Rottweiler 1" DestinationURL="https://es.wikipedia.org/wiki/Rottweiler" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//es.wikipedia.org/wiki/Dóberman 1" DestinationUniqueKey="382653" Name="https://es.wikipedia.org/wiki/Dóberman 1" DestinationURL="https://es.wikipedia.org/wiki/Dóberman" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.colombiaaprende.edu.co/fen2015 1" DestinationUniqueKey="382654" Name="http://www.colombiaaprende.edu.co/fen2015 1" DestinationURL="http://www.colombiaaprende.edu.co/fen2015" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.dosquebradas.gov.co/ 2" DestinationUniqueKey="382655" Name="http://www.dosquebradas.gov.co/ 2" DestinationURL="http://www.dosquebradas.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.colombiaaprende.com/" DestinationUniqueKey="382656" Name="http://www.colombiaaprende.com/" DestinationURL="http://www.colombiaaprende.com/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/tel%3a312 8452879" DestinationUniqueKey="382657" Name="tel:312 8452879" DestinationURL="tel:312 8452879" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.dosquebradas.gov.co/ 131" DestinationUniqueKey="382658" Name="http://www.dosquebradas.gov.co/ 131" DestinationURL="http://www.dosquebradas.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//kunfupanda.com/" DestinationUniqueKey="382659" Name="http://kunfupanda.com/" DestinationURL="http://kunfupanda.com/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//kunfupanda.com/ 133" DestinationUniqueKey="382660" Name="http://kunfupanda.com/ 133" DestinationURL="http://kunfupanda.com/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3acoordinacioncnp@hotmail.com" DestinationUniqueKey="382661" Name="mailto:coordinacioncnp@hotmail.com" DestinationURL="mailto:coordinacioncnp@hotmail.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//maestros.colombiaaprende.edu.co/" DestinationUniqueKey="382662" Name="http://maestros.colombiaaprende.edu.co/" DestinationURL="http://maestros.colombiaaprende.edu.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.monografias.com/trabajos6/trail/trail.shtml" DestinationUniqueKey="382663" Name="http://www.monografias.com/trabajos6/trail/trail.shtml" DestinationURL="http://www.monografias.com/trabajos6/trail/trail.shtml" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3aeduardohenaomonsalve@gmail.com 137" DestinationUniqueKey="382664" Name="mailto:eduardohenaomonsalve@gmail.com 137" DestinationURL="mailto:eduardohenaomonsalve@gmail.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/tel%3a3167577874" DestinationUniqueKey="382665" Name="tel:3167577874" DestinationURL="tel:3167577874" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3aeduardohenaomonsalve@gmail.com 139" DestinationUniqueKey="382667" Name="mailto:eduardohenaomonsalve@gmail.com 139" DestinationURL="mailto:eduardohenaomonsalve@gmail.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/tel%3a3167577874 140" DestinationUniqueKey="382668" Name="tel:3167577874 140" DestinationURL="tel:3167577874" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3adireccion@fundacioncharlot.com" DestinationUniqueKey="382669" Name="mailto:direccion@fundacioncharlot.com" DestinationURL="mailto:direccion@fundacioncharlot.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/mailto%3adireccion@fundacioncharlot.com 142" DestinationUniqueKey="382670" Name="mailto:direccion@fundacioncharlot.com 142" DestinationURL="mailto:direccion@fundacioncharlot.com" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/tel%3a018000949999" DestinationUniqueKey="382671" Name="tel:018000949999" DestinationURL="tel:018000949999" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/tel%3a(6) 3339610" DestinationUniqueKey="382672" Name="tel:(6) 3339610" DestinationURL="tel:(6) 3339610" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.cne.gov.co/cne/media/file/RES - 3751-15 DOSQUEBRADAS-RISARALDA.pdf" DestinationUniqueKey="382673" Name="http://www.cne.gov.co/cne/media/file/RES - 3751-15 DOSQUEBRADAS-RISARALDA.pdf" DestinationURL="http://www.cne.gov.co/cne/media/file/RES - 3751-15 DOSQUEBRADAS-RISARALDA.pdf" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.cne.gov.co/cne/media/file/RES - 3751-15 DOSQUEBRADAS-RISARALDA.pdf 146" DestinationUniqueKey="382674" Name="http://www.cne.gov.co/cne/media/file/RES - 3751-15 DOSQUEBRADAS-RISARALDA.pdf 146" DestinationURL="http://www.cne.gov.co/cne/media/file/RES - 3751-15 DOSQUEBRADAS-RISARALDA.pdf" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//aprende.colombiaaprende.edu.co/es/siemprediae/86525" DestinationUniqueKey="382675" Name="http://aprende.colombiaaprende.edu.co/es/siemprediae/86525" DestinationURL="http://aprende.colombiaaprende.edu.co/es/siemprediae/86525" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.cne.gov.co/cne/media/file/RES - 3751-15 DOSQUEBRADAS-RISARALDA.pdf 148" DestinationUniqueKey="382676" Name="http://www.cne.gov.co/cne/media/file/RES - 3751-15 DOSQUEBRADAS-RISARALDA.pdf 148" DestinationURL="http://www.cne.gov.co/cne/media/file/RES - 3751-15 DOSQUEBRADAS-RISARALDA.pdf" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//aprende.colombiaaprende.edu.co/es/siemprediae/86525 149" DestinationUniqueKey="382677" Name="http://aprende.colombiaaprende.edu.co/es/siemprediae/86525 149" DestinationURL="http://aprende.colombiaaprende.edu.co/es/siemprediae/86525" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/tel%3a3128863476" DestinationUniqueKey="382678" Name="tel:3128863476" DestinationURL="tel:3128863476" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/tel%3a3122863476" DestinationUniqueKey="382679" Name="tel:3122863476" DestinationURL="tel:3122863476" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//www.facebook.com/universidadcatolicadepereiraucp/" DestinationUniqueKey="382680" Name="https://www.facebook.com/universidadcatolicadepereiraucp/" DestinationURL="https://www.facebook.com/universidadcatolicadepereiraucp/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//www.facebook.com/hashtag/compromisodetodos?source=feed_text&amp;story_id=925961007511763" DestinationUniqueKey="382682" Name="https://www.facebook.com/hashtag/compromisodetodos?source=feed_text&amp;story_id=925961007511763" DestinationURL="https://www.facebook.com/hashtag/compromisodetodos?source=feed_text&amp;story_id=925961007511763" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//www.google.com.co/search?safe=off&amp;espv=2&amp;biw=1440&amp;bih=716&amp;q=chikungunya&amp;spell=1&amp;sa=X&amp;ved=0ahUKEwjIgayJlMHLAhVKQCYKHe7fAfsQvwUIFygA" DestinationUniqueKey="382683" Name="https://www.google.com.co/search?safe=off&amp;espv=2&amp;biw=1440&amp;bih=716&amp;q=chikungunya&amp;spell=1&amp;sa=X&amp;ved=0ahUKEwjIgayJlMHLAhVKQCYKHe7fAfsQvwUIFygA" DestinationURL="https://www.google.com.co/search?safe=off&amp;espv=2&amp;biw=1440&amp;bih=716&amp;q=chikungunya&amp;spell=1&amp;sa=X&amp;ved=0ahUKEwjIgayJlMHLAhVKQCYKHe7fAfsQvwUIFygA" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//www.facebook.com/meeli.blandon?fref=ufi&amp;rc=p" DestinationUniqueKey="382684" Name="https://www.facebook.com/meeli.blandon?fref=ufi&amp;rc=p" DestinationURL="https://www.facebook.com/meeli.blandon?fref=ufi&amp;rc=p" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//www.facebook.com/diegoad1?fref=ufi&amp;rc=p" DestinationUniqueKey="382685" Name="https://www.facebook.com/diegoad1?fref=ufi&amp;rc=p" DestinationURL="https://www.facebook.com/diegoad1?fref=ufi&amp;rc=p" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/http%3a//www.mineducacion.gov.co/ 157" DestinationUniqueKey="382688" Name="http://www.mineducacion.gov.co/ 157" DestinationURL="http://www.mineducacion.gov.co/" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//www.facebook.com/karol.loaizalopez?fref=ufi&amp;rc=p" DestinationUniqueKey="382689" Name="https://www.facebook.com/karol.loaizalopez?fref=ufi&amp;rc=p" DestinationURL="https://www.facebook.com/karol.loaizalopez?fref=ufi&amp;rc=p" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//www.facebook.com/drobayogarcia?fref=ufi&amp;rc=p" DestinationUniqueKey="382690" Name="https://www.facebook.com/drobayogarcia?fref=ufi&amp;rc=p" DestinationURL="https://www.facebook.com/drobayogarcia?fref=ufi&amp;rc=p" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//www.facebook.com/francyarcila1982?fref=ufi&amp;rc=p" DestinationUniqueKey="382691" Name="https://www.facebook.com/francyarcila1982?fref=ufi&amp;rc=p" DestinationURL="https://www.facebook.com/francyarcila1982?fref=ufi&amp;rc=p" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//www.facebook.com/hashtag/nomaspereiraenelfutbolcolombiano?hc_location=ufi" DestinationUniqueKey="382692" Name="https://www.facebook.com/hashtag/nomaspereiraenelfutbolcolombiano?hc_location=ufi" DestinationURL="https://www.facebook.com/hashtag/nomaspereiraenelfutbolcolombiano?hc_location=ufi" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//www.facebook.com/hashtag/nomaspereiraenelfutbolcolombiano?hc_location=ufi 162" DestinationUniqueKey="382693" Name="https://www.facebook.com/hashtag/nomaspereiraenelfutbolcolombiano?hc_location=ufi 162" DestinationURL="https://www.facebook.com/hashtag/nomaspereiraenelfutbolcolombiano?hc_location=ufi" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//www.facebook.com/marcos.velez.319?fref=ufi&amp;rc=p" DestinationUniqueKey="382694" Name="https://www.facebook.com/marcos.velez.319?fref=ufi&amp;rc=p" DestinationURL="https://www.facebook.com/marcos.velez.319?fref=ufi&amp;rc=p" Hidden="false"/>
+	<HyperlinkURLDestination Self="HyperlinkURLDestination/https%3a//www.facebook.com/carlos.coneorivero?fref=ufi&amp;rc=p" DestinationUniqueKey="382695" Name="https://www.facebook.com/carlos.coneorivero?fref=ufi&amp;rc=p" DestinationURL="https://www.facebook.com/carlos.coneorivero?fref=ufi&amp;rc=p" Hidden="false"/>
+	<HyphenationException Self="dHyphenationException0" Name="$ID/English: UK" RemovedExceptions="" AddedExceptions="$ID/realizará"/>
+	<HyphenationException Self="dHyphenationException1" Name="$ID/English: USA" RemovedExceptions="" AddedExceptions="$ID/CHIEF"/>
+	<HyphenationException Self="dHyphenationException2" Name="$ID/Spanish: Castilian" RemovedExceptions="" AddedExceptions="$ID/Adicionalmente $ID/Adriana $ID/aerolíneas $ID/agroindustrial $ID/agropecuaria $ID/Agustín $ID/alucinógena $ID/alucinógenos $ID/Andrea $ID/aniversarias $ID/antinarcticos $ID/Antioquia $ID/anímicamente $ID/Apía $ID/Arabia $ID/Arajo $ID/Arango $ID/Araucarias $ID/Araújo $ID/Arbeláez $ID/Arcila $ID/Ardila $ID/Aristizabal $ID/Aristizábal $ID/Armenia $ID/artesanal $ID/artesanías $ID/Artunduaga $ID/asaltantes $ID/Asdrúbal $ID/asistencial $ID/asistenciales $ID/atracadores $ID/Auc $ID/audiovisual $ID/audiovisuales $ID/Aurelio $ID/autodefensas $ID/autoempleo $ID/autogestión $ID/avaluada $ID/avaluadas $ID/avaluado $ID/avaluados $ID/azotada $ID/Baena $ID/Balboa $ID/Bancóldex $ID/Barranquilla $ID/Bedoya $ID/Belalcázar $ID/Berlaín $ID/Betancur $ID/Biodiversidad $ID/Bolcheviques $ID/Bolivarianos $ID/Botero $ID/boutique $ID/Buitrago $ID/buseta $ID/C4 $ID/caficultura $ID/Caimalito $ID/CAM $ID/Camargo $ID/cambuches $ID/candidata $ID/caneca $ID/canecas $ID/Carrasquilla $ID/Cartagena $ID/cartagenera $ID/Cartago $ID/Castrillón $ID/caucheras $ID/Cayetano $ID/Celia $ID/Cepeda $ID/Cerritos $ID/Chec $ID/Chinchiná $ID/Chávez $ID/ciclopaseo $ID/citología $ID/colapsar $ID/colisionó $ID/Colombia $ID/Comfamiliar $ID/competitividad $ID/condolencias $ID/confeccionista $ID/conservatismo $ID/consultoría $ID/contraguerrillas $ID/Contralora $ID/Contraloría $ID/contrarreforma $ID/copresidenta $ID/corregimiento $ID/crediticia $ID/criminalística $ID/Crónica $ID/CTI $ID/cubrimientos $ID/Cárder $ID/Cúcuta $ID/deambuló $ID/Decamern $ID/Decamerón $ID/Defensoría $ID/delictivas $ID/delictivos $ID/desempleados $ID/deslizamientos $ID/desmovilización $ID/desmovilizó $ID/diagnósticas $ID/digital $ID/dirigencia $ID/Dosquebradas $ID/Díaz $ID/dígitos $ID/d�ías $ID/Echeverri $ID/ecologicos $ID/Ecopetrol $ID/ecoturismo $ID/ecoturísticas $ID/efectúen $ID/Eliécer $ID/Eln $ID/emprendimiento $ID/enfatizó $ID/enfrentamientos $ID/Espinal $ID/estructuración $ID/estrés $ID/etc $ID/exitosos $ID/falencias $ID/Farc $ID/Fifa $ID/fleteros $ID/Flrez $ID/Flórez $ID/Galeano $ID/Galicia $ID/gallinazos $ID/Galviz $ID/Garca $ID/García $ID/Gastronómica $ID/gastronómico $ID/Gaula $ID/Gaviria $ID/gerenciada $ID/Germán $ID/Gnova $ID/Gonzalez $ID/guaduas $ID/Guillermo $ID/Gutiérrez $ID/Guática $ID/Génova $ID/Gómez $ID/hablados $ID/Henrquez $ID/Hernando $ID/Hernndez $ID/Hernández $ID/Herrera $ID/Heróica $ID/hiperactiva $ID/Hipertensión $ID/Horacio $ID/hotelería $ID/Humánitas $ID/Héctor $ID/Ibagué $ID/ilícitas $ID/implementacin $ID/implementación $ID/implementando $ID/incrementaron $ID/incrementen $ID/incrementó $ID/indiciada $ID/indiciado $ID/informáticas $ID/ingenieros $ID/Ingrid $ID/inmovilizados $ID/inmuebles $ID/instaurado $ID/intercambiador $ID/intermediación $ID/intermunicipal $ID/intrafamiliar $ID/involucradas $ID/involucrados $ID/Itagüí $ID/Iván $ID/Jaramillo $ID/Javeriana $ID/Jiménez $ID/Julin $ID/Julián $ID/La $ID/Lamprea $ID/Latiff $ID/Latinoamerica $ID/lesiva $ID/Leyton $ID/Lizcano $ID/local@eldiario.com.co $ID/Londoño $ID/López $ID/Manizales $ID/marsellés $ID/Martha $ID/Martínez $ID/Ma~~rín $ID/mascotas $ID/Matecaña $ID/Mauricio $ID/Maurier $ID/Mazda $ID/Medellín $ID/medidores $ID/Megabus $ID/Megabús $ID/mejía $ID/Mejía $ID/Meneses $ID/Merchán $ID/metabólico $ID/Millán $ID/minifundista $ID/Ministra $ID/Mistrató $ID/modelaje $ID/Montealegre $ID/motocicletas $ID/Multiservicios $ID/Márquez $ID/Mónica $ID/Múnera $ID/narcotrfico $ID/narcotráfico $ID/Ocampo $ID/Octavio $ID/opacidades $ID/operativos $ID/opin $ID/organizacionales $ID/Otùn $ID/otún $ID/Otún $ID/Panaca $ID/papayeras $ID/paramilitar $ID/paramilitarismo $ID/parqueadero $ID/Paula $ID/Peláez $ID/Pereira $ID/pereirana $ID/pereiranas $ID/pereirano $ID/pereiranos $ID/Personería $ID/Pipintá $ID/pirotécnicos $ID/planeación $ID/pluripartidista $ID/Polvorería $ID/precandidatos $ID/predial $ID/premiación $ID/privacidad $ID/procuradura $ID/Procuraduría $ID/promocionales $ID/Promotora $ID/protagónico $ID/Pyme $ID/Pymes $ID/Pérez $ID/públicos $ID/quela $ID/quereres $ID/Quinceañeras $ID/Quinchía $ID/Quindo $ID/Quindío $ID/quirúrgicamente $ID/Raigoza $ID/Ramírez $ID/Registraduría $ID/reinició $ID/reinserción $ID/reinsertado $ID/reinsertados $ID/Remodelación $ID/Rentería $ID/Risaralda $ID/risaraldense $ID/ri~~sa~~ral~~den~~ses $ID/risaraldenses $ID/Rodríguez $ID/Rubéola $ID/Salazar $ID/Sanín $ID/scar $ID/seccional $ID/Sergio $ID/sesionó $ID/sexualmente $ID/sicarios $ID/sicólogos $ID/Siendo $ID/Sijín $ID/Simón $ID/Sisbén $ID/sismorresistencia $ID/Skäl $ID/slp $ID/sor~~pre~~si~~va $ID/subsidiado $ID/Suárez $ID/Sánchez $ID/Tabima $ID/Tamayo $ID/Tangarife $ID/Tejares $ID/Termales $ID/Teófilo $ID/TLC $ID/Tolima $ID/tractocamión $ID/tractomula $ID/URI $ID/Uribe $ID/Valentina $ID/Va~~ne~~gas $ID/velación $ID/Velásquez $ID/Vernica $ID/Victor $ID/virtuales $ID/Vivian $ID/volqueta $ID/Vásquez $ID/Vélez $ID/Víctor $ID/VÍctor $ID/Yarumal $ID/Yuli $ID/Álvarez $ID/Álvaro $ID/Ávila $ID/élite $ID/ó $ID/Óscar"/>
+	<IndexingSortOption Self="dIndexingSortOptionnkIndexGroup_Symbol" Name="$ID/kIndexGroup_Symbol" Include="true" Priority="0" HeaderType="Nothing"/>
+	<IndexingSortOption Self="dIndexingSortOptionnkIndexGroup_Alphabet" Name="$ID/kIndexGroup_Alphabet" Include="true" Priority="1" HeaderType="Spanish"/>
+	<IndexingSortOption Self="dIndexingSortOptionnkIndexGroup_Numeric" Name="$ID/kIndexGroup_Numeric" Include="false" Priority="2" HeaderType="Nothing"/>
+	<IndexingSortOption Self="dIndexingSortOptionnkWRIndexGroup_GreekAlphabet" Name="$ID/kWRIndexGroup_GreekAlphabet" Include="false" Priority="3" HeaderType="Nothing"/>
+	<IndexingSortOption Self="dIndexingSortOptionnkWRIndexGroup_CyrillicAlphabet" Name="$ID/kWRIndexGroup_CyrillicAlphabet" Include="false" Priority="4" HeaderType="Russian"/>
+	<IndexingSortOption Self="dIndexingSortOptionnkIndexGroup_Kana" Name="$ID/kIndexGroup_Kana" Include="false" Priority="5" HeaderType="HiraganaAll"/>
+	<IndexingSortOption Self="dIndexingSortOptionnkIndexGroup_Chinese" Name="$ID/kIndexGroup_Chinese" Include="false" Priority="6" HeaderType="ChinesePinyin"/>
+	<IndexingSortOption Self="dIndexingSortOptionnkIndexGroup_Korean" Name="$ID/kIndexGroup_Korean" Include="false" Priority="7" HeaderType="KoreanConsonant"/>
+	<IndexingSortOption Self="dIndexingSortOptionnkWRIndexGroup_ArabicAlphabet" Name="$ID/kWRIndexGroup_ArabicAlphabet" Include="false" Priority="8" HeaderType="Nothing"/>
+	<IndexingSortOption Self="dIndexingSortOptionnkWRIndexGroup_HebrewAlphabet" Name="$ID/kWRIndexGroup_HebrewAlphabet" Include="false" Priority="9" HeaderType="Nothing"/>
+	<ABullet Self="dABullet0" CharacterType="UnicodeOnly" CharacterValue="8226">
+		<Properties>
+			<BulletsFont type="string">$ID/</BulletsFont>
+			<BulletsFontStyle type="string">$ID/</BulletsFontStyle>
+		</Properties>
+	</ABullet>
+	<ABullet Self="dABullet1" CharacterType="UnicodeOnly" CharacterValue="42">
+		<Properties>
+			<BulletsFont type="string">$ID/</BulletsFont>
+			<BulletsFontStyle type="string">$ID/</BulletsFontStyle>
+		</Properties>
+	</ABullet>
+	<ABullet Self="dABullet2" CharacterType="UnicodeOnly" CharacterValue="9674">
+		<Properties>
+			<BulletsFont type="string">$ID/</BulletsFont>
+			<BulletsFontStyle type="string">$ID/</BulletsFontStyle>
+		</Properties>
+	</ABullet>
+	<ABullet Self="dABullet3" CharacterType="UnicodeWithFont" CharacterValue="187">
+		<Properties>
+			<BulletsFont type="string">Myriad Pro</BulletsFont>
+			<BulletsFontStyle type="string">$ID/Regular</BulletsFontStyle>
+		</Properties>
+	</ABullet>
+	<ABullet Self="dABullet4" CharacterType="GlyphWithFont" CharacterValue="503">
+		<Properties>
+			<BulletsFont type="string">Minion Pro</BulletsFont>
+			<BulletsFontStyle type="string">$ID/Regular</BulletsFontStyle>
+		</Properties>
+	</ABullet>
+	<ABullet Self="dABullet5" CharacterType="GlyphWithFont" CharacterValue="630">
+		<Properties>
+			<BulletsFont type="string">Adobe Jenson Pro</BulletsFont>
+			<BulletsFontStyle type="string">$ID/Regular</BulletsFontStyle>
+		</Properties>
+	</ABullet>
+	<Assignment Self="ub3" Name="$ID/UnassignedInCopy" UserName="$ID/" ExportOptions="AssignedSpreads" IncludeLinksWhenPackage="true" FilePath="$ID/">
+		<Properties>
+			<FrameColor type="enumeration">Nothing</FrameColor>
+		</Properties>
+	</Assignment>
+</Document>

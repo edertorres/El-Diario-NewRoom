@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CONSULTA — Resultados Electorales</title>
+<style>
+:root {
+    --bg: #f8fafc; --card: #fff; --text: #1e293b; --text-light: #64748b;
+    --border: #e2e8f0; --accent: #3b82f6; --party-bg: #f8fafc;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.5;
+}
+.toolbar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--card); border-bottom: 1px solid var(--border);
+    padding: 12px 24px; display: flex; align-items: center; gap: 16px;
+    flex-wrap: wrap; box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.toolbar h1 { font-size: 16px; font-weight: 700; white-space: nowrap; }
+.toolbar select, .toolbar input {
+    padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px;
+    font-size: 13px; background: var(--bg); color: var(--text);
+}
+.toolbar input { width: 200px; }
+.metrics {
+    display: flex; gap: 12px; padding: 16px 24px; flex-wrap: wrap;
+}
+.metric {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 20px; flex: 1; min-width: 140px; text-align: center;
+}
+.metric .val { font-size: 22px; font-weight: 700; color: var(--accent); }
+.metric .lbl { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: .5px; }
+.muni-section {
+    margin: 16px 24px; background: var(--card);
+    border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+}
+.muni-header {
+    background: #1e293b; color: #fff; padding: 10px 20px;
+    font-size: 14px; font-weight: 700; letter-spacing: .5px;
+}
+.parties-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 8px; padding: 12px;
+}
+.party-block {
+    background: var(--party-bg); border: 1px solid var(--border);
+    border-radius: 6px; overflow: hidden;
+}
+.party-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 10px; background: #f1f5f9; font-size: 12px; font-weight: 700;
+}
+.party-name { flex: 1; }
+.party-votes, .party-pct { font-variant-numeric: tabular-nums; min-width: 50px; text-align: right; }
+.cand-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+.cand-table tr:nth-child(even) { background: #f8fafc; }
+.cand-table td { padding: 2px 10px; }
+.cand-table .cand-name { color: var(--text-light); padding-left: 18px; }
+.cand-table .num { text-align: right; font-variant-numeric: tabular-nums; min-width: 46px; }
+.stats-footer {
+    display: flex; flex-wrap: wrap; gap: 6px 20px;
+    padding: 10px 20px; background: #f8fafc; border-top: 1px solid var(--border);
+    font-size: 11.5px;
+}
+.stat-row span { color: var(--text-light); }
+.stat-row strong { margin: 0 4px; }
+.stat-row small { color: var(--text-light); }
+.hidden { display: none !important; }
+@media print {
+    .toolbar { position: static; box-shadow: none; }
+    .muni-section { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+    <h1>📊 CONSULTA — Resultados</h1>
+    <select id="filterMuni" onchange="filterByMuni()">
+        <option value="__all__">Todos los municipios</option>
+        <option value="COLOMBIA">COLOMBIA</option>
+
+    </select>
+    <input type="text" id="searchBox" placeholder="Buscar candidato o partido…" oninput="doSearch()">
+</div>
+
+<div class="metrics">
+    <div class="metric"><div class="val" id="kpi-votos">337.419.192</div><div class="lbl">Votos Totales</div></div>
+    <div class="metric"><div class="val" id="kpi-munis">1</div><div class="lbl">Municipios</div></div>
+    <div class="metric"><div class="val" id="kpi-partidos">3</div><div class="lbl">Partidos</div></div>
+</div>
+
+
+        <div class="muni-section" data-muni="COLOMBIA">
+            <div class="muni-header">CONSULTA COLOMBIA</div>
+            <div class="parties-grid">
+                
+            <div class="party-block" data-votes="5743043" data-party="LA GRAN CONSULTA POR COLOMBIA">
+                <div class="party-header" style="border-left: 4px solid #5C6BC0;">
+                    <span class="party-name">LA GRAN CONSULTA POR COLOMBIA</span>
+                    <span class="party-votes">5.743.043</span>
+                    <span class="party-pct">56.16%</span>
+                </div>
+                <table class="cand-table">
+                    <tr>
+                    <td class="cand-name">JUAN DANIEL OVIEDO ARANGO</td>
+                    <td class="num">21.267.972</td>
+                    <td class="num">6.3%</td>
+                </tr><tr>
+                    <td class="cand-name">JUAN MANUEL GALAN PACHON</td>
+                    <td class="num">21.127.491</td>
+                    <td class="num">6.26%</td>
+                </tr><tr>
+                    <td class="cand-name">MAURICIO CARDENAS SANTAMARIA</td>
+                    <td class="num">21.095.778</td>
+                    <td class="num">6.25%</td>
+                </tr><tr>
+                    <td class="cand-name">VICTORIA EUGENIA DAVILA HOYOS</td>
+                    <td class="num">21.053.670</td>
+                    <td class="num">6.23%</td>
+                </tr><tr>
+                    <td class="cand-name">DAVID ANDRES LUNA SANCHEZ</td>
+                    <td class="num">21.049.908</td>
+                    <td class="num">6.23%</td>
+                </tr><tr>
+                    <td class="cand-name">ANIBAL GAVIRIA CORREA</td>
+                    <td class="num">21.005.490</td>
+                    <td class="num">6.22%</td>
+                </tr><tr>
+                    <td class="cand-name">JUAN CARLOS PINZON BUENO</td>
+                    <td class="num">21.003.510</td>
+                    <td class="num">6.22%</td>
+                </tr><tr>
+                    <td class="cand-name">ENRIQUE PEÑALOSA LONDOÑO</td>
+                    <td class="num">20.964.636</td>
+                    <td class="num">6.21%</td>
+                </tr><tr>
+                    <td class="cand-name">PALOMA SUSANA VALENCIA LASERNA</td>
+                    <td class="num">20.951.964</td>
+                    <td class="num">6.2%</td>
+                </tr>
+                </table>
+            </div>
+            <div class="party-block" data-votes="3207910" data-party="FRENTE POR LA VIDA">
+                <div class="party-header" style="border-left: 4px solid #5C6BC0;">
+                    <span class="party-name">FRENTE POR LA VIDA</span>
+                    <span class="party-votes">3.207.910</span>
+                    <span class="party-pct">31.37%</span>
+                </div>
+                <table class="cand-table">
+                    <tr>
+                    <td class="cand-name">ROY LEONARDO BARRERAS MONTEALEGRE</td>
+                    <td class="num">21.255.762</td>
+                    <td class="num">6.29%</td>
+                </tr><tr>
+                    <td class="cand-name">EDISON LUCIO TORRES MORENO</td>
+                    <td class="num">21.186.957</td>
+                    <td class="num">6.27%</td>
+                </tr><tr>
+                    <td class="cand-name">HECTOR ELIAS PINEDA SALAZAR</td>
+                    <td class="num">21.183.954</td>
+                    <td class="num">6.27%</td>
+                </tr><tr>
+                    <td class="cand-name">MARTHA VIVIANA BERNAL AMAYA</td>
+                    <td class="num">21.173.790</td>
+                    <td class="num">6.27%</td>
+                </tr><tr>
+                    <td class="cand-name">DANIEL QUINTERO CALLE</td>
+                    <td class="num">21.060.567</td>
+                    <td class="num">6.24%</td>
+                </tr>
+                </table>
+            </div>
+            <div class="party-block" data-votes="1273871" data-party="CONSULTA DE LAS SOLUCIONES: SALUD, SEGURIDAD Y EDUCACIÓN">
+                <div class="party-header" style="border-left: 4px solid #5C6BC0;">
+                    <span class="party-name">CONSULTA DE LAS SOLUCIONES: SALUD, SEGURIDAD Y EDUCACIÓN</span>
+                    <span class="party-votes">1.273.871</span>
+                    <span class="party-pct">12.45%</span>
+                </div>
+                <table class="cand-table">
+                    <tr>
+                    <td class="cand-name">CLAUDIA NAYIBE LOPEZ HERNANDEZ</td>
+                    <td class="num">21.032.121</td>
+                    <td class="num">6.23%</td>
+                </tr><tr>
+                    <td class="cand-name">LEONARDO HUMBERTO HUERTA GUTIERREZ</td>
+                    <td class="num">21.005.622</td>
+                    <td class="num">6.22%</td>
+                </tr>
+                </table>
+            </div>
+            </div>
+            
+            <div class="stats-footer">
+                <div class="stat-row"><span>Votantes</span><strong>11.502.449</strong> <small>27.85%</small></div>
+                <div class="stat-row"><span>Válidos</span><strong>10.224.824</strong> <small>88.89%</small></div>
+                <div class="stat-row"><span>Nulos</span><strong>639.253</strong> <small>5.55%</small></div>
+                <div class="stat-row"><span>En Blanco</span><strong>0</strong> <small>0%</small></div>
+                <div class="stat-row"><span>No Marcados</span><strong>638.372</strong> <small>5.54%</small></div>
+                <div class="stat-row"><span>Mesas</span><strong>86.41%</strong> <small>109445 de 126647</small></div>
+            </div>
+        </div>
+
+<script>
+function filterByMuni() {
+    const val = document.getElementById('filterMuni').value;
+    document.querySelectorAll('.muni-section').forEach(el => {
+        el.classList.toggle('hidden', val !== '__all__' && el.dataset.muni !== val);
+    });
+    updateKPIs();
+}
+function doSearch() {
+    const q = document.getElementById('searchBox').value.toLowerCase();
+    if (!q) {
+        document.querySelectorAll('.party-block, .muni-section').forEach(el => el.classList.remove('hidden'));
+        updateKPIs();
+        return;
+    }
+    document.querySelectorAll('.muni-section').forEach(sec => {
+        let anyVisible = false;
+        sec.querySelectorAll('.party-block').forEach(pb => {
+            const text = pb.textContent.toLowerCase();
+            const match = text.includes(q);
+            pb.classList.toggle('hidden', !match);
+            if (match) anyVisible = true;
+        });
+        sec.classList.toggle('hidden', !anyVisible);
+    });
+    updateKPIs();
+}
+function updateKPIs() {
+    let totalVotos = 0;
+    let munisSet = new Set();
+    let partiesSet = new Set();
+    
+    // Usamos las secciones individuales para evitar doble conteo con el consolidado
+    document.querySelectorAll('.muni-section').forEach(sec => {
+        if (sec.classList.contains('hidden')) return;
+        if (sec.dataset.muni === '__global__') return;
+        
+        munisSet.add(sec.dataset.muni);
+        sec.querySelectorAll('.party-block').forEach(pb => {
+            if (pb.classList.contains('hidden')) return;
+            totalVotos += parseInt(pb.dataset.votes || 0);
+            partiesSet.add(pb.dataset.party);
+        });
+    });
+    
+    // Si la vista es el Consolidado Total, usamos sus datos directamente
+    const currentMuni = document.getElementById('filterMuni').value;
+    if (currentMuni === '__global__') {
+        totalVotos = 0;
+        partiesSet.clear();
+        munisSet.clear(); 
+        const globalSec = document.querySelector('.muni-section[data-muni="__global__"]');
+        if (globalSec) {
+            globalSec.querySelectorAll('.party-block').forEach(pb => {
+                if (pb.classList.contains('hidden')) return;
+                totalVotos += parseInt(pb.dataset.votes || 0);
+                partiesSet.add(pb.dataset.party);
+            });
+            // Para el consolidado, el número de municipios es el total de munis reales en el dataset
+            document.querySelectorAll('.muni-section').forEach(s => {
+                if (s.dataset.muni !== '__global__') munisSet.add(s.dataset.muni);
+            });
+        }
+    }
+
+    document.getElementById('kpi-votos').textContent = totalVotos.toLocaleString('es-CO').replace(/,/g, '.');
+    document.getElementById('kpi-munis').textContent = munisSet.size;
+    document.getElementById('kpi-partidos').textContent = partiesSet.size;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+{
+    "name": "bitandblack/helpers",
+    "description": "Useful methods for PHP you may like.",
+    "license": "MIT",
+    "type": "library",
+    "keywords": [
+        "array",
+        "condition",
+        "number",
+        "request",
+        "sanitize",
+        "string",
+        "url",
+        "xml"
+    ],
+    "authors": [
+        {
+            "name": "Tobias Köngeter",
+            "email": "hello@bitandblack.com",
+            "homepage": "https://www.bitandblack.com"
+        }
+    ],
+    "homepage": "https://www.bitandblack.com",
+    "support": {
+        "issues": "https://bitbucket.org/wirbelwild/helpers/issues"
+    },
+    "funding": [
+        {
+            "type": "buymeacoffee",
+            "url": "https://www.buymeacoffee.com/tobiaskoengeter"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "ext-curl": "*",
+        "ext-dom": "*",
+        "ext-json": "*",
+        "ext-libxml": "*",
+        "ext-mbstring": "*"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.0",
+        "phpunit/phpunit": "^11.0",
+        "rector/rector": "^1.0",
+        "symplify/easy-coding-standard": "^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "BitAndBlack\\Helpers\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BitAndBlack\\Helpers\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "scripts": {
+        "phpstan": "php vendor/bin/phpstan analyse --configuration ./phpstan.neon --memory-limit=-1 --ansi",
+        "phpunit": "php vendor/bin/phpunit --configuration ./phpunit.xml --colors=always",
+        "refactor": "php vendor/bin/rector && php vendor/bin/ecs --fix"
+    },
+    "scripts-descriptions": {
+        "phpstan": "Runs PHPStan over the src folder and the tests folder.",
+        "phpunit": "Runs PHPUnit.",
+        "refactor": "Runs tools to refactor the code."
+    }
+}

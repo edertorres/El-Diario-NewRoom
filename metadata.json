@@ -1,0 +1,5 @@
+{
+  "name": "IDML Injector Pro",
+  "description": "Una herramienta profesional para analizar archivos de InDesign (IDML), mapear contenido de texto a historias e inyectar nuevo texto utilizando asistencia de IA mientras se preservan los estilos de diseño.",
+  "requestFramePermissions": []
+}

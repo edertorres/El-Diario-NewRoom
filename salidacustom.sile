@@ -1,0 +1,87 @@
+\begin[papersize=807.8740157480315pt x 1133.8582677165357pt, class=plain]{document}
+\lua{
+  SILE.scratch.idml = {}
+  SILE.usr = SILE.usr or {}
+  -- Function to define style
+  SILE.usr.defineStyle = function(name, opts)
+    SILE.registerCommand(name, function(options, content)
+      SILE.call("font", opts, content)
+    end)
+  end
+  -- Function to force content into a frame
+  SILE.registerCommand("textframe", function(options, content)
+    local id = options.id
+    local f = SILE.documentState.thisPageTemplate.frames[id]
+    if not f then return end
+    -- Try to typeset into frame
+    if SILE.typesetter.typesetInto then
+      SILE.typesetter:typesetInto(f, content)
+    else
+      -- Older SILE hack
+      local oldFrame = SILE.typesetter.frame
+      SILE.typesetter.frame = f
+      SILE.process(content)
+      SILE.typesetter.frame = oldFrame
+    end
+  end)
+}
+
+\lua{
+  SILE.usr.defineStyle("style_texto_principal", { weight=400, size="9.5pt" })
+  SILE.usr.defineStyle("style__no_paragraph_style_", { weight=400, size="12pt" })
+  SILE.usr.defineStyle("style__no_character_style_", { weight=400, size="10pt" })
+  SILE.usr.defineStyle("style_intertitulo_general", { weight=700, size="11pt" })
+  SILE.usr.defineStyle("style_titulo_1_pag_general", { weight=700, size="43pt" })
+  SILE.usr.defineStyle("style_antetitulo", { weight=700, size="15pt" })
+  SILE.usr.defineStyle("style_tengalo_en_cuenta", { weight=400, size="10pt" })
+  SILE.usr.defineStyle("style_titulo_2_pag_general", { weight=400, size="29pt" })
+  SILE.usr.defineStyle("style_destacado_general", { weight=700, size="10pt" })
+  SILE.usr.defineStyle("style___bala_fotonoticia", { weight=400, size="10pt" })
+  SILE.usr.defineStyle("style__no_character_style_", { weight=400, size="10pt" })
+  SILE.usr.defineStyle("style_titulo_que_piensa", { weight=700, size="17pt" })
+  SILE.usr.defineStyle("style_texto_que_piensa", { weight=400, size="9.5pt" })
+  SILE.usr.defineStyle("style_pie_de_foto", { weight=700, size="10pt" })
+  SILE.usr.defineStyle("style_sumario_general", { weight=700, size="16pt" })
+  SILE.usr.defineStyle("style__no_paragraph_style_", { weight=400, size="12pt" })
+}
+
+\lua{
+}
+\eject
+\lua{
+}
+\eject
+\lua{
+}
+\eject
+\lua{
+  local spec = { id = "frame_u1a5_0", top = "1092.7664904168294pt", left = "250.01978976626708pt", width = "620.3407994647247pt", height = "71.99999999999977pt" }
+  if SILE.newFrame then
+    SILE.newFrame(spec)
+  else
+    SILE.documentState.thisPageTemplate.frames["frame_u1a5_0"] = spec
+  end
+  local spec = { id = "frame_u1a5_1", top = "1069.0277905353382pt", left = "119.4158911954188pt", width = "268.39066430495814pt", height = "12.983825683593977pt" }
+  if SILE.newFrame then
+    SILE.newFrame(spec)
+  else
+    SILE.documentState.thisPageTemplate.frames["frame_u1a5_1"] = spec
+  end
+  local spec = { id = "frame_u1a5_2", top = "1065.8985348350448pt", left = "735.9482877838416pt", width = "128.6594379912599pt", height = "20.557723999023438pt" }
+  if SILE.newFrame then
+    SILE.newFrame(spec)
+  else
+    SILE.documentState.thisPageTemplate.frames["frame_u1a5_2"] = spec
+  end
+}
+\textframe[id=frame_u1a5_0]{
+\style_tengalo_en_cuenta{JuaGenimillit unt velicabo. Nam, siniendant, con consequ asserum quo voluptur? Quiae exces mi, tem veriassequis esequi ulparch ilitae. Ipsaper ibeatae stiissi dolore prem restem que volorrum estio. Aximint alis et facero et aut la que net offictur? Otaque porrovit expero dolor sed milibus et optam sumendignia antiaec ustotatat.} 
+}
+\textframe[id=frame_u1a5_1]{
+\style__no_paragraph_style_{ |  domingo 4 de mayo de 2025 } 
+}
+\textframe[id=frame_u1a5_2]{
+\style__no_paragraph_style_{judicial \{ 13} 
+}
+\eject
+\end{document}

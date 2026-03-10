@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  idml-injector:
+    build: .
+    container_name: idml-injector-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - idml-network
+    depends_on:
+      - preview-service
+
+  preview-service:
+    build: ./preview-service
+    container_name: idml-preview-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./preview-service/app.py:/app/app.py
+      - ./preview-service/idml_to_sla.py:/app/idml_to_sla.py
+      - ./preview-service/export_sla.py:/app/export_sla.py
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - idml-network
+
+networks:
+  idml-network:
+    driver: bridge

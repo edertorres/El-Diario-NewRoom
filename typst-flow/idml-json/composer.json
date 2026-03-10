@@ -1,0 +1,5 @@
+{
+    "require": {
+        "bitandblack/idml-json-converter": "^2.2"
+    }
+}

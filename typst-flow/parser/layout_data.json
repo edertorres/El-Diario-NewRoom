@@ -1,0 +1,138 @@
+{
+  "page": {
+    "width": 807.8740157480315,
+    "height": 1133.8582677165357
+  },
+  "slots": [
+    {
+      "tag": "TEXTO1",
+      "type": "text",
+      "x": 28.346,
+      "y": 209.52,
+      "w": 152.206,
+      "h": 582.953,
+      "style": {
+        "font": "Utopia",
+        "size": 9.5,
+        "leading": 12.0
+      }
+    },
+    {
+      "tag": "TEXTO2",
+      "type": "text",
+      "x": 412.441,
+      "y": 881.52,
+      "w": 367.621,
+      "h": 209.819,
+      "style": {
+        "font": "Utopia",
+        "size": 9.5,
+        "leading": 12.0
+      }
+    },
+    {
+      "tag": "LEYENDA1",
+      "type": "text",
+      "x": 256.766,
+      "y": 674.335,
+      "w": 347.375,
+      "h": 27.185,
+      "style": {
+        "font": "serif",
+        "size": 10.0,
+        "leading": 12.0
+      }
+    },
+    {
+      "tag": "CREDITO",
+      "type": "text",
+      "x": 31.595,
+      "y": 161.52,
+      "w": 143.035,
+      "h": 36.0,
+      "style": {
+        "font": "Utopia",
+        "size": 9.5,
+        "leading": 12.0
+      }
+    },
+    {
+      "tag": "TITULO1",
+      "type": "text",
+      "x": 255.68,
+      "y": 189.921,
+      "w": 504.54,
+      "h": 123.128,
+      "style": {
+        "font": "Playfair Display",
+        "size": 43.0,
+        "leading": 54.0
+      }
+    },
+    {
+      "tag": "TITULO2",
+      "type": "text",
+      "x": 411.012,
+      "y": 809.52,
+      "w": 368.516,
+      "h": 72.0,
+      "style": {
+        "font": "serif",
+        "size": 29.0,
+        "leading": 33.0
+      }
+    },
+    {
+      "tag": "ANTETITULO1",
+      "type": "text",
+      "x": 256.117,
+      "y": 158.372,
+      "w": 504.103,
+      "h": 15.148,
+      "style": {
+        "font": "Myriad Pro",
+        "size": 18.0,
+        "leading": 11.023618125623065
+      }
+    },
+    {
+      "tag": "SUMARIO",
+      "type": "text",
+      "x": 256.326,
+      "y": 312.01,
+      "w": 500.713,
+      "h": 36.0,
+      "style": {
+        "font": "Myriad Pro",
+        "size": 17.0,
+        "leading": 18.0
+      }
+    },
+    {
+      "tag": "SOBRANTES",
+      "type": "text",
+      "x": -378.425,
+      "y": 385.512,
+      "w": 324.387,
+      "h": 228.11,
+      "style": {
+        "font": "serif",
+        "size": 10.0,
+        "leading": 12.0
+      }
+    },
+    {
+      "tag": "FOTO1",
+      "type": "image",
+      "x": 255.68,
+      "y": 365.52,
+      "w": 341.029,
+      "h": 312.0,
+      "style": {
+        "font": "serif",
+        "size": 10,
+        "leading": 1.2
+      }
+    }
+  ]
+}

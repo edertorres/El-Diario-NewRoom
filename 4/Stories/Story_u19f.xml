@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<idPkg:Story xmlns:idPkg="http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging" DOMVersion="7.5">
+	<Story Self="u19f" AppliedTOCStyle="n" TrackChanges="false" StoryTitle="$ID/" AppliedNamedGrid="n">
+		<StoryPreference OpticalMarginAlignment="false" OpticalMarginSize="12" FrameType="TextFrameType" StoryOrientation="Horizontal" StoryDirection="LeftToRightDirection"/>
+		<InCopyExportOption IncludeGraphicProxies="true" IncludeAllResources="false"/>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/$ID/[No paragraph style]" HyphenateLadderLimit="0" AutoLeading="120.4986572265625" Hyphenation="false" HyphenateAfterFirst="3" HyphenateCapitalizedWords="false" HyphenateWordsLongerThan="6" HyphenationZone="0" DesiredWordSpacing="110.0006103515625" MaximumWordSpacing="250" MinimumWordSpacing="85.0006103515625" MaximumLetterSpacing="3.99932861328125" RuleAboveLineWeight="0" RuleAboveTint="0" RuleBelowLineWeight="2" RuleBelowTint="0" RuleBelowOffset="2.834645669291339" RuleBelowWidth="TextWidth" RuleBelow="true" GridAlignment="AlignBaseline">
+			<Properties>
+				<RuleAboveColor type="object">Color/White</RuleAboveColor>
+				<RuleAboveGapColor type="string">Text Color</RuleAboveGapColor>
+				<RuleBelowGapColor type="string">Text Color</RuleBelowGapColor>
+			</Properties>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="SemiBold" PointSize="9.5" Ligatures="false" AppliedLanguage="$ID/Spanish: Castilian" CharacterAlignment="AlignBaseline" RubyOpenTypePro="false" RubyAutoAlign="false" WarichuAlignment="LeftAlign">
+				<Properties>
+					<Leading type="unit">11</Leading>
+					<AppliedFont type="string">Playfair Display</AppliedFont>
+					<UnderlineGapColor type="string">Text Color</UnderlineGapColor>
+					<StrikeThroughGapColor type="string">Text Color</StrikeThroughGapColor>
+				</Properties>
+				<Content>Víctor Quinchía.</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="9.5" Ligatures="false" AppliedLanguage="$ID/Spanish: Castilian" CharacterAlignment="AlignBaseline" RubyOpenTypePro="false" RubyAutoAlign="false" WarichuAlignment="LeftAlign">
+				<Properties>
+					<Leading type="unit">11</Leading>
+					<AppliedFont type="string">Playfair Display</AppliedFont>
+					<UnderlineGapColor type="string">Text Color</UnderlineGapColor>
+					<StrikeThroughGapColor type="string">Text Color</StrikeThroughGapColor>
+				</Properties>
+				<Content> </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold Condensed" PointSize="9.5" Ligatures="false" AppliedLanguage="$ID/Spanish: Castilian" CharacterAlignment="AlignBaseline" RubyOpenTypePro="false" RubyAutoAlign="false" WarichuAlignment="LeftAlign">
+				<Properties>
+					<Leading type="unit">11</Leading>
+					<AppliedFont type="string">Myriad Pro</AppliedFont>
+					<UnderlineGapColor type="string">Text Color</UnderlineGapColor>
+					<StrikeThroughGapColor type="string">Text Color</StrikeThroughGapColor>
+				</Properties>
+				<Content>Periodista Diario del Otún</Content>
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+	</Story>
+</idPkg:Story>

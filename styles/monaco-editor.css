@@ -1,0 +1,159 @@
+/* Contenedor base */
+.codemirror-editor-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.codemirror-editor-container .monaco-editor {
+  height: 100%;
+}
+
+/* Scrollbar */
+.codemirror-editor-container .monaco-scrollable-element::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.codemirror-editor-container .monaco-scrollable-element::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 5px;
+}
+
+.codemirror-editor-container .monaco-scrollable-element::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 5px;
+  border: 2px solid #f3f4f6;
+}
+
+.codemirror-editor-container .monaco-scrollable-element::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Placeholder (no hay API directa; se puede simular con aria-label) */
+.codemirror-editor-container [data-placeholder]:empty::before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+}
+
+/* Etiquetas válidas por grupo */
+.monaco-tag {
+  font-weight: 900;
+  padding: 2px 4px;
+  border-radius: 4px;
+  border: 1px solid;
+}
+
+.monaco-tag-color-0 { background-color: rgba(99, 102, 241, 0.1) !important; border-color: rgba(99, 102, 241, 0.2) !important; color: #4f46e5 !important; }
+.monaco-tag-color-1 { background-color: rgba(34, 197, 94, 0.1) !important; border-color: rgba(34, 197, 94, 0.2) !important; color: #22c55e !important; }
+.monaco-tag-color-2 { background-color: rgba(249, 115, 22, 0.1) !important; border-color: rgba(249, 115, 22, 0.2) !important; color: #f97316 !important; }
+.monaco-tag-color-3 { background-color: rgba(168, 85, 247, 0.1) !important; border-color: rgba(168, 85, 247, 0.2) !important; color: #a855f7 !important; }
+.monaco-tag-color-4 { background-color: rgba(236, 72, 153, 0.1) !important; border-color: rgba(236, 72, 153, 0.2) !important; color: #ec4899 !important; }
+.monaco-tag-color-5 { background-color: rgba(59, 130, 246, 0.1) !important; border-color: rgba(59, 130, 246, 0.2) !important; color: #3b82f6 !important; }
+.monaco-tag-color-6 { background-color: rgba(234, 179, 8, 0.1) !important; border-color: rgba(234, 179, 8, 0.2) !important; color: #eab308 !important; }
+.monaco-tag-color-7 { background-color: rgba(14, 165, 233, 0.1) !important; border-color: rgba(14, 165, 233, 0.2) !important; color: #0ea5e9 !important; }
+
+/* Etiquetas inválidas */
+.monaco-tag-invalid {
+  color: #dc2626 !important;
+  font-weight: 900 !important;
+  background-color: rgba(220, 38, 38, 0.1) !important;
+  padding: 2px 4px;
+  border-radius: 4px;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  text-decoration: line-through;
+  text-decoration-color: rgba(220, 38, 38, 0.5);
+}
+
+/* Badges inline (conteo y porcentaje) */
+.monaco-tag-badge {
+  margin-left: 4px;
+  padding: 0px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1.4;
+  letter-spacing: 0.1px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.monaco-badge-ok {
+  background: rgba(16, 185, 129, 0.18);
+  color: #0f5132;
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.monaco-badge-warn {
+  background: rgba(251, 191, 36, 0.2);
+  color: #92400e;
+  border-color: rgba(251, 191, 36, 0.45);
+}
+
+.monaco-badge-over {
+  background: rgba(248, 113, 113, 0.2);
+  color: #991b1b;
+  border-color: rgba(248, 113, 113, 0.45);
+}
+
+.monaco-badge-miss {
+  background: rgba(248, 113, 113, 0.25);
+  color: #991b1b;
+  border-color: rgba(248, 113, 113, 0.5);
+}
+
+/* Autocompletado */
+.monaco-editor .suggest-widget {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.monaco-editor .suggest-widget .monaco-list-row.focused {
+  background-color: rgba(99, 102, 241, 0.1) !important;
+  color: #4f46e5 !important;
+  font-weight: 600;
+}
+
+/* Panel de etiquetas faltantes en editor */
+.monaco-missing-panel {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 8px 10px;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: auto; /* El panel sí debe recibir clics */
+}
+
+.monaco-missing-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #b91c1c;
+}
+
+.monaco-missing-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.monaco-missing-chip {
+  background: rgba(248, 113, 113, 0.12);
+  color: #b91c1c;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  padding: 3px 6px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+}
