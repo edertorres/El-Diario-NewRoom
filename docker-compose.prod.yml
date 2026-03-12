@@ -23,7 +23,7 @@ services:
     #      - "8000:8000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`api_redaccion.rreditores.com`)"
+      - "traefik.http.routers.backend.rule=Host(`api-redaccion.rreditores.com`)"
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
