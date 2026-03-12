@@ -1,11 +1,9 @@
 version: '3.8'
 
 services:
-  # Frontend con Nginx (Compilado para producción)
+  # Frontend con Nginx (Pre-compilado en GitHub Actions)
   frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.prod
+    image: ghcr.io/edertorres/el-diario-newroom-frontend:latest
     ports:
       - "3000:80"
     labels:
@@ -20,9 +18,7 @@ services:
 
   # Backend (Preview Service) con Scribus y Typst
   backend:
-    build:
-      context: ./preview-service
-      dockerfile: Dockerfile
+    image: ghcr.io/edertorres/el-diario-newroom-backend:latest
     ports:
       - "8000:8000"
     labels:
