@@ -33,6 +33,7 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_DRIVE_TEMPLATES_FOLDER_ID': JSON.stringify(env.VITE_DRIVE_TEMPLATES_FOLDER_ID || ''),
       'import.meta.env.VITE_DRIVE_DESTINATION_FOLDER_ID': JSON.stringify(env.VITE_DRIVE_DESTINATION_FOLDER_ID || ''),
       'import.meta.env.VITE_GOOGLE_SHEETS_LOG_ID': JSON.stringify(env.VITE_GOOGLE_SHEETS_LOG_ID || ''),
+      'import.meta.env.VITE_PREVIEW_API_URL': JSON.stringify(env.VITE_PREVIEW_API_URL || ''),
     },
     build: {
       sourcemap: false,
