@@ -76,7 +76,7 @@ jobs:
             VITE_DRIVE_TEMPLATES_FOLDER_ID=${{ secrets.VITE_DRIVE_TEMPLATES_FOLDER_ID }}
             VITE_DRIVE_DESTINATION_FOLDER_ID=${{ secrets.VITE_DRIVE_DESTINATION_FOLDER_ID }}
             VITE_GOOGLE_SHEETS_LOG_ID=${{ secrets.VITE_GOOGLE_SHEETS_LOG_ID }}
-            VITE_PREVIEW_API_URL=/api-preview
+            VITE_PREVIEW_API_URL=https://api-redaccion.rreditores.com
             GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
             VITE_DEEPSEEK_API_KEY=${{ secrets.VITE_DEEPSEEK_API_KEY }}
             VITE_STORAGE_MODE=both

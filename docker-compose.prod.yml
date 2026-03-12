@@ -27,6 +27,9 @@ services:
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
+      # Aumentar límites de carga y tiempo
+      - "traefik.http.middlewares.backend-limit.buffering.maxRequestBodyBytes=52428800"
+      - "traefik.http.routers.backend.middlewares=backend-limit"
     volumes:
       # Volúmenes persistentes para evitar pérdida de datos en despliegues
       - preview-data:/app/uploads
