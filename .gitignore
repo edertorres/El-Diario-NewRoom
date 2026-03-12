@@ -50,5 +50,4 @@ preview-service/venv/
 preview-service/.venv/
 
 # Scribus
-.scribus/
 *.bak
