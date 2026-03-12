@@ -23,6 +23,10 @@ services:
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
+      # Timeouts extendidos para Scribus (puede tardar varios minutos)
+      - "traefik.http.services.backend.loadbalancer.responseforwarding.flushinterval=100ms"
+      - "traefik.http.middlewares.backend-timeout.headers.customrequestheaders.X-Timeout=300"
+      - "traefik.http.routers.backend.middlewares=backend-timeout"
     volumes:
       - preview-data:/app/uploads
       - preview-output:/app/output
