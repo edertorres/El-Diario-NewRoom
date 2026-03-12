@@ -34,6 +34,17 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_DRIVE_DESTINATION_FOLDER_ID': JSON.stringify(env.VITE_DRIVE_DESTINATION_FOLDER_ID || ''),
       'import.meta.env.VITE_GOOGLE_SHEETS_LOG_ID': JSON.stringify(env.VITE_GOOGLE_SHEETS_LOG_ID || ''),
     },
+    build: {
+      sourcemap: false,
+      minify: 'esbuild',
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            monaco: ['monaco-editor'],
+          },
+        },
+      },
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

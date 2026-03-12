@@ -1,5 +1,7 @@
 # Etapa de Construcción (Build Stage)
 FROM node:20-alpine AS build
+# Optimizar para entornos con poca memoria
+ENV NODE_OPTIONS="--max-old-space-size=2048"
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
