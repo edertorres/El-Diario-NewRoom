@@ -97,20 +97,66 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, sto
 
                 console.log(`[Preview] Enviando payload total: ${(totalSize / 1024 / 1024).toFixed(2)} MB`);
 
-                if (imagesFolderId) {
-                    formData.append('images_folder_id', imagesFolderId);
+                const authHeader = storageManager.activeProvider.getAuthHeader() || '';
+
+                let response: Response;
+
+                if (previewType === 'scribus') {
+                    // Usar patrón async con polling para evitar timeout de Traefik (60s)
+                    formData.append('show_overflows', String(debugOverflow));
+                    const startResp = await fetch(`${previewApiUrl}/render`, {
+                        method: 'POST',
+                        headers: { 'Authorization': authHeader },
+                        body: formData,
+                    });
+                    if (!startResp.ok) {
+                        const errData = await startResp.json().catch(() => ({ detail: 'Error al iniciar el render' }));
+                        throw new Error(errData.detail || 'Error al iniciar el render');
+                    }
+                    const { job_id } = await startResp.json();
+                    console.log(`[Preview] Job iniciado: ${job_id}. Haciendo polling...`);
+
+                    // Polling cada 3 segundos hasta que esté listo (máx. 5 min)
+                    const maxAttempts = 100;
+                    let attempts = 0;
+                    while (attempts < maxAttempts) {
+                        await new Promise(r => setTimeout(r, 3000));
+                        attempts++;
+                        const pollResp = await fetch(`${previewApiUrl}/result/${job_id}`, {
+                            headers: { 'Authorization': authHeader },
+                        });
+                        if (!pollResp.ok) {
+                            const errData = await pollResp.json().catch(() => ({ detail: 'Error en el servidor de Scribus' }));
+                            throw new Error(errData.detail || 'Error en el servidor de Scribus');
+                        }
+                        const contentType = pollResp.headers.get('content-type') || '';
+                        if (contentType.includes('application/pdf')) {
+                            // ¡PDF listo!
+                            response = pollResp;
+                            break;
+                        }
+                        const status = await pollResp.json().catch(() => ({ status: 'pending' }));
+                        console.log(`[Preview] Polling... intento ${attempts}: ${status.status}`);
+                        if (status.status === 'error') {
+                            throw new Error(status.detail || 'Error en el servidor de Scribus');
+                        }
+                    }
+                    if (!response!) {
+                        throw new Error('Timeout: Scribus tardó demasiado en responder');
+                    }
+                } else {
+                    // Typst Pro: llamada directa (más rápida, sin riesgo de timeout)
+                    if (imagesFolderId) {
+                        formData.append('images_folder_id', imagesFolderId);
+                    }
+                    response = await fetch(`${previewApiUrl}/preview-typst-pro`, {
+                        method: 'POST',
+                        headers: { 'Authorization': authHeader },
+                        body: formData,
+                    });
                 }
 
-                const endpoint = previewType === 'typst-pro' ? '/preview-typst-pro' : '/preview';
-                const response = await fetch(`${previewApiUrl}${endpoint}${previewType === 'scribus' ? `?show_overflows=${debugOverflow}` : ''}`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': storageManager.activeProvider.getAuthHeader() || ''
-                    },
-                    body: formData
-                });
-
-                if (!response.ok) {
+                if (!response!.ok) {
                     const motorName = previewType === 'typst-pro' ? 'Typst Pro' : 'Scribus';
                     const errData = await response.json().catch(() => ({ detail: `Error en el servidor de ${motorName}` }));
                     throw new Error(errData.detail || `Error al generar PDF con ${motorName}`);

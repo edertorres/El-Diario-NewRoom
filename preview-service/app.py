@@ -252,6 +252,129 @@ async def render_idml_to_typst_pdf(idml_path: Path, output_pdf: Path, images_fol
         raise RuntimeError("Typst terminó pero no generó el PDF")
 
 
+# ── Job Store (Async Rendering) ───────────────────────────────────────────────
+import uuid
+import threading
+
+# job_id → {"status": "pending"|"done"|"error", "pdf": bytes|None,
+#            "overflows": list, "overflow_header": str, "error": str|None, "tmp_dir": str}
+_jobs: dict = {}
+_jobs_lock = threading.Lock()
+
+
+def _run_scribus_job(job_id: str, idml_path: Path, pdf_path: Path,
+                     show_overflows: bool, tmp_dir: Path):
+    """Ejecuta el pipeline Scribus en un hilo separado."""
+    try:
+        overflows = render_idml_to_pdf(idml_path, pdf_path, show_overflows=show_overflows)
+        pdf_bytes = pdf_path.read_bytes()
+        overflow_header = json.dumps(overflows, ensure_ascii=False) if overflows else ""
+        with _jobs_lock:
+            _jobs[job_id] = {
+                "status": "done",
+                "pdf": pdf_bytes,
+                "filename": f"{idml_path.stem}_prensa.pdf",
+                "overflows": overflows,
+                "overflow_header": overflow_header,
+                "error": None,
+                "tmp_dir": str(tmp_dir),
+            }
+        shutil.rmtree(tmp_dir, ignore_errors=True)
+    except Exception as exc:
+        logger.exception(f"[Job {job_id}] Error en render: {exc}")
+        with _jobs_lock:
+            _jobs[job_id] = {
+                "status": "error",
+                "pdf": None,
+                "overflows": [],
+                "overflow_header": "",
+                "error": str(exc),
+                "tmp_dir": str(tmp_dir),
+            }
+        shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
+@app.post("/render")
+async def start_render_job(
+    file: UploadFile = File(...),
+    images: Optional[List[UploadFile]] = File(None),
+    show_overflows: bool = True,
+):
+    """Inicia el render de Scribus de forma asíncrona y retorna un job_id."""
+    logger.info(f"[/render] Nueva petición async: {file.filename}")
+    if not file.filename.lower().endswith(".idml"):
+        raise HTTPException(status_code=400, detail="El archivo debe ser .idml")
+
+    tmp_dir = Path(tempfile.mkdtemp(prefix="idml-async-", dir=TEMP_BASE))
+    idml_path = tmp_dir / file.filename
+    pdf_path = tmp_dir / "output.pdf"
+    links_dir = tmp_dir / "Links"
+    links_dir.mkdir(exist_ok=True)
+
+    # Guardar IDML
+    with idml_path.open("wb") as f:
+        f.write(await file.read())
+
+    # Guardar imágenes
+    if images:
+        for img in images:
+            img_data = await img.read()
+            safe_name = os.path.basename(img.filename.replace('\\', '/'))
+            with (links_dir / safe_name).open("wb") as f:
+                f.write(img_data)
+
+    job_id = str(uuid.uuid4())
+    with _jobs_lock:
+        _jobs[job_id] = {"status": "pending", "pdf": None, "error": None, "tmp_dir": str(tmp_dir)}
+
+    # Lanzar hilo de render
+    t = threading.Thread(
+        target=_run_scribus_job,
+        args=(job_id, idml_path, pdf_path, show_overflows, tmp_dir),
+        daemon=True,
+    )
+    t.start()
+    logger.info(f"[/render] Job iniciado: {job_id}")
+    return {"job_id": job_id}
+
+
+@app.get("/result/{job_id}")
+async def get_render_result(job_id: str):
+    """Retorna el estado del job. Si está listo, devuelve el PDF."""
+    with _jobs_lock:
+        job = _jobs.get(job_id)
+
+    if job is None:
+        raise HTTPException(status_code=404, detail="Job no encontrado")
+
+    if job["status"] == "pending":
+        return {"status": "pending"}
+
+    if job["status"] == "error":
+        # Limpiar job de memoria
+        with _jobs_lock:
+            _jobs.pop(job_id, None)
+        raise HTTPException(status_code=500, detail=job["error"])
+
+    # Status == "done" → devolver PDF
+    pdf_bytes = job["pdf"]
+    filename = job.get("filename", "preview.pdf")
+    overflow_header = job.get("overflow_header", "")
+    with _jobs_lock:
+        _jobs.pop(job_id, None)
+
+    headers = {}
+    if overflow_header:
+        headers["X-Overflow-Frames"] = overflow_header
+        headers["Access-Control-Expose-Headers"] = "X-Overflow-Frames"
+
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers=headers,
+    )
+
+
 # ── Endpoints ────────────────────────────────────────────────────────
 
 @app.post("/preview")
