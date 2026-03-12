@@ -60,7 +60,21 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, sto
         setIsLoading(true);
         setError(null);
         try {
-            const previewApiUrl = import.meta.env.VITE_PREVIEW_API_URL || '/api-preview';
+            // Resolver URL de la API de forma robusta
+            const getApiUrl = () => {
+                const envUrl = import.meta.env.VITE_PREVIEW_API_URL;
+                // Si la variable de entorno tiene una URL absoluta, usarla
+                if (envUrl && envUrl.startsWith('http')) return envUrl;
+                // Si estamos en local, usar el proxy de Vite
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    return '/api-preview';
+                }
+                // En producción por defecto, ir directo al subdominio de la API (Bypass Nginx)
+                return 'https://api-redaccion.rreditores.com';
+            };
+
+            const previewApiUrl = getApiUrl();
+            console.log(`[Preview] Usando API en: ${previewApiUrl}`);
 
             if (previewType === 'typst-pro' || previewType === 'scribus') {
                 // Lógica de Typst Pro o Scribus (ambos reciben IDML + Imágenes)
@@ -69,6 +83,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, sto
                 const idmlBlob = await idmlEngine.generateBlob(stories);
                 const formData = new FormData();
                 formData.append('file', idmlBlob, 'preview.idml');
+                let totalSize = idmlBlob.size;
 
                 // Adjuntar imágenes subidas
                 if (includeImages && uploadedImages.length > 0) {
@@ -76,8 +91,11 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, sto
                         let fileName = img.customName;
                         if (!fileName.includes('.')) fileName += '.jpg';
                         formData.append('images', img.file, fileName);
+                        totalSize += img.file.size;
                     });
                 }
+
+                console.log(`[Preview] Enviando payload total: ${(totalSize / 1024 / 1024).toFixed(2)} MB`);
 
                 if (imagesFolderId) {
                     formData.append('images_folder_id', imagesFolderId);

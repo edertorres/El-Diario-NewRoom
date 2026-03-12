@@ -10,9 +10,6 @@ services:
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
       - "traefik.http.services.frontend.loadbalancer.server.port=80"
-      # Límites para el frontend (incluye el proxy /api-preview si se usa)
-      - "traefik.http.middlewares.frontend-limit.buffering.maxRequestBodyBytes=104857600"
-      - "traefik.http.routers.frontend.middlewares=frontend-limit"
     restart: always
     networks:
       - idml-network
@@ -26,9 +23,6 @@ services:
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
-      # Límites para el backend (comunicación directa absoluta)
-      - "traefik.http.middlewares.backend-limit.buffering.maxRequestBodyBytes=104857600"
-      - "traefik.http.routers.backend.middlewares=backend-limit"
     volumes:
       - preview-data:/app/uploads
       - preview-output:/app/output
