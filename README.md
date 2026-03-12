@@ -6,14 +6,14 @@
 
 This contains everything you need to run your app locally.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1f750jiDE4va-BhyPTrJ_L7Dg-u1i3bT1
+View your app in AI Studio: <https://ai.studio/apps/drive/1f750jiDE4va-BhyPTrJ_L7Dg-u1i3bT1>
 
 ## Run Locally
 
 **Prerequisites:**  Node.js
 
-
 1. Install dependencies:
+
    ```bash
    npm install
    ```
@@ -30,8 +30,11 @@ View your app in AI Studio: https://ai.studio/apps/drive/1f750jiDE4va-BhyPTrJ_L7
      - `VITE_DRIVE_DESTINATION_FOLDER_ID`: Google Drive folder ID for destination
 
 3. Run the app:
+
    ```bash
    npm run dev
    ```
 
 For detailed configuration instructions, see [CONFIGURACION_GOOGLE_DRIVE.md](CONFIGURACION_GOOGLE_DRIVE.md)
+
+## test
