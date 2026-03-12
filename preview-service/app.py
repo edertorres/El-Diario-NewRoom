@@ -123,9 +123,9 @@ def run_scribus_export(sla_path: Path, output_pdf: Path, show_overflows: bool = 
                 logger.warning(f"[Scribus stderr] {'; '.join(important)}")
 
         if result.returncode != 0:
+            full_log = f"stdout: {result.stdout[-1000:] if result.stdout else 'vacío'}\nstderr: {result.stderr[-500:] if result.stderr else 'vacío'}"
             raise RuntimeError(
-                f"Scribus terminó con código {result.returncode}. "
-                f"stderr: {result.stderr[-500:] if result.stderr else 'vacío'}"
+                f"Scribus terminó con código {result.returncode}.\n{full_log}"
             )
 
         if not output_pdf.exists():
@@ -282,10 +282,12 @@ async def preview_idml(
         if images:
             for img in images:
                 img_data = await img.read()
-                img_path = links_dir / img.filename
+                # Sanitizar filename (quitar rutas de Windows si las hay)
+                safe_name = os.path.basename(img.filename.replace('\\', '/'))
+                img_path = links_dir / safe_name
                 with img_path.open("wb") as f:
                     f.write(img_data)
-                logger.info(f"  Imagen guardada: {img.filename} ({len(img_data)} bytes)")
+                logger.info(f"  Imagen guardada: {safe_name} ({len(img_data)} bytes)")
             logger.info(f"{len(images)} imágenes guardadas en {links_dir}")
             # Listar archivos en Links/ para debug
             for f_name in sorted(links_dir.iterdir()):

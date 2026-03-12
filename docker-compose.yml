@@ -26,6 +26,7 @@ services:
       - ./preview-service/app.py:/app/app.py
       - ./preview-service/idml_to_sla.py:/app/idml_to_sla.py
       - ./preview-service/export_sla.py:/app/export_sla.py
+      - ./preview-service/idml_to_high_fidelity_typst.py:/app/idml_to_high_fidelity_typst.py
     env_file:
       - .env
     restart: unless-stopped

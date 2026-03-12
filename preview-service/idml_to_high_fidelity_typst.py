@@ -468,7 +468,8 @@ class IDMLToTypstProConverter:
         self.spreads.append(pos)
 
     def _find_image_on_disk(self, idml_ref: str) -> str:
-        temp_dir = self.idml_path.parent
+        # Resolver a ruta absoluta para evitar problemas con paths relativos como '.' o ''
+        temp_dir = self.idml_path.resolve().parent
         ref_l = idml_ref.lower()
         ref_stem = Path(idml_ref).stem.lower()
         
@@ -479,12 +480,13 @@ class IDMLToTypstProConverter:
                 # a. Match exacto
                 if idml_ref in files:
                     abs_path = Path(root) / idml_ref
-                    return os.path.relpath(abs_path, temp_dir)
+                    # Usar as_posix() asegura que siempre devuelva "Links/foto.jpg" y no "Links\foto.jpg"
+                    return abs_path.relative_to(temp_dir).as_posix()
                 # b. Match case-insensitive o stem
                 for f in files:
                     if f.lower() == ref_l or Path(f).stem.lower() == ref_stem:
                         abs_path = Path(root) / f
-                        return os.path.relpath(abs_path, temp_dir)
+                        return abs_path.relative_to(temp_dir).as_posix()
         except Exception as e:
             logger.error(f"Error en búsqueda recursiva: {e}")
             
@@ -560,13 +562,23 @@ class IDMLToTypstProConverter:
         resolver = self.resolver
         if not resolver: return ""
         
+        emitted_names = set()
+        
         for p_id in sorted(used_p_styles):
+            name = resolver.sanitize_name(p_id)
+            if name in emitted_names: continue
+            emitted_names.add(name)
             s_code = resolver.build_typst_style(p_id)
             if s_code: parts.append(s_code)
+            else: parts.append(f"#let {name}(it) = it\n")
         
         for c_id in sorted(used_c_styles):
+            name = resolver.sanitize_name(c_id)
+            if name in emitted_names: continue
+            emitted_names.add(name)
             s_code = resolver.build_typst_style(c_id, is_char=True)
             if s_code: parts.append(s_code)
+            else: parts.append(f"#let {name}(it) = it\n")
             
         parts.append("#let style_default(it) = it\n")
         

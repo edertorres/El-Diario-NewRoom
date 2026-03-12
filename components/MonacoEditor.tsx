@@ -77,6 +77,8 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
   const onChangeRef = useRef(onChange);
   const inlineWordCountsRef = useRef<typeof inlineWordCounts>(inlineWordCounts);
   const [missingInEditor, setMissingInEditor] = useState<string[]>([]);
+  const internalValueRef = useRef<string>(value);
+  const emittedQueueRef = useRef<string[]>([value]);
 
   useEffect(() => {
     storiesRef.current = stories;
@@ -118,7 +120,7 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
       .map((s) => normalizeTag(s.scriptLabel))
       .filter(Boolean);
     const decorations: monaco.editor.IModelDeltaDecoration[] = [];
-    const regex = /##([A-Za-z0-9_]+)[ \t]*\n?/g;
+    const regex = /##([A-Za-z0-9_]+)[ \t]*/g;
     let match: RegExpExecArray | null;
 
     const matches: Array<{ start: number; end: number; tagName: string }> = [];
@@ -141,27 +143,33 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
 
       const story = storiesRef.current.find((s) => normalizeTag(s.scriptLabel) === tagName);
       const limit = limitsMap[tagName] ?? story?.initialWordCount ?? 0;
-      const percent = limit > 0 ? Math.round(((usedWords - limit) / limit) * 100) : 0;
+      const diff = usedWords - limit;
 
       const startPos = model.getPositionAt(start);
       const endPos = model.getPositionAt(end);
       const isValid = normalizedAvailable.includes(tagName) || normalizedAvailable.length === 0;
       const inIdml = idmlTags.includes(tagName);
 
-      const pctText = `${percent >= 0 ? '+' : ''}${percent}%`;
+      let diffText = "";
+      if (limit > 0) {
+        if (diff > 0) diffText = `(+${diff} sobrantes)`;
+        else if (diff < 0) diffText = `(${diff} faltan)`;
+        else diffText = `(Exacto)`;
+      }
+
       const badgeText = limit > 0
-        ? ` ${limit}  →  ${usedWords} (${pctText}) ${inIdml ? '✓' : '!'} `
-        : ` —  →  ${usedWords} (${pctText}) ${inIdml ? '✓' : '!'} `;
+        ? ` ${limit}  →  ${usedWords} ${diffText} ${inIdml ? '✓' : '!'} `
+        : ` —  →  ${usedWords} ${inIdml ? '✓' : '!'} `;
       const tooltip =
         limit > 0
-          ? `Palabras esperadas ${limit}, palabras escritas ${usedWords}, diferencia ${pctText}`
-          : `Palabras esperadas sin límite, palabras escritas ${usedWords}, diferencia ${pctText}`;
+          ? `Palabras esperadas: ${limit}, escritas: ${usedWords}, diferencia: ${diff}`
+          : `Palabras escritas: ${usedWords}`;
 
       const statusClass =
         !inIdml ? 'monaco-badge-miss' :
-        limit === 0 ? 'monaco-badge-warn' :
-        usedWords > limit ? 'monaco-badge-over' :
-        usedWords < limit ? 'monaco-badge-warn' : 'monaco-badge-ok';
+          limit === 0 ? 'monaco-badge-warn' :
+            usedWords > limit ? 'monaco-badge-over' :
+              usedWords < limit ? 'monaco-badge-warn' : 'monaco-badge-ok';
 
       if (isValid) {
         const colorGroup = getColorGroup(tagName);
@@ -170,7 +178,7 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
           options: {
             inlineClassName: `monaco-tag monaco-tag-color-${colorGroup.id}`,
             after: {
-              contentText: badgeText,
+              content: badgeText,
               inlineClassName: `monaco-tag-badge ${statusClass}`,
               inlineClassNameAffectsLetterSpacing: true
             },
@@ -183,7 +191,7 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
           options: {
             inlineClassName: 'monaco-tag-invalid',
             after: {
-              contentText: badgeText,
+              content: badgeText,
               inlineClassName: `monaco-tag-badge monaco-badge-over`,
               inlineClassNameAffectsLetterSpacing: true
             },
@@ -229,6 +237,11 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
     // Placeholder emulation
     editor.onDidChangeModelContent(() => {
       const newValue = editor.getValue();
+      internalValueRef.current = newValue; // Guardamos el valor interno asincrónico
+      emittedQueueRef.current.push(newValue);
+      if (emittedQueueRef.current.length > 50) {
+        emittedQueueRef.current.shift();
+      }
       if (newValue !== value) {
         onChangeRef.current(newValue);
       }
@@ -290,7 +303,7 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
     );
 
     // addCommand no expone removeCommand en la API pública; no-op en cleanup
-    disposables.push({ dispose: () => {} } as monaco.IDisposable);
+    disposables.push({ dispose: () => { } } as monaco.IDisposable);
 
     // Autocompletado
     const completionProvider = monaco.languages.registerCompletionItemProvider('plaintext', {
@@ -356,14 +369,81 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleInsertTag = (tag: string) => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const position = editor.getPosition();
+    const model = editor.getModel();
+
+    if (!position || !model) {
+      // Si no hay posición conocida, insertamos al final
+      const lineCount = model ? model.getLineCount() : 1;
+      const lastLineLength = model ? model.getLineMaxColumn(lineCount) : 1;
+      editor.executeEdits('insert-missing-tag', [{
+        range: new monaco.Range(lineCount, lastLineLength, lineCount, lastLineLength),
+        text: `\n##${tag}\n`,
+        forceMoveMarkers: true,
+      }]);
+      editor.setPosition({ lineNumber: lineCount + 2, column: 1 });
+      editor.focus();
+      return;
+    }
+
+    const currentLineContent = model.getLineContent(position.lineNumber);
+    const isLineEmpty = currentLineContent.trim() === '';
+
+    let textToInsert = `##${tag}\n`;
+
+    // Si no estamos al principio de una línea no vacía, agregamos salto de línea antes
+    if (position.column > 1 && !isLineEmpty) {
+      textToInsert = `\n\n##${tag}\n`;
+    } else if (position.column === 1 && !isLineEmpty) {
+      textToInsert = `##${tag}\n\n`;
+    }
+
+    editor.executeEdits('insert-missing-tag', [
+      {
+        range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
+        text: textToInsert,
+        forceMoveMarkers: true,
+      }
+    ]);
+
+    editor.focus();
+  };
+
   // Actualizar valor externo
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
+
     const current = editor.getValue();
-    if (value !== current) {
+    const normalizedValue = value.replace(/\r\n/g, '\n');
+
+    // Comprobamos si el valor que nos envía React está en nuestra cola de emisiones recientes.
+    // Esto significa que es un "eco" de algo que acabamos de escribir, retrasado por los ciclos de React.
+    const queueIndex = emittedQueueRef.current.findIndex(v => v.replace(/\r\n/g, '\n') === normalizedValue);
+
+    if (queueIndex !== -1) {
+      // Es un eco. Eliminamos este y los anteriores de la cola.
+      emittedQueueRef.current.splice(0, queueIndex + 1);
+      return;
+    }
+
+    const normalizedCurrent = current.replace(/\r\n/g, '\n');
+
+    if (normalizedValue !== normalizedCurrent) {
+      // Si el valor nuevo no estaba en la cola de emisiones recientes, 
+      // y es diferente a lo que hay en el editor, es un cambio genuino forzado desde afuera 
+      // (por ejemplo, inyección de AI, botón de reiniciar, cambio de tab).
+      emittedQueueRef.current = []; // Limpiamos la cola porque el cambio externo invalida todo
       const model = editor.getModel();
       if (model) {
+        // Guardar la vista y posiciones del cursor
+        const viewState = editor.saveViewState();
+
+        internalValueRef.current = value; // Actualizamos el ref interno ya que forzaremos el cambio
         const fullRange = model.getFullModelRange();
         editor.executeEdits('external-update', [
           {
@@ -372,6 +452,12 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
             forceMoveMarkers: true
           }
         ]);
+
+        // Restaurar estado del cursor y scroll
+        if (viewState) {
+          editor.restoreViewState(viewState);
+        }
+
         updateDecorations();
       }
     }
@@ -396,7 +482,14 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
           <div className="monaco-missing-title">Etiquetas en IDML no presentes en el editor:</div>
           <div className="monaco-missing-list">
             {missingInEditor.map((tag) => (
-              <span key={tag} className="monaco-missing-chip">##{tag}</span>
+              <span
+                key={tag}
+                className="monaco-missing-chip"
+                onClick={() => handleInsertTag(tag)}
+                title="Haz clic para insertar esta etiqueta en la posición del cursor"
+              >
+                ##{tag}
+              </span>
             ))}
           </div>
         </div>

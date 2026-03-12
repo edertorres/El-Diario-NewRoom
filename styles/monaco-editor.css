@@ -156,4 +156,12 @@
   border-radius: 8px;
   font-size: 11px;
   font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.monaco-missing-chip:hover {
+  background: rgba(248, 113, 113, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(248, 113, 113, 0.2);
 }

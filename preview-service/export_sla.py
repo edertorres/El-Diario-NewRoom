@@ -11,26 +11,16 @@ Los paths se pasan por variables de entorno:
 """
 import sys
 import os
-import signal
 import json
 import re
 
 try:
     import scribus
 except ImportError:
-    sys.exit(1)
-
-# Timeout de seguridad: 90 segundos
-def _hard_timeout(signum, frame):
-    sys.stderr.write("--- HARD TIMEOUT: export_sla.py excedió 90s ---\n")
-    sys.stderr.flush()
-    os._exit(1)
-
-try:
-    signal.signal(signal.SIGALRM, _hard_timeout)
-    signal.alarm(90)
-except Exception:
+    # No estamos dentro de Scribus
     pass
+
+# Signal timeout removido por estabilidad en Scribus
 
 # Mapeo de fuentes InDesign → Scribus
 FONT_MAP = {
@@ -470,41 +460,39 @@ def main():
 
     icc_profile = os.environ.get("EXPORT_ICC_PROFILE", "")
 
-    # El SLA se pasa como argumento en sys.argv
-    # scribus -g -py export_sla.py /path/to/file.sla
-    sla_path = None
-    for arg in sys.argv[1:]:
-        if arg.endswith('.sla') and os.path.exists(arg):
-            sla_path = arg
-            break
-
+    # El SLA se pasa como argumento en sys.argv o por env
+    # Priorizar variable de entorno si existe
+    sla_path = os.environ.get("EXPORT_SLA_PATH", "")
+    
     if not sla_path:
-        # También intentar desde env
-        sla_path = os.environ.get("EXPORT_SLA_PATH", "")
+        for arg in sys.argv[1:]:
+            if isinstance(arg, str) and arg.lower().endswith('.sla') and os.path.exists(arg):
+                sla_path = os.path.abspath(arg)
+                break
 
-    sys.stdout.write(f"--- export_sla.py ---\n")
+    sys.stdout.write(f"--- export_sla.py starting ---\n")
     sys.stdout.write(f"--- SLA: {sla_path} ---\n")
     sys.stdout.write(f"--- Output PDF: {output_pdf} ---\n")
     sys.stdout.flush()
 
+    # Intentar abrir el documento si no hay uno activo
     try:
-        scribus.setRedraw(False)
-    except Exception:
-        pass
-
-    # Abrir el SLA (openDoc funciona con SLA, solo falla con IDML)
-    if sla_path and os.path.exists(sla_path):
-        sys.stdout.write(f"--- Abriendo SLA con scribus.openDoc()... ---\n")
+        if not scribus.haveDoc():
+            if sla_path and os.path.exists(sla_path):
+                sys.stdout.write(f"--- Opening SLA: {sla_path} ---\n")
+                sys.stdout.flush()
+                scribus.openDoc(sla_path)
+    except Exception as e:
+        sys.stdout.write(f"--- Warning checking/opening doc: {e} ---\n")
         sys.stdout.flush()
-        try:
-            scribus.openDoc(sla_path)
-            sys.stdout.write(f"--- SLA abierto: {scribus.pageCount()} páginas ---\n")
-        except Exception as e:
-            sys.stderr.write(f"--- Error abriendo SLA: {e} ---\n")
-            os._exit(1)
-    else:
-        sys.stderr.write(f"--- SLA no encontrado: {sla_path} ---\n")
+
+    if not scribus.haveDoc():
+        sys.stderr.write("--- ERROR: No open document found ---\n")
+        sys.stderr.flush()
         os._exit(1)
+
+    sys.stdout.write(f"--- Active Doc: {scribus.pageCount()} pages ---\n")
+    sys.stdout.flush()
 
     # Arreglar fuentes y re-vincular imágenes
     fix_fonts()
@@ -546,6 +534,10 @@ def main():
         set_attr(pdf, 'profilep', icc_profile)
         set_attr(pdf, 'intent', 1)
 
+    # --- CONFIGURACIÓN DE FUENTES (CRÍTICO PARA WINDOWS) ---
+    # fontEmbedding: 0 = Embed, 1 = Outline, 2 = No embedding
+    set_attr(pdf, 'fontEmbedding', 0) 
+    # --------------------------------------------------------
     set_attr(pdf, 'useColor', True)
     set_attr(pdf, 'quality', 2)
     set_attr(pdf, 'resolution', 150)
@@ -553,7 +545,6 @@ def main():
     set_attr(pdf, 'compress', True)
     set_attr(pdf, 'compressMethod', 1)
     set_attr(pdf, 'thumbnails', False)
-    set_attr(pdf, 'fontEmbedding', 0)
 
     try:
         pdf.save()
