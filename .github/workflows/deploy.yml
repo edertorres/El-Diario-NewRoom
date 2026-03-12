@@ -6,7 +6,9 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME_PREFIX: ${{ github.repository }}
+  # Forzamos minúsculas para evitar errores en GHCR
+  IMAGE_NAME_BACKEND: edertorres/el-diario-newroom-backend
+  IMAGE_NAME_FRONTEND: edertorres/el-diario-newroom-frontend
 
 jobs:
   build-and-push:
@@ -30,21 +32,21 @@ jobs:
         id: meta-backend
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-backend
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}
 
       - name: Build and push Backend image
         uses: docker/build-push-action@v5
         with:
           context: ./preview-service
           push: true
-          tags: ${{ env.REGISTRY }}/edertorres/el-diario-newroom-backend:latest
+          tags: ${{ steps.meta-backend.outputs.tags }}
           labels: ${{ steps.meta-backend.outputs.labels }}
 
       - name: Extract metadata (tags, labels) for Frontend
         id: meta-frontend
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/edertorres/el-diario-newroom-frontend
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}
 
       - name: Build and push Frontend image
         uses: docker/build-push-action@v5
@@ -52,7 +54,7 @@ jobs:
           context: .
           file: ./Dockerfile.prod
           push: true
-          tags: ${{ env.REGISTRY }}/edertorres/el-diario-newroom-frontend:latest
+          tags: ${{ steps.meta-frontend.outputs.tags }}
           labels: ${{ steps.meta-frontend.outputs.labels }}
           build-args: |
             VITE_GOOGLE_DRIVE_CLIENT_ID=${{ secrets.VITE_GOOGLE_DRIVE_CLIENT_ID }}
