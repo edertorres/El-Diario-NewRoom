@@ -37,14 +37,14 @@ jobs:
         with:
           context: ./preview-service
           push: true
-          tags: ${{ steps.meta-backend.outputs.tags }}
+          tags: ${{ env.REGISTRY }}/edertorres/el-diario-newroom-backend:latest
           labels: ${{ steps.meta-backend.outputs.labels }}
 
       - name: Extract metadata (tags, labels) for Frontend
         id: meta-frontend
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-frontend
+          images: ${{ env.REGISTRY }}/edertorres/el-diario-newroom-frontend
 
       - name: Build and push Frontend image
         uses: docker/build-push-action@v5
@@ -52,7 +52,7 @@ jobs:
           context: .
           file: ./Dockerfile.prod
           push: true
-          tags: ${{ steps.meta-frontend.outputs.tags }}
+          tags: ${{ env.REGISTRY }}/edertorres/el-diario-newroom-frontend:latest
           labels: ${{ steps.meta-frontend.outputs.labels }}
           build-args: |
             VITE_GOOGLE_DRIVE_CLIENT_ID=${{ secrets.VITE_GOOGLE_DRIVE_CLIENT_ID }}
