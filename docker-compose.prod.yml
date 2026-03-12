@@ -4,8 +4,8 @@ services:
   # Frontend con Nginx (Pre-compilado en GitHub Actions)
   frontend:
     image: ghcr.io/edertorres/el-diario-newroom-frontend:latest
-    ports:
-      - "3000:80"
+    #    ports:
+    #      - "3000:80"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`${DOMAIN_FRONTEND}`)"
@@ -19,8 +19,8 @@ services:
   # Backend (Preview Service) con Scribus y Typst
   backend:
     image: ghcr.io/edertorres/el-diario-newroom-backend:latest
-    ports:
-      - "8000:8000"
+    #    ports:
+    #      - "8000:8000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`${DOMAIN_BACKEND}`)"
