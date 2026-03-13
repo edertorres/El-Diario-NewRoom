@@ -12,6 +12,10 @@ services:
       - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
       - "traefik.http.services.frontend.loadbalancer.server.port=80"
     restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 256M
     networks:
       - idml-network
 
@@ -25,6 +29,10 @@ services:
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
+    deploy:
+      resources:
+        limits:
+          memory: 2500M
     volumes:
       - preview-data:/app/uploads
       - preview-output:/app/output

@@ -8,6 +8,7 @@ import base64
 import json
 import urllib.request
 import urllib.parse
+import time
 from pathlib import Path
 from typing import List, Optional
 
@@ -256,42 +257,52 @@ async def render_idml_to_typst_pdf(idml_path: Path, output_pdf: Path, images_fol
 import uuid
 import threading
 
-# job_id → {"status": "pending"|"done"|"error", "pdf": bytes|None,
-#            "overflows": list, "overflow_header": str, "error": str|None, "tmp_dir": str}
+# job_id → {"status": "pending"|"done"|"error", "pdf_path": str|None,
+#            "overflows": list, "overflow_header": str, "error": str|None, "tmp_dir": str, "created_at": float}
 _jobs: dict = {}
 _jobs_lock = threading.Lock()
 
+def _cleanup_stale_jobs():
+    """Limpia jobs abandonados (más de 10 minutos) para evitar memory leaks y OOMs."""
+    while True:
+        time.sleep(300)
+        now = time.time()
+        with _jobs_lock:
+            stale_ids = []
+            for jid, job in _jobs.items():
+                if now - job.get("created_at", now) > 600:
+                    stale_ids.append(jid)
+            for jid in stale_ids:
+                job = _jobs.pop(jid, {})
+                tmp_dir = job.get("tmp_dir")
+                if tmp_dir and os.path.exists(tmp_dir):
+                    shutil.rmtree(tmp_dir, ignore_errors=True)
+
+threading.Thread(target=_cleanup_stale_jobs, daemon=True).start()
 
 def _run_scribus_job(job_id: str, idml_path: Path, pdf_path: Path,
                      show_overflows: bool, tmp_dir: Path):
     """Ejecuta el pipeline Scribus en un hilo separado."""
     try:
         overflows = render_idml_to_pdf(idml_path, pdf_path, show_overflows=show_overflows)
-        pdf_bytes = pdf_path.read_bytes()
         overflow_header = json.dumps(overflows, ensure_ascii=False) if overflows else ""
         with _jobs_lock:
-            _jobs[job_id] = {
-                "status": "done",
-                "pdf": pdf_bytes,
-                "filename": f"{idml_path.stem}_prensa.pdf",
-                "overflows": overflows,
-                "overflow_header": overflow_header,
-                "error": None,
-                "tmp_dir": str(tmp_dir),
-            }
-        shutil.rmtree(tmp_dir, ignore_errors=True)
+            if job_id in _jobs:
+                _jobs[job_id].update({
+                    "status": "done",
+                    "pdf_path": str(pdf_path),
+                    "filename": f"{idml_path.stem}_prensa.pdf",
+                    "overflows": overflows,
+                    "overflow_header": overflow_header,
+                })
     except Exception as exc:
         logger.exception(f"[Job {job_id}] Error en render: {exc}")
         with _jobs_lock:
-            _jobs[job_id] = {
-                "status": "error",
-                "pdf": None,
-                "overflows": [],
-                "overflow_header": "",
-                "error": str(exc),
-                "tmp_dir": str(tmp_dir),
-            }
-        shutil.rmtree(tmp_dir, ignore_errors=True)
+            if job_id in _jobs:
+                _jobs[job_id].update({
+                    "status": "error",
+                    "error": str(exc),
+                })
 
 
 @app.post("/render")
@@ -325,7 +336,7 @@ async def start_render_job(
 
     job_id = str(uuid.uuid4())
     with _jobs_lock:
-        _jobs[job_id] = {"status": "pending", "pdf": None, "error": None, "tmp_dir": str(tmp_dir)}
+        _jobs[job_id] = {"status": "pending", "pdf_path": None, "error": None, "tmp_dir": str(tmp_dir), "created_at": time.time()}
 
     # Lanzar hilo de render
     t = threading.Thread(
@@ -339,7 +350,7 @@ async def start_render_job(
 
 
 @app.get("/result/{job_id}")
-async def get_render_result(job_id: str):
+async def get_render_result(job_id: str, background_tasks: BackgroundTasks):
     """Retorna el estado del job. Si está listo, devuelve el PDF."""
     with _jobs_lock:
         job = _jobs.get(job_id)
@@ -354,22 +365,34 @@ async def get_render_result(job_id: str):
         # Limpiar job de memoria
         with _jobs_lock:
             _jobs.pop(job_id, None)
+        tmp_dir = job.get("tmp_dir")
+        if tmp_dir and os.path.exists(tmp_dir):
+            background_tasks.add_task(shutil.rmtree, tmp_dir, ignore_errors=True)
         raise HTTPException(status_code=500, detail=job["error"])
 
     # Status == "done" → devolver PDF
-    pdf_bytes = job["pdf"]
+    pdf_path = job.get("pdf_path")
     filename = job.get("filename", "preview.pdf")
     overflow_header = job.get("overflow_header", "")
+    tmp_dir = job.get("tmp_dir")
+    
     with _jobs_lock:
         _jobs.pop(job_id, None)
+        
+    if tmp_dir and os.path.exists(tmp_dir):
+        background_tasks.add_task(shutil.rmtree, tmp_dir, ignore_errors=True)
 
     headers = {}
     if overflow_header:
         headers["X-Overflow-Frames"] = overflow_header
         headers["Access-Control-Expose-Headers"] = "X-Overflow-Frames"
 
-    return Response(
-        content=pdf_bytes,
+    if not pdf_path or not os.path.exists(pdf_path):
+        raise HTTPException(status_code=500, detail="El PDF no existe en el servidor.")
+
+    return FileResponse(
+        path=pdf_path,
+        filename=filename,
         media_type="application/pdf",
         headers=headers,
     )
@@ -489,7 +512,7 @@ async def preview_typst_pro(
         # Renderizado Pro (Solo usamos las imágenes ya guardadas en Links/)
         await render_idml_to_typst_pdf(idml_path, pdf_path, None, None)
 
-        # background_tasks.add_task(cleanup_temp_dir, str(tmp_dir))
+        background_tasks.add_task(cleanup_temp_dir, str(tmp_dir))
 
         return FileResponse(
             path=pdf_path,
