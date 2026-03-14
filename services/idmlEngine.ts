@@ -904,17 +904,14 @@ export class IDMLEngine {
   }
 
   /**
-   * Agrega una línea en blanco (dos <Br/>) al final del último CharacterStyleRange
-   * del último párrafo en el storyNode.
+   * Crea un párrafo en blanco (ParagraphStyleRange vacío) usando la plantilla base.
    */
-  private addBlankLineBefore(storyNode: Element, doc: Document): void {
-    const lastPRange = storyNode.lastElementChild;
-    if (lastPRange) {
-      const lastCRange = lastPRange.lastElementChild;
-      if (lastCRange) {
-        lastCRange.appendChild(doc.createElement("Br"));
-      }
-    }
+  private createBlankParagraph(doc: Document, basePTemplate: Element | null): Element {
+    const pRange = basePTemplate ? basePTemplate.cloneNode(false) as Element : doc.createElement("ParagraphStyleRange");
+    const cRange = doc.createElement("CharacterStyleRange");
+    cRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/$ID/[No character style]");
+    pRange.appendChild(cRange);
+    return pRange;
   }
 
   /**
@@ -1028,11 +1025,11 @@ export class IDMLEngine {
       const segment = segments[segIdx];
 
       if (segment.type === 'intertitle') {
-        // Agregar línea en blanco ANTES del intertítulo
-        this.addBlankLineBefore(storyNode, doc);
+        // 1. Agregar párrafo en blanco ANTES del intertítulo para separación real
+        storyNode.appendChild(this.createBlankParagraph(doc, basePTemplate));
 
-        // Crear párrafo de intertítulo
-        const pRange = doc.createElement("ParagraphStyleRange");
+        // 2. Crear párrafo de intertítulo usando la plantilla base para preservar contexto (columnas, etc)
+        const pRange = basePTemplate ? basePTemplate.cloneNode(false) as Element : doc.createElement("ParagraphStyleRange");
         pRange.setAttribute("AppliedParagraphStyle", "ParagraphStyle/INTERTITULO");
 
         const cRange = doc.createElement("CharacterStyleRange");
@@ -1042,9 +1039,7 @@ export class IDMLEngine {
         content.textContent = segment.text;
         cRange.appendChild(content);
 
-        // Agregar <Br/> DESPUÉS del intertítulo
-        cRange.appendChild(doc.createElement("Br"));
-
+        // NOTA: NO agregamos <Br/> después del intertítulo para que el texto siga inmediatamente
         pRange.appendChild(cRange);
         storyNode.appendChild(pRange);
       } else {
