@@ -1028,8 +1028,10 @@ export class IDMLEngine {
       const segment = segments[segIdx];
 
       if (segment.type === 'intertitle') {
-        // Agregar línea en blanco ANTES del intertítulo
-        this.addBlankLineBefore(storyNode, doc);
+        // Agregar línea en blanco ANTES del intertítulo (solo si no es el primero)
+        if (segIdx > 0) {
+          this.addBlankLineBefore(storyNode, doc);
+        }
 
         // Crear párrafo de intertítulo
         const pRange = doc.createElement("ParagraphStyleRange");
@@ -1042,8 +1044,7 @@ export class IDMLEngine {
         content.textContent = segment.text;
         cRange.appendChild(content);
 
-        // Agregar <Br/> DESPUÉS del intertítulo
-        cRange.appendChild(doc.createElement("Br"));
+        // Ya NO agregamos <Br/> DESPUÉS del intertítulo (como se pidió)
 
         pRange.appendChild(cRange);
         storyNode.appendChild(pRange);
