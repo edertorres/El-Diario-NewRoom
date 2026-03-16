@@ -867,6 +867,7 @@ export class IDMLEngine {
           textRange.appendChild(doc.createElement("Br"));
         }
       });
+      textRange.appendChild(doc.createElement("Br"));
 
       pRange.appendChild(textRange);
     } else {
@@ -896,6 +897,7 @@ export class IDMLEngine {
           textRange.appendChild(doc.createElement("Br"));
         }
       });
+      textRange.appendChild(doc.createElement("Br"));
 
       pRange.appendChild(textRange);
     }
@@ -910,6 +912,7 @@ export class IDMLEngine {
     const pRange = basePTemplate ? basePTemplate.cloneNode(false) as Element : doc.createElement("ParagraphStyleRange");
     const cRange = doc.createElement("CharacterStyleRange");
     cRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/$ID/[No character style]");
+    cRange.appendChild(doc.createElement("Br"));
     pRange.appendChild(cRange);
     return pRange;
   }
@@ -1039,7 +1042,9 @@ export class IDMLEngine {
         content.textContent = segment.text;
         cRange.appendChild(content);
 
-        // NOTA: NO agregamos <Br/> después del intertítulo para que el texto siga inmediatamente
+        // Agregamos <Br/> al final del intertítulo
+        cRange.appendChild(doc.createElement("Br"));
+
         pRange.appendChild(cRange);
         storyNode.appendChild(pRange);
       } else {
