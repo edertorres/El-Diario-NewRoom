@@ -295,8 +295,17 @@ export class IDMLEngine {
     if (!uri) return "";
     // Eliminar prefijo "file:" si existe para procesar la ruta limpia
     const cleanUri = uri.startsWith("file:") ? uri.substring(5) : uri;
+
+    // Decodificar URI para manejar espacios (%20) y otros caracteres especiales
+    let decodedUri = cleanUri;
+    try {
+      decodedUri = decodeURIComponent(cleanUri);
+    } catch (e) {
+      console.warn(`[IDML Engine] No se pudo decodificar la URI: ${cleanUri}`, e);
+    }
+
     // Dividir por / o \ (Windows) y tomar el último componente
-    const parts = cleanUri.split(/[/\\]/);
+    const parts = decodedUri.split(/[/\\]/);
     const fileName = parts.pop() || "";
     return fileName.trim();
   }
@@ -1208,9 +1217,8 @@ export class IDMLEngine {
 
     // APLICAR RELINKEO AUTOMÁTICO (Si está activo)
     if (this.automaticRelink.enabled) {
-      // Si hay nombre de carpeta, usarlo. Si no, Links/ es el estándar.
-      // Si el nombre es "." o vacío, se asume directorio raíz (mismo nivel que IDML).
-      const destFolder = this.automaticRelink.destinationFolder || "Links";
+      // Si hay nombre de carpeta, usarlo. Si no, "." es el comportamiento por defecto (mismo nivel que IDML).
+      const destFolder = this.automaticRelink.destinationFolder || ".";
       const relativeBase = destFolder === "." || destFolder === "" ? "file:" : `file:${destFolder}/`;
 
       console.log(`[IDML Engine] Aplicando relinkeo automático relativo a: '${relativeBase}'`);

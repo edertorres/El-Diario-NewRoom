@@ -1236,8 +1236,8 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
                   });
 
                   // Configurar relinkeo automático relativo
-                  const destFolderName = folderPath?.split('/').pop() || undefined;
-                  idmlEngine.setAutomaticRelink(useRelativeLinks, destFolderName);
+                  // Usamos "." porque las imágenes se suben a la misma carpeta que el IDML
+                  idmlEngine.setAutomaticRelink(useRelativeLinks, ".");
 
                   // Generar blob con stories que tienen el contenido inyectado
                   const blob = await idmlEngine.generateBlob(storiesToUse);

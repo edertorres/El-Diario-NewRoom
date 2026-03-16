@@ -33,6 +33,16 @@ async function testRelink() {
           <Link LinkResourceURI="file:/Network/OtherFolder/image3.jpg" />
         </Image>
       </Rectangle>
+      <Rectangle Self="u222">
+        <Image>
+          <Link LinkResourceURI="file:SÁBADO_2026-03-14%20%3E%2004%20OPINIÓN%20/FOTO1.jpg" />
+        </Image>
+      </Rectangle>
+      <Rectangle Self="u333">
+        <Image>
+          <Link LinkResourceURI="file:C:\\Windows\\Path\\image_with_backslashes.jpg" />
+        </Image>
+      </Rectangle>
     </Spread>
   `;
 
@@ -57,7 +67,9 @@ async function testRelink() {
         console.log("Verified: Spread XML was updated in ZIP.");
         if (content.includes("file:FinalPhotos/image1.jpg") &&
           content.includes("file:FinalPhotos/image2.png") &&
-          content.includes("file:FinalPhotos/image3.jpg")) {
+          content.includes("file:FinalPhotos/image3.jpg") &&
+          content.includes("file:FinalPhotos/FOTO1.jpg") &&
+          content.includes("file:FinalPhotos/image_with_backslashes.jpg")) {
           console.log("SUCCESS: URIs were correctly transformed to relative paths.");
         } else {
           console.error("FAILURE: URIs were NOT correctly transformed.");
