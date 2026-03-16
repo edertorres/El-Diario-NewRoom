@@ -291,6 +291,16 @@ export class IDMLEngine {
     return (node instanceof Element ? (node.localName || node.tagName.split(':').pop() || "") : "").toLowerCase();
   }
 
+  private extractFileNameFromURI(uri: string): string {
+    if (!uri) return "";
+    // Eliminar prefijo "file:" si existe para procesar la ruta limpia
+    const cleanUri = uri.startsWith("file:") ? uri.substring(5) : uri;
+    // Dividir por / o \ (Windows) y tomar el último componente
+    const parts = cleanUri.split(/[/\\]/);
+    const fileName = parts.pop() || "";
+    return fileName.trim();
+  }
+
   private findScriptLabel(node: Element): string | undefined {
     const labelAttrs = ["Label", "label", "ScriptLabel", "Name"];
     for (const attr of labelAttrs) {
@@ -1138,7 +1148,9 @@ export class IDMLEngine {
           const linkNode = imageNode ? Array.from(imageNode.getElementsByTagName("*")).find(n => this.getLocalName(n) === 'link') : null;
 
           if (linkNode) {
-            (linkNode as Element).setAttribute("LinkResourceURI", `file:Links/${file.name}`);
+            const destFolder = this.automaticRelink.destinationFolder || "Links";
+            const relativeBase = destFolder === "." || destFolder === "" ? "file:" : `file:${destFolder}/`;
+            (linkNode as Element).setAttribute("LinkResourceURI", `${relativeBase}${file.name}`);
           }
         }
       }
@@ -1197,8 +1209,9 @@ export class IDMLEngine {
     // APLICAR RELINKEO AUTOMÁTICO (Si está activo)
     if (this.automaticRelink.enabled) {
       // Si hay nombre de carpeta, usarlo. Si no, Links/ es el estándar.
+      // Si el nombre es "." o vacío, se asume directorio raíz (mismo nivel que IDML).
       const destFolder = this.automaticRelink.destinationFolder || "Links";
-      const relativeBase = `file:${destFolder}/`;
+      const relativeBase = destFolder === "." || destFolder === "" ? "file:" : `file:${destFolder}/`;
 
       console.log(`[IDML Engine] Aplicando relinkeo automático relativo a: '${relativeBase}'`);
 
@@ -1208,13 +1221,13 @@ export class IDMLEngine {
         let modified = false;
 
         for (const link of links) {
-          const uri = link.getAttribute("LinkResourceURI");
+          const uri = (link as Element).getAttribute("LinkResourceURI");
           if (uri) {
-            // Extraer solo el nombre del archivo de la ruta actual
-            const fileName = uri.split('/').pop() || "";
+            // Extraer el nombre del archivo de forma robusta
+            const fileName = this.extractFileNameFromURI(uri);
             if (fileName) {
               const newUri = `${relativeBase}${fileName}`;
-              link.setAttribute("LinkResourceURI", newUri);
+              (link as Element).setAttribute("LinkResourceURI", newUri);
               modified = true;
               console.log(`  - Relink relativo: ${uri} -> ${newUri}`);
             }
