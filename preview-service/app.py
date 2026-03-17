@@ -79,14 +79,22 @@ def _preexec_fn():
 def run_scribus_export(sla_path: Path, output_pdf: Path, show_overflows: bool = True):
     """
     Usa Scribus -g para abrir un SLA y exportarlo a PDF.
-    Usa el modo offscreen nativo de Qt para evitar la sobrecarga de Xvfb.
+    Envuelve Scribus en xvfb-run para que tenga un display X11 virtual.
+    Usa os.setsid y os.killpg para asegurar que TODO (Xvfb + Scribus) muera en timeout.
     """
     import signal
     scribus_exec = get_executable_path("scribus")
+    xvfb_run = shutil.which("xvfb-run")
 
-    # Intentar usar modo offscreen directamente para evitar sobrecarga de xvfb-run
-    # y procesos extra que puedan quedar huérfanos.
-    cmd = [scribus_exec, "-g", "-py", str(EXPORT_SLA_SCRIPT), str(sla_path)]
+    scribus_cmd = [scribus_exec, "-g", "-py", str(EXPORT_SLA_SCRIPT), str(sla_path)]
+    
+    if xvfb_run:
+        cmd = [
+            xvfb_run, "--auto-servernum", "--server-args=-screen 0 1024x768x24",
+            "--"
+        ] + scribus_cmd
+    else:
+        cmd = scribus_cmd
 
     env = os.environ.copy()
     env["EXPORT_OUTPUT_PDF"] = str(output_pdf)
@@ -95,11 +103,11 @@ def run_scribus_export(sla_path: Path, output_pdf: Path, show_overflows: bool = 
     if ICC_PROFILE.exists():
         env["EXPORT_ICC_PROFILE"] = str(ICC_PROFILE)
     
-    # Forzar offscreen siempre para máxima estabilidad en headless
-    env["QT_QPA_PLATFORM"] = "offscreen"
-    env["DISPLAY"] = ":99" # Placeholder por si acaso Scribus lo requiere
+    # Si no hay xvfb-run, intentamos offscreen como fallback desesperado
+    if not xvfb_run:
+        env["QT_QPA_PLATFORM"] = "offscreen"
 
-    logger.info(f"Ejecutando (modo offscreen): {' '.join(cmd)}")
+    logger.info(f"Ejecutando (con robust cleanup): {' '.join(cmd)}")
 
     process = None
     try:
@@ -130,10 +138,13 @@ def run_scribus_export(sla_path: Path, output_pdf: Path, show_overflows: bool = 
                 raise RuntimeError(f"Scribus terminó con código {process.returncode}")
 
         except subprocess.TimeoutExpired:
-            # ¡CRÍTICO! Matar todo el grupo de procesos
+            # ¡CRÍTICO! Matar todo el grupo de procesos (Xvfb + Scribus + xvfb-run)
             logger.error(f"Timeout en Scribus ({SCRIBUS_TIMEOUT}s). Matando proceso y descendencia...")
-            os.killpg(os.getpgid(process.pid), signal.SIGKILL)
-            raise RuntimeError(f"Scribus se colgó (timeout {SCRIBUS_TIMEOUT}s). Proceso eliminado.")
+            try:
+                os.killpg(os.getpgid(process.pid), signal.SIGKILL)
+            except Exception as ke:
+                logger.error(f"Error matando proceso: {ke}")
+            raise RuntimeError(f"Scribus se colgó (timeout {SCRIBUS_TIMEOUT}s). Proceso e hijos eliminados.")
 
         if not output_pdf.exists():
             raise RuntimeError("Scribus terminó pero no generó el PDF")
