@@ -43,7 +43,12 @@ TEMP_BASE.mkdir(parents=True, exist_ok=True)
 
 ICC_PROFILE = BASE_DIR / "ISOnewspaper26v4.icc"
 EXPORT_SLA_SCRIPT = BASE_DIR / "export_sla.py"
-SCRIBUS_TIMEOUT = 120  # segundos
+SCRIBUS_TIMEOUT = 180  # segundos - Incrementado de 120 para evitar timeouts erráticos
+
+import threading
+# Semáforo para limitar la concurrencia de Scribus (CPU-intensive)
+# Dado que el servidor tiene 2 vCPUs, limitamos a 1 ejecución para evitar peleas por recursos.
+_scribus_lock = threading.Semaphore(1)
 
 
 def cleanup_temp_dir(temp_dir: str):
@@ -137,7 +142,7 @@ def run_scribus_export(sla_path: Path, output_pdf: Path, show_overflows: bool = 
     except subprocess.TimeoutExpired:
         raise RuntimeError(
             f"Scribus se colgó (timeout {SCRIBUS_TIMEOUT}s). "
-            "El SLA podría tener un problema."
+            "El SLA podría ser demasiado complejo o el servidor estar sobrecargado."
         )
 
 
@@ -163,7 +168,9 @@ def render_idml_to_pdf(idml_path: Path, output_pdf: Path, show_overflows: bool =
 
     # Paso 2: Renderizar SLA → PDF con Scribus
     logger.info(f"Paso 2: Renderizando SLA → PDF con Scribus (show_overflows={show_overflows})")
+    start_time = time.time()
     run_scribus_export(sla_path, output_pdf, show_overflows=show_overflows)
+    logger.info(f"Renderizado Scribus finalizado en {time.time() - start_time:.2f}s")
 
     # Paso 3: Leer overflows.json si existe
     overflows_json = sla_path.parent / f"{sla_path.stem}_overflows.json"
@@ -280,29 +287,35 @@ def _cleanup_stale_jobs():
 
 threading.Thread(target=_cleanup_stale_jobs, daemon=True).start()
 
+_scribus_lock = threading.Semaphore(1)
+
 def _run_scribus_job(job_id: str, idml_path: Path, pdf_path: Path,
                      show_overflows: bool, tmp_dir: Path):
-    """Ejecuta el pipeline Scribus en un hilo separado."""
-    try:
-        overflows = render_idml_to_pdf(idml_path, pdf_path, show_overflows=show_overflows)
-        overflow_header = json.dumps(overflows, ensure_ascii=False) if overflows else ""
-        with _jobs_lock:
-            if job_id in _jobs:
-                _jobs[job_id].update({
-                    "status": "done",
-                    "pdf_path": str(pdf_path),
-                    "filename": f"{idml_path.stem}_prensa.pdf",
-                    "overflows": overflows,
-                    "overflow_header": overflow_header,
-                })
-    except Exception as exc:
-        logger.exception(f"[Job {job_id}] Error en render: {exc}")
-        with _jobs_lock:
-            if job_id in _jobs:
-                _jobs[job_id].update({
-                    "status": "error",
-                    "error": str(exc),
-                })
+    """Ejecuta el pipeline Scribus con control de concurrencia (Threading Semaphore)."""
+    with _scribus_lock:
+        logger.info(f"[Job {job_id}] Turno de ejecución obtenido (Lock)")
+        start_t = time.time()
+        try:
+            overflows = render_idml_to_pdf(idml_path, pdf_path, show_overflows=show_overflows)
+            overflow_header = json.dumps(overflows, ensure_ascii=False) if overflows else ""
+            with _jobs_lock:
+                if job_id in _jobs:
+                    _jobs[job_id].update({
+                        "status": "done",
+                        "pdf_path": str(pdf_path),
+                        "filename": f"{idml_path.stem}_prensa.pdf",
+                        "overflows": overflows,
+                        "overflow_header": overflow_header,
+                    })
+            logger.info(f"[Job {job_id}] Renderizado completado exitosamente en {time.time() - start_t:.2f}s")
+        except Exception as exc:
+            logger.exception(f"[Job {job_id}] Error en render: {exc}")
+            with _jobs_lock:
+                if job_id in _jobs:
+                    _jobs[job_id].update({
+                        "status": "error",
+                        "error": str(exc),
+                    })
 
 
 @app.post("/render")

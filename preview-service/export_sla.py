@@ -13,6 +13,12 @@ import sys
 import os
 import json
 import re
+import time
+
+def log(msg):
+    """Log con timestamp para debugging de performance."""
+    print(f"[{time.strftime('%H:%M:%S')}] {msg}")
+    sys.stdout.flush()
 
 try:
     import scribus
@@ -65,6 +71,7 @@ def fix_fonts():
         return
 
     families = ["Heuristica", "Utopia", "Playfair Display", "Myriad Pro", "Austin", "Vitesse"]
+    log(f"Arreglando fuentes para familias: {families}")
     for fam in families:
         regular = f"{fam} Regular"
         if regular in available_fonts:
@@ -110,8 +117,7 @@ def relink_images():
         sys.stdout.write(f"--- relink_images: links_dir={links_dir} ---\n")
 
         if not os.path.exists(links_dir):
-            sys.stdout.write("--- No hay carpeta Links/, saltando relink ---\n")
-            sys.stdout.flush()
+            log("No hay carpeta Links/, saltando relink")
             return
 
         # Construir índice de archivos disponibles en Links/
@@ -229,12 +235,10 @@ def relink_images():
                 except Exception as e:
                     sys.stdout.write(f"  ! Error fallback relink {frame}: {e}\n")
 
-        sys.stdout.write(f"--- Relink: {linked} vinculadas, {missed} sin imagen ---\n")
-        sys.stdout.flush()
+        log(f"Relink: {linked} vinculadas, {missed} sin imagen")
 
     except Exception as e:
-        sys.stdout.write(f"  Error general relink: {e}\n")
-        sys.stdout.flush()
+        log(f"Error general relink: {e}")
 
 
 def apply_hyphenation():
@@ -249,7 +253,7 @@ def apply_hyphenation():
         # Diagnóstico de lenguajes disponibles
         try:
             langs = scribus.getHyphLanguages()
-            sys.stdout.write(f"--- Lenguajes de hyphenation disponibles: {langs}\n")
+            log(f"Lenguajes de hyphenation disponibles: {langs}")
         except Exception:
             pass
 
@@ -283,13 +287,12 @@ def apply_hyphenation():
                         sys.stdout.write(f"  ✓ Hyphenation: {item}\n")
                 except Exception as e:
                     sys.stdout.write(f"  ! Error hyphenation {item}: {e}\n")
-        sys.stdout.write(
-            f"--- Hyphenation aplicada a {hyphenated} frames TEXTO* "
-            f"({skipped} frames omitidos) ---\n"
+        log(
+            f"Hyphenation aplicada a {hyphenated} frames TEXTO* "
+            f"({skipped} frames omitidos)"
         )
-        sys.stdout.flush()
     except Exception as e:
-        sys.stdout.write(f"--- Error en hyphenation: {e} ---\n")
+        log(f"Error en hyphenation: {e}")
 
 
 def detect_overflows():
@@ -431,12 +434,11 @@ def detect_overflows():
                 except Exception as e:
                     sys.stdout.write(f"  ! Error chequeando overflow {item}: {e}\n")
 
-        sys.stdout.write(
-            f"--- Overflow: {len(overflows)} frames con desborde ---\n"
+        log(
+            f"Overflow: {len(overflows)} frames con desborde"
         )
-        sys.stdout.flush()
     except Exception as e:
-        sys.stdout.write(f"--- Error general detect_overflows: {e} ---\n")
+        log(f"Error general detect_overflows: {e}")
 
     return overflows
 
@@ -447,9 +449,9 @@ def save_overflows_json(overflows, sla_path):
         json_path = os.path.splitext(sla_path)[0] + "_overflows.json"
         with open(json_path, "w", encoding="utf-8") as f:
             json.dump(overflows, f, ensure_ascii=False)
-        sys.stdout.write(f"--- overflows.json guardado: {json_path} ---\n")
+        log(f"overflows.json guardado: {json_path}")
     except Exception as e:
-        sys.stdout.write(f"--- Error guardando overflows.json: {e} ---\n")
+        log(f"Error guardando overflows.json: {e}")
 
 
 def main():
@@ -470,29 +472,25 @@ def main():
                 sla_path = os.path.abspath(arg)
                 break
 
-    sys.stdout.write(f"--- export_sla.py starting ---\n")
-    sys.stdout.write(f"--- SLA: {sla_path} ---\n")
-    sys.stdout.write(f"--- Output PDF: {output_pdf} ---\n")
-    sys.stdout.flush()
+    log(f"export_sla.py starting")
+    log(f"SLA: {sla_path}")
+    log(f"Output PDF: {output_pdf}")
 
     # Intentar abrir el documento si no hay uno activo
     try:
         if not scribus.haveDoc():
             if sla_path and os.path.exists(sla_path):
-                sys.stdout.write(f"--- Opening SLA: {sla_path} ---\n")
-                sys.stdout.flush()
+                log(f"Opening SLA: {sla_path}")
                 scribus.openDoc(sla_path)
     except Exception as e:
-        sys.stdout.write(f"--- Warning checking/opening doc: {e} ---\n")
-        sys.stdout.flush()
+        log(f"Warning checking/opening doc: {e}")
 
     if not scribus.haveDoc():
         sys.stderr.write("--- ERROR: No open document found ---\n")
         sys.stderr.flush()
         os._exit(1)
 
-    sys.stdout.write(f"--- Active Doc: {scribus.pageCount()} pages ---\n")
-    sys.stdout.flush()
+    log(f"Active Doc: {scribus.pageCount()} pages")
 
     # Arreglar fuentes y re-vincular imágenes
     fix_fonts()
@@ -558,8 +556,7 @@ def main():
         except Exception:
             pass
 
-    sys.stdout.write("--- export_sla.py terminó correctamente ---\n")
-    sys.stdout.flush()
+    log("export_sla.py terminó correctamente")
     os._exit(0)
 
 
