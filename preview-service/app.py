@@ -70,80 +70,79 @@ def get_executable_path(name: str):
     return name
 
 
+def _preexec_fn():
+    """Crea un nuevo session ID para el subproceso para matarlo por completo si es necesario."""
+    import os
+    os.setsid()
+
+
 def run_scribus_export(sla_path: Path, output_pdf: Path, show_overflows: bool = True):
     """
     Usa Scribus -g para abrir un SLA y exportarlo a PDF.
-    
-    Envuelve Scribus en xvfb-run para que tenga un display X11 virtual.
-    Esto funciona tanto en Docker como en local sin necesitar Xvfb persistente.
+    Usa el modo offscreen nativo de Qt para evitar la sobrecarga de Xvfb.
     """
+    import signal
     scribus_exec = get_executable_path("scribus")
-    xvfb_run = shutil.which("xvfb-run")
 
-    scribus_cmd = [
-        scribus_exec, "-g", "-py", str(EXPORT_SLA_SCRIPT),
-        str(sla_path),
-    ]
-
-    # Envolver con xvfb-run para display virtual temporal
-    if xvfb_run:
-        cmd = [
-            xvfb_run, "--auto-servernum", "--server-args=-screen 0 1024x768x24",
-            "--"
-        ] + scribus_cmd
-    else:
-        cmd = scribus_cmd
+    # Intentar usar modo offscreen directamente para evitar sobrecarga de xvfb-run
+    # y procesos extra que puedan quedar huérfanos.
+    cmd = [scribus_exec, "-g", "-py", str(EXPORT_SLA_SCRIPT), str(sla_path)]
 
     env = os.environ.copy()
-    # Pasar paths al script via variables de entorno
     env["EXPORT_OUTPUT_PDF"] = str(output_pdf)
     env["EXPORT_SLA_PATH"] = str(sla_path)
     env["EXPORT_SHOW_OVERFLOWS"] = "1" if show_overflows else "0"
     if ICC_PROFILE.exists():
         env["EXPORT_ICC_PROFILE"] = str(ICC_PROFILE)
-    # Si no hay xvfb-run ni DISPLAY, usar offscreen como último recurso
-    if not xvfb_run and not env.get("DISPLAY"):
-        env["QT_QPA_PLATFORM"] = "offscreen"
+    
+    # Forzar offscreen siempre para máxima estabilidad en headless
+    env["QT_QPA_PLATFORM"] = "offscreen"
+    env["DISPLAY"] = ":99" # Placeholder por si acaso Scribus lo requiere
 
-    logger.info(f"Ejecutando: {' '.join(cmd)}")
+    logger.info(f"Ejecutando (modo offscreen): {' '.join(cmd)}")
 
+    process = None
     try:
-        result = subprocess.run(
+        process = subprocess.Popen(
             cmd,
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
-            timeout=SCRIBUS_TIMEOUT,
             env=env,
+            preexec_fn=_preexec_fn
         )
 
-        if result.stdout:
-            for line in result.stdout.strip().split('\n'):
-                logger.info(f"[Scribus] {line}")
+        try:
+            stdout, stderr = process.communicate(timeout=SCRIBUS_TIMEOUT)
+            
+            if stdout:
+                for line in stdout.strip().split('\n'):
+                    logger.info(f"[Scribus] {line}")
 
-        if result.stderr:
-            # Filtrar warnings de Qt/Xvfb que no son errores reales
-            important = [l for l in result.stderr.strip().split('\n')
-                         if not l.startswith(('QStandardPaths:', 'qt.', 'Warning:',
-                                              'Xvfb ', '_XSERVTransmk'))]
-            if important:
-                logger.warning(f"[Scribus stderr] {'; '.join(important)}")
+            if stderr:
+                important = [l for l in stderr.strip().split('\n')
+                             if not l.startswith(('QStandardPaths:', 'qt.', 'Warning:',
+                                                  'Xvfb ', '_XSERVTransmk'))]
+                if important:
+                    logger.warning(f"[Scribus stderr] {'; '.join(important)}")
 
-        if result.returncode != 0:
-            full_log = f"stdout: {result.stdout[-1000:] if result.stdout else 'vacío'}\nstderr: {result.stderr[-500:] if result.stderr else 'vacío'}"
-            raise RuntimeError(
-                f"Scribus terminó con código {result.returncode}.\n{full_log}"
-            )
+            if process.returncode != 0:
+                raise RuntimeError(f"Scribus terminó con código {process.returncode}")
+
+        except subprocess.TimeoutExpired:
+            # ¡CRÍTICO! Matar todo el grupo de procesos
+            logger.error(f"Timeout en Scribus ({SCRIBUS_TIMEOUT}s). Matando proceso y descendencia...")
+            os.killpg(os.getpgid(process.pid), signal.SIGKILL)
+            raise RuntimeError(f"Scribus se colgó (timeout {SCRIBUS_TIMEOUT}s). Proceso eliminado.")
 
         if not output_pdf.exists():
             raise RuntimeError("Scribus terminó pero no generó el PDF")
 
         logger.info(f"PDF generado por Scribus: {output_pdf} ({output_pdf.stat().st_size} bytes)")
-
-    except subprocess.TimeoutExpired:
-        raise RuntimeError(
-            f"Scribus se colgó (timeout {SCRIBUS_TIMEOUT}s). "
-            "El SLA podría ser demasiado complejo o el servidor estar sobrecargado."
-        )
+    except Exception as e:
+        if "Timeout" not in str(e):
+             logger.error(f"Error en ejecución de Scribus: {e}")
+        raise
 
 
 def render_idml_to_pdf(idml_path: Path, output_pdf: Path, show_overflows: bool = True) -> list:
