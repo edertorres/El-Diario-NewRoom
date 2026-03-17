@@ -11,10 +11,15 @@ import urllib.parse
 import time
 from pathlib import Path
 from typing import List, Optional
+import uuid
 
 from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks, Request, Form
 from fastapi.responses import FileResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
+
+import threading
+import uuid
+import signal
 
 from idml_to_sla import IDMLToSLAConverter
 from idml_to_high_fidelity_typst import IDMLToTypstProConverter
@@ -45,10 +50,10 @@ ICC_PROFILE = BASE_DIR / "ISOnewspaper26v4.icc"
 EXPORT_SLA_SCRIPT = BASE_DIR / "export_sla.py"
 SCRIBUS_TIMEOUT = 180  # segundos - Incrementado de 120 para evitar timeouts erráticos
 
-import threading
 # Semáforo para limitar la concurrencia de Scribus (CPU-intensive)
-# Dado que el servidor tiene 2 vCPUs, limitamos a 1 ejecución para evitar peleas por recursos.
 _scribus_lock = threading.Semaphore(1)
+_jobs_lock = threading.Lock()
+_jobs: dict = {}
 
 
 def cleanup_temp_dir(temp_dir: str):
@@ -70,29 +75,28 @@ def get_executable_path(name: str):
     return name
 
 
-def _preexec_fn():
-    """Crea un nuevo session ID para el subproceso para matarlo por completo si es necesario."""
-    import os
-    os.setsid()
+# Helper para limpiar procesos si fuera necesario
+def _cleanup_scribus_processes():
+    try:
+        subprocess.run(["pkill", "-9", "scribus"], capture_output=True)
+        subprocess.run(["pkill", "-9", "Xvfb"], capture_output=True)
+    except:
+        pass
 
 
 def run_scribus_export(sla_path: Path, output_pdf: Path, show_overflows: bool = True):
     """
     Usa Scribus -g para abrir un SLA y exportarlo a PDF.
-    Envuelve Scribus en xvfb-run para que tenga un display X11 virtual.
-    Usa os.setsid y os.killpg para asegurar que TODO (Xvfb + Scribus) muera en timeout.
+    Envuelve Scribus en xvfb-run si está disponible.
     """
-    import signal
     scribus_exec = get_executable_path("scribus")
     xvfb_run = shutil.which("xvfb-run")
 
     scribus_cmd = [scribus_exec, "-g", "-py", str(EXPORT_SLA_SCRIPT), str(sla_path)]
     
     if xvfb_run:
-        cmd = [
-            xvfb_run, "--auto-servernum", "--server-args=-screen 0 1024x768x24",
-            "--"
-        ] + scribus_cmd
+        # Simplificamos el comando de xvfb-run
+        cmd = [xvfb_run, "--auto-servernum", "--"] + scribus_cmd
     else:
         cmd = scribus_cmd
 
@@ -103,57 +107,47 @@ def run_scribus_export(sla_path: Path, output_pdf: Path, show_overflows: bool = 
     if ICC_PROFILE.exists():
         env["EXPORT_ICC_PROFILE"] = str(ICC_PROFILE)
     
-    # Si no hay xvfb-run, intentamos offscreen como fallback desesperado
+    # Solo usar offscreen si no hay Xvfb
     if not xvfb_run:
         env["QT_QPA_PLATFORM"] = "offscreen"
+    else:
+        env.pop("QT_QPA_PLATFORM", None)
 
-    logger.info(f"Ejecutando (con robust cleanup): {' '.join(cmd)}")
+    logger.info(f"Ejecutando: {' '.join(cmd)}")
 
-    process = None
     try:
-        process = subprocess.Popen(
+        # Usar subprocess.run es más simple y estable
+        result = subprocess.run(
             cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
             env=env,
-            preexec_fn=_preexec_fn
+            capture_output=True,
+            text=True,
+            timeout=SCRIBUS_TIMEOUT
         )
 
-        try:
-            stdout, stderr = process.communicate(timeout=SCRIBUS_TIMEOUT)
-            
-            if stdout:
-                for line in stdout.strip().split('\n'):
-                    logger.info(f"[Scribus] {line}")
+        if result.stdout:
+            stdout_lines = result.stdout.strip().split('\n')
+            for line in stdout_lines[:50]:
+                logger.info(f"[Scribus] {line}")
 
-            if stderr:
-                important = [l for l in stderr.strip().split('\n')
-                             if not l.startswith(('QStandardPaths:', 'qt.', 'Warning:',
-                                                  'Xvfb ', '_XSERVTransmk'))]
-                if important:
-                    logger.warning(f"[Scribus stderr] {'; '.join(important)}")
+        if result.returncode != 0:
+            logger.error(f"Scribus falló con código {result.returncode}")
+            logger.error(f"Stderr: {result.stderr[-500:]}")
+            raise RuntimeError(f"Scribus terminó con código {result.returncode}")
 
-            if process.returncode != 0:
-                raise RuntimeError(f"Scribus terminó con código {process.returncode}")
-
-        except subprocess.TimeoutExpired:
-            # ¡CRÍTICO! Matar todo el grupo de procesos (Xvfb + Scribus + xvfb-run)
-            logger.error(f"Timeout en Scribus ({SCRIBUS_TIMEOUT}s). Matando proceso y descendencia...")
-            try:
-                os.killpg(os.getpgid(process.pid), signal.SIGKILL)
-            except Exception as ke:
-                logger.error(f"Error matando proceso: {ke}")
-            raise RuntimeError(f"Scribus se colgó (timeout {SCRIBUS_TIMEOUT}s). Proceso e hijos eliminados.")
-
-        if not output_pdf.exists():
-            raise RuntimeError("Scribus terminó pero no generó el PDF")
-
-        logger.info(f"PDF generado por Scribus: {output_pdf} ({output_pdf.stat().st_size} bytes)")
+    except subprocess.TimeoutExpired:
+        logger.error(f"Timeout en Scribus ({SCRIBUS_TIMEOUT}s)")
+        # Intentar limpieza agresiva
+        _cleanup_scribus_processes()
+        raise RuntimeError(f"Scribus se colgó (timeout {SCRIBUS_TIMEOUT}s)")
     except Exception as e:
-        if "Timeout" not in str(e):
-             logger.error(f"Error en ejecución de Scribus: {e}")
+        logger.error(f"Error inesperado ejecutando Scribus: {e}")
         raise
+
+    if not output_pdf.exists():
+        raise RuntimeError("Scribus terminó pero no generó el PDF")
+
+    logger.info(f"PDF generado: {output_pdf} ({output_pdf.stat().st_size} bytes)")
 
 
 def render_idml_to_pdf(idml_path: Path, output_pdf: Path, show_overflows: bool = True) -> list:
@@ -271,13 +265,6 @@ async def render_idml_to_typst_pdf(idml_path: Path, output_pdf: Path, images_fol
 
 
 # ── Job Store (Async Rendering) ───────────────────────────────────────────────
-import uuid
-import threading
-
-# job_id → {"status": "pending"|"done"|"error", "pdf_path": str|None,
-#            "overflows": list, "overflow_header": str, "error": str|None, "tmp_dir": str, "created_at": float}
-_jobs: dict = {}
-_jobs_lock = threading.Lock()
 
 def _cleanup_stale_jobs():
     """Limpia jobs abandonados (más de 10 minutos) para evitar memory leaks y OOMs."""
@@ -297,35 +284,41 @@ def _cleanup_stale_jobs():
 
 threading.Thread(target=_cleanup_stale_jobs, daemon=True).start()
 
-_scribus_lock = threading.Semaphore(1)
+
 
 def _run_scribus_job(job_id: str, idml_path: Path, pdf_path: Path,
                      show_overflows: bool, tmp_dir: Path):
     """Ejecuta el pipeline Scribus con control de concurrencia (Threading Semaphore)."""
-    with _scribus_lock:
-        logger.info(f"[Job {job_id}] Turno de ejecución obtenido (Lock)")
-        start_t = time.time()
-        try:
-            overflows = render_idml_to_pdf(idml_path, pdf_path, show_overflows=show_overflows)
-            overflow_header = json.dumps(overflows, ensure_ascii=False) if overflows else ""
-            with _jobs_lock:
-                if job_id in _jobs:
-                    _jobs[job_id].update({
-                        "status": "done",
-                        "pdf_path": str(pdf_path),
-                        "filename": f"{idml_path.stem}_prensa.pdf",
-                        "overflows": overflows,
-                        "overflow_header": overflow_header,
-                    })
-            logger.info(f"[Job {job_id}] Renderizado completado exitosamente en {time.time() - start_t:.2f}s")
-        except Exception as exc:
-            logger.exception(f"[Job {job_id}] Error en render: {exc}")
-            with _jobs_lock:
-                if job_id in _jobs:
-                    _jobs[job_id].update({
-                        "status": "error",
-                        "error": str(exc),
-                    })
+    try:
+        with _scribus_lock:
+            logger.info(f"[Job {job_id}] Turno de ejecución obtenido (Lock)")
+            start_t = time.time()
+            try:
+                overflows = render_idml_to_pdf(idml_path, pdf_path, show_overflows=show_overflows)
+                overflow_header = json.dumps(overflows, ensure_ascii=False) if overflows else ""
+                with _jobs_lock:
+                    if job_id in _jobs:
+                        _jobs[job_id].update({
+                            "status": "done",
+                            "pdf_path": str(pdf_path),
+                            "filename": f"{idml_path.stem}_prensa.pdf",
+                            "overflows": overflows,
+                            "overflow_header": overflow_header,
+                        })
+                logger.info(f"[Job {job_id}] Renderizado completado exitosamente en {time.time() - start_t:.2f}s")
+            except Exception as exc:
+                logger.exception(f"[Job {job_id}] Error en render: {exc}")
+                with _jobs_lock:
+                    if job_id in _jobs:
+                        _jobs[job_id].update({
+                            "status": "error",
+                            "error": str(exc),
+                        })
+    except Exception as global_exc:
+        logger.exception(f"[Job {job_id}] Error crítico en el hilo: {global_exc}")
+        with _jobs_lock:
+            if job_id in _jobs:
+                _jobs[job_id].update({"status": "error", "error": "Error interno del servidor"})
 
 
 @app.post("/render")
