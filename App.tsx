@@ -290,6 +290,7 @@ const App = () => {
 
         {mode === AppMode.MAPPING && (
           <StoryMapper
+            key={templateName || 'local-upload'}
             stories={stories}
             setStories={setStories}
             spreads={spreads}

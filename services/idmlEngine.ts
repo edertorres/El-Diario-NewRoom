@@ -102,10 +102,14 @@ export class IDMLEngine {
 
     try {
       this.zip = new window.JSZip();
-      const zipContent = await this.zip.loadAsync(file);
+      const buffer = await file.arrayBuffer();
+      const zipContent = await this.zip.loadAsync(buffer);
 
       this.stories.clear();
       this.spreads.clear();
+      this.styles = {};
+      this.fonts = [];
+      this.swatches = [];
 
       const storyFiles: any[] = [];
       const spreadFiles: any[] = [];
@@ -162,14 +166,14 @@ export class IDMLEngine {
       const extractStyleAttrs = (elem: Element) => {
         const attrs: Record<string, string> = {};
         for (let i = 0; i < elem.attributes.length; i++) {
-          const attr = elem.attributes[i];
+          const attr = elem.attributes[i] as Attr;
           attrs[attr.name] = attr.value;
         }
         // También buscar en <Properties>
-        const props = elem.getElementsByTagName("Properties")[0];
+        const props = (elem.getElementsByTagName("Properties")[0]) as Element | undefined;
         if (props) {
           for (let i = 0; i < props.children.length; i++) {
-            const child = props.children[i];
+            const child = props.children[i] as Element;
             if (child.textContent) attrs[child.tagName] = child.textContent;
           }
         }
@@ -217,7 +221,7 @@ export class IDMLEngine {
       // Colores
       const colors = doc.getElementsByTagName("Color");
       for (let i = 0; i < colors.length; i++) {
-        const c = colors[i];
+        const c = colors[i] as Element;
         const self = c.getAttribute("Self");
         if (self) {
           this.swatches[self] = {
@@ -231,7 +235,7 @@ export class IDMLEngine {
       // Tintas
       const tints = doc.getElementsByTagName("Tint");
       for (let i = 0; i < tints.length; i++) {
-        const t = tints[i];
+        const t = tints[i] as Element;
         const self = t.getAttribute("Self");
         if (self) {
           this.swatches[self] = {
@@ -251,11 +255,11 @@ export class IDMLEngine {
     if (designmapEntry) {
       const xml = await designmapEntry.async("string");
       const doc = this.getParser().parseFromString(xml, "application/xml");
-      const docElem = doc.getElementsByTagName("Document")[0];
+      const docElem = doc.getElementsByTagName("Document")[0] as Element | undefined;
       if (docElem) {
-        const zp = docElem.getAttribute("ZeroPoint");
-        if (zp) {
-          const parts = zp.split(' ').map(Number);
+        const zeroPointAttr = doc.documentElement.getAttribute("ZeroPoint");
+        if (zeroPointAttr) {
+          const parts = zeroPointAttr.split(' ').map(Number);
           zeroPoint = { x: parts[0] || 0, y: parts[1] || 0 };
         }
       }
@@ -279,9 +283,10 @@ export class IDMLEngine {
       const doc = this.getParser().parseFromString(xml, "application/xml");
       const fontElems = doc.getElementsByTagName("Font");
       for (let i = 0; i < fontElems.length; i++) {
+        const fElem = fontElems[i] as Element;
         this.fonts.push({
-          name: fontElems[i].getAttribute("Name"),
-          postScript: fontElems[i].getAttribute("PostScriptName")
+          name: fElem.getAttribute("Name"),
+          postScript: fElem.getAttribute("PostScriptName")
         });
       }
     }
@@ -1148,13 +1153,13 @@ export class IDMLEngine {
       const fileData = await file.arrayBuffer();
       this.zip.file(linkPath, fileData);
 
-      const doc = this.getParser().parseFromString(spread.originalXml, "application/xml");
-      const allRects = Array.from(doc.getElementsByTagName("*")).filter(n => ['rectangle', 'oval', 'polygon'].includes(this.getLocalName(n)));
+      const doc = (this.getParser() as DOMParser).parseFromString(spread.originalXml, "application/xml");
+      const allRects = Array.from(doc.getElementsByTagName("*")).filter(n => ['rectangle', 'oval', 'polygon'].includes(this.getLocalName(n as Node)));
 
       for (const rect of allRects) {
         if (this.findScriptLabel(rect as Element) === imageTag) {
-          const imageNode = Array.from(rect.getElementsByTagName("*")).find(n => ['image', 'pdf', 'eps', 'importedpage'].includes(this.getLocalName(n)));
-          const linkNode = imageNode ? Array.from(imageNode.getElementsByTagName("*")).find(n => ['link', 'Link'].includes(this.getLocalName(n))) : null;
+          const imageNode = Array.from((rect as Element).getElementsByTagName("*")).find(n => ['image', 'pdf', 'eps', 'importedpage'].includes(this.getLocalName(n as Node)));
+          const linkNode = imageNode ? Array.from((imageNode as Element).getElementsByTagName("*")).find(n => ['link', 'Link'].includes(this.getLocalName(n as Node))) : null;
 
           if (linkNode) {
             const destFolder = this.automaticRelink.destinationFolder || "Links";
@@ -1178,12 +1183,17 @@ export class IDMLEngine {
 
     console.log(`[IDML Engine] Bulk update started for ${imageUpdates.length} images`);
 
-    // Pre-procesar archivos a ArrayBuffer
-    const imageData = await Promise.all(imageUpdates.map(async u => ({
-      tag: u.tag,
-      name: u.file.name,
-      data: await u.file.arrayBuffer()
-    })));
+    // Pre-procesar archivos a ArrayBuffer y normalizar nombres a TAG.ext
+    const imageData = await Promise.all(imageUpdates.map(async u => {
+      const extension = u.file.name.includes('.') ? u.file.name.split('.').pop() : 'jpg';
+      // Normalizar el tag para usarlo como nombre de archivo seguro
+      const safeTagName = u.tag.trim().replace(/[^a-zA-Z0-9_]/g, '_').toUpperCase();
+      return {
+        tag: u.tag,
+        name: `${safeTagName}.${extension}`,
+        data: await u.file.arrayBuffer()
+      };
+    }));
 
     // Escribir todos los archivos al ZIP en la carpeta Links/
     for (const img of imageData) {
@@ -1206,9 +1216,9 @@ export class IDMLEngine {
       const hasUpdates = spread.imageFrames.some(f => f.scriptLabel && updateMap.has(normalizeTag(f.scriptLabel)));
       if (!hasUpdates) continue;
 
-      const doc = this.getParser().parseFromString(spread.originalXml, "application/xml");
+      const doc = (this.getParser() as DOMParser).parseFromString(spread.originalXml, "application/xml");
       const allRects = Array.from(doc.getElementsByTagName("*")).filter(n =>
-        ['rectangle', 'oval', 'polygon'].includes(this.getLocalName(n))
+        ['rectangle', 'oval', 'polygon'].includes(this.getLocalName(n as Node))
       );
 
       let modified = false;
@@ -1218,11 +1228,11 @@ export class IDMLEngine {
 
         if (normTag && updateMap.has(normTag)) {
           const fileName = updateMap.get(normTag)!;
-          const imageNode = Array.from(rect.getElementsByTagName("*")).find(n =>
-            ['image', 'pdf', 'eps', 'importedpage'].includes(this.getLocalName(n))
+          const imageNode = Array.from((rect as Element).getElementsByTagName("*")).find(n =>
+            ['image', 'pdf', 'eps', 'importedpage'].includes(this.getLocalName(n as Node))
           );
-          const linkNode = imageNode ? Array.from(imageNode.getElementsByTagName("*")).find(n =>
-            ['link', 'Link'].includes(this.getLocalName(n))
+          const linkNode = imageNode ? Array.from((imageNode as Element).getElementsByTagName("*")).find(n =>
+            ['link', 'Link'].includes(this.getLocalName(n as Node))
           ) : null;
 
           if (linkNode) {
