@@ -80,6 +80,15 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, sto
                 // Lógica de Typst Pro o Scribus (ambos reciben IDML + Imágenes)
                 setTypstCode(""); // Typst Pro genera el código en el servidor
 
+                // Sincronizar imágenes del sidebar al motor IDML si están activas
+                if (includeImages && uploadedImages.length > 0) {
+                    const imageUpdates = uploadedImages.map(img => ({
+                        tag: img.customName,
+                        file: img.file
+                    }));
+                    await idmlEngine.bulkUpdateImages(imageUpdates);
+                }
+
                 const idmlBlob = await idmlEngine.generateBlob(stories);
                 const formData = new FormData();
                 formData.append('file', idmlBlob, 'preview.idml');

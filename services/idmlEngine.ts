@@ -26,7 +26,7 @@ export class IDMLEngine {
   public styles: any = {};
   public fonts: any[] = [];
   public swatches: any[] = [];
-  public pageSettings: { width: number, height: number } = { width: 595.275590551181, height: 841.889763779528 };
+  public pageSettings: { width: number, height: number, zeroPoint?: { x: number, y: number } } = { width: 595.275590551181, height: 841.889763779528, zeroPoint: { x: 0, y: 0 } };
   public automaticRelink: { enabled: boolean, destinationFolder?: string } = { enabled: true };
   private _parser: any = parser;
   private _serializer: any = serializer;
@@ -1154,7 +1154,7 @@ export class IDMLEngine {
       for (const rect of allRects) {
         if (this.findScriptLabel(rect as Element) === imageTag) {
           const imageNode = Array.from(rect.getElementsByTagName("*")).find(n => ['image', 'pdf', 'eps', 'importedpage'].includes(this.getLocalName(n)));
-          const linkNode = imageNode ? Array.from(imageNode.getElementsByTagName("*")).find(n => this.getLocalName(n) === 'link') : null;
+          const linkNode = imageNode ? Array.from(imageNode.getElementsByTagName("*")).find(n => ['link', 'Link'].includes(this.getLocalName(n))) : null;
 
           if (linkNode) {
             const destFolder = this.automaticRelink.destinationFolder || "Links";
@@ -1167,6 +1167,81 @@ export class IDMLEngine {
       spread.originalXml = newXml;
       this.zip.file(spread.id, newXml);
     }
+  }
+
+  /**
+   * Actualiza múltiples imágenes en una sola pasada sobre los spreads.
+   * Útil para sincronizar las imágenes subidas en el sidebar antes de exportar.
+   */
+  async bulkUpdateImages(imageUpdates: Array<{ tag: string, file: File }>): Promise<void> {
+    if (!this.zip || imageUpdates.length === 0) return;
+
+    console.log(`[IDML Engine] Bulk update started for ${imageUpdates.length} images`);
+
+    // Pre-procesar archivos a ArrayBuffer
+    const imageData = await Promise.all(imageUpdates.map(async u => ({
+      tag: u.tag,
+      name: u.file.name,
+      data: await u.file.arrayBuffer()
+    })));
+
+    // Escribir todos los archivos al ZIP en la carpeta Links/
+    for (const img of imageData) {
+      this.zip.file(`Links/${img.name}`, img.data);
+    }
+
+    // Mapa para búsqueda rápida por etiqueta (scriptLabel)
+    const updateMap = new Map<string, string>();
+    for (const img of imageData) {
+      // Normalizar el tag para asegurar coincidencia
+      const normTag = normalizeTag(img.tag);
+      updateMap.set(normTag, img.name);
+    }
+
+    // Iterar sobre todos los spreads cargados
+    for (const spread of this.spreads.values()) {
+      if (!spread || !spread.imageFrames) continue;
+
+      // Optimizacion: verificar si este spread tiene alguno de los tags que estamos actualizando
+      const hasUpdates = spread.imageFrames.some(f => f.scriptLabel && updateMap.has(normalizeTag(f.scriptLabel)));
+      if (!hasUpdates) continue;
+
+      const doc = this.getParser().parseFromString(spread.originalXml, "application/xml");
+      const allRects = Array.from(doc.getElementsByTagName("*")).filter(n =>
+        ['rectangle', 'oval', 'polygon'].includes(this.getLocalName(n))
+      );
+
+      let modified = false;
+      for (const rect of allRects) {
+        const tag = this.findScriptLabel(rect as Element);
+        const normTag = tag ? normalizeTag(tag) : null;
+
+        if (normTag && updateMap.has(normTag)) {
+          const fileName = updateMap.get(normTag)!;
+          const imageNode = Array.from(rect.getElementsByTagName("*")).find(n =>
+            ['image', 'pdf', 'eps', 'importedpage'].includes(this.getLocalName(n))
+          );
+          const linkNode = imageNode ? Array.from(imageNode.getElementsByTagName("*")).find(n =>
+            ['link', 'Link'].includes(this.getLocalName(n))
+          ) : null;
+
+          if (linkNode) {
+            const destFolder = this.automaticRelink.destinationFolder || "Links";
+            const relativeBase = destFolder === "." || destFolder === "" ? "file:" : `file:${destFolder}/`;
+            (linkNode as Element).setAttribute("LinkResourceURI", `${relativeBase}${fileName}`);
+            modified = true;
+            console.log(`  - Actualizando link XML: ${tag} -> ${fileName}`);
+          }
+        }
+      }
+
+      if (modified) {
+        const newXml = this.getSerializer().serializeToString(doc);
+        spread.originalXml = newXml;
+        this.zip.file(spread.id, newXml);
+      }
+    }
+    console.log(`[IDML Engine] Bulk update finished`);
   }
 
   /**
@@ -1224,7 +1299,7 @@ export class IDMLEngine {
       console.log(`[IDML Engine] Aplicando relinkeo automático relativo a: '${relativeBase}'`);
 
       for (const spread of this.spreads.values()) {
-        const doc = this.getParser().parseFromString(spread.originalXml, "application/xml");
+        const doc = (this.getParser() as DOMParser).parseFromString(spread.originalXml, "application/xml");
         const links = Array.from(doc.getElementsByTagName("Link"));
         let modified = false;
 

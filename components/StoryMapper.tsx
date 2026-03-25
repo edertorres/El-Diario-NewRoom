@@ -1086,6 +1086,15 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
                           ? injectBatchContentIntoStories(batchText, stories)
                           : stories;
 
+                        // Sincronizar imágenes del sidebar al motor IDML
+                        if (uploadedImages.length > 0) {
+                          const imageUpdates = uploadedImages.map(img => ({
+                            tag: img.customName,
+                            file: img.file
+                          }));
+                          await idmlEngine.bulkUpdateImages(imageUpdates);
+                        }
+
                         // Configurar relinkeo automático relativo
                         const destFolderName = lastDestinationFolderPath?.split('/').pop() || undefined;
                         idmlEngine.setAutomaticRelink(useRelativeLinks, destFolderName);
@@ -1234,6 +1243,15 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
                     images: [],
                     folderPath: folderPath || null
                   });
+
+                  // Sincronizar imágenes del sidebar al motor IDML
+                  if (uploadedImages.length > 0) {
+                    const imageUpdates = uploadedImages.map(img => ({
+                      tag: img.customName,
+                      file: img.file
+                    }));
+                    await idmlEngine.bulkUpdateImages(imageUpdates);
+                  }
 
                   // Configurar relinkeo automático relativo
                   // Usamos "." porque las imágenes se suben a la misma carpeta que el IDML
