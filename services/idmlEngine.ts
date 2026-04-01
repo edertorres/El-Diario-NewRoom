@@ -879,15 +879,14 @@ export class IDMLEngine {
         textRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/$ID/[No character style]");
       }
 
-      // Agregar el nuevo contenido
-      const lines = text.split(/\n/);
-      lines.forEach((line, idx) => {
-        if (line.length > 0) {
-          const content = doc.createElement("Content");
-          content.textContent = line;
-          textRange.appendChild(content);
-        }
-        if (idx < lines.length - 1) {
+      // Agregar el nuevo contenido de forma segura (sin saltos de línea adicionales al final)
+      const sanitizedLines = text.trim().split(/\n/).filter(line => line.length > 0);
+      sanitizedLines.forEach((line, idx) => {
+        const content = doc.createElement("Content");
+        content.textContent = line;
+        textRange.appendChild(content);
+
+        if (idx < sanitizedLines.length - 1) {
           textRange.appendChild(doc.createElement("Br"));
         }
       });
@@ -910,15 +909,13 @@ export class IDMLEngine {
         textRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/$ID/[No character style]");
       }
 
-      const sanitizedText = text.trim();
-      const lines = sanitizedText.split(/\n/);
-      lines.forEach((line, idx) => {
-        if (line.trim().length > 0) {
-          const content = doc.createElement("Content");
-          content.textContent = line;
-          textRange.appendChild(content);
-        }
-        if (idx < lines.length - 1) {
+      const sanitizedLines = text.trim().split(/\n/).filter((line) => line.length > 0);
+      sanitizedLines.forEach((line, idx) => {
+        const content = doc.createElement("Content");
+        content.textContent = line;
+        textRange.appendChild(content);
+
+        if (idx < sanitizedLines.length - 1) {
           textRange.appendChild(doc.createElement("Br"));
         }
       });
@@ -1069,8 +1066,8 @@ export class IDMLEngine {
         pRange.appendChild(cRange);
         storyNode.appendChild(pRange);
       } else {
-        // Texto normal - dividir por párrafos (cualquier salto de línea)
-        const paragraphs = segment.text.trim().split(/\n+/).filter(p => p.trim().length > 0);
+        // Texto normal - dividir por párrafos (cualquier salto de línea real)
+        const paragraphs = segment.text.trim().split(/\n/).filter(p => p.trim().length > 0);
 
         for (const paraText of paragraphs) {
           // Para LEYENDA: manejo especial de bala + texto + crédito
