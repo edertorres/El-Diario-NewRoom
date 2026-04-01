@@ -910,9 +910,10 @@ export class IDMLEngine {
         textRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/$ID/[No character style]");
       }
 
-      const lines = text.split(/\n/);
+      const sanitizedText = text.trim();
+      const lines = sanitizedText.split(/\n/);
       lines.forEach((line, idx) => {
-        if (line.length > 0) {
+        if (line.trim().length > 0) {
           const content = doc.createElement("Content");
           content.textContent = line;
           textRange.appendChild(content);
@@ -1045,8 +1046,11 @@ export class IDMLEngine {
       return this.getSerializer().serializeToString(doc);
     }
 
+    // Normalizar saltos de línea (\r\n -> \n, \r -> \n)
+    const normalizedText = newText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
     // Procesar texto con intertítulos
-    const segments = this.parseTextWithIntertitles(newText);
+    const segments = this.parseTextWithIntertitles(normalizedText);
 
     for (let segIdx = 0; segIdx < segments.length; segIdx++) {
       const segment = segments[segIdx];
