@@ -891,7 +891,7 @@ export class IDMLEngine {
           textRange.appendChild(doc.createElement("Br"));
         }
       });
-      textRange.appendChild(doc.createElement("Br"));
+
 
       pRange.appendChild(textRange);
     } else {
@@ -921,7 +921,7 @@ export class IDMLEngine {
           textRange.appendChild(doc.createElement("Br"));
         }
       });
-      textRange.appendChild(doc.createElement("Br"));
+
 
       pRange.appendChild(textRange);
     }
@@ -1052,10 +1052,6 @@ export class IDMLEngine {
       const segment = segments[segIdx];
 
       if (segment.type === 'intertitle') {
-        // 1. Agregar párrafo en blanco ANTES del intertítulo para separación real
-        storyNode.appendChild(this.createBlankParagraph(doc, basePTemplate));
-
-        // 2. Crear párrafo de intertítulo usando la plantilla base para preservar contexto (columnas, etc)
         const pRange = basePTemplate ? basePTemplate.cloneNode(false) as Element : doc.createElement("ParagraphStyleRange");
         pRange.setAttribute("AppliedParagraphStyle", "ParagraphStyle/INTERTITULO");
 
@@ -1065,9 +1061,6 @@ export class IDMLEngine {
         const content = doc.createElement("Content");
         content.textContent = segment.text;
         cRange.appendChild(content);
-
-        // Agregamos <Br/> al final del intertítulo
-        cRange.appendChild(doc.createElement("Br"));
 
         pRange.appendChild(cRange);
         storyNode.appendChild(pRange);
@@ -1126,7 +1119,6 @@ export class IDMLEngine {
               const content = doc.createElement("Content");
               content.textContent = creditText;
               creditRange.appendChild(content);
-              creditRange.appendChild(doc.createElement("Br"));
               pRange.appendChild(creditRange);
             }
 
