@@ -683,7 +683,7 @@ export class IDMLEngine {
           }
           fullText += cr.content;
         });
-        if (idx < paragraphs.length - 1) fullText += "\n\n";
+        if (idx < paragraphs.length - 1) fullText += "\n";
       });
 
       return {
@@ -1065,8 +1065,8 @@ export class IDMLEngine {
         pRange.appendChild(cRange);
         storyNode.appendChild(pRange);
       } else {
-        // Texto normal - dividir por párrafos (doble salto de línea)
-        const paragraphs = segment.text.trim().split(/\n{2,}/).filter(p => p.trim().length > 0);
+        // Texto normal - dividir por párrafos (cualquier salto de línea)
+        const paragraphs = segment.text.trim().split(/\n+/).filter(p => p.trim().length > 0);
 
         for (const paraText of paragraphs) {
           // Para LEYENDA: manejo especial de bala + texto + crédito
