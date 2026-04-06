@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { IDMLStory, IDMLSpread, ImageFrame, UploadedImage } from '../types';
 import { idmlEngine } from '../services/idmlEngine';
 import { rewriteContent, smartTrim, AiConfig } from '../services/gemini';
@@ -12,8 +12,6 @@ import { MonacoEditor } from './MonacoEditor';
 import { WordCountIndicator } from './WordCountIndicator';
 import { PreviewModal } from './PreviewModal';
 import { normalizeTag, parseBatchText } from '../utils/tagUtils';
-import { typstGenerator } from '../services/typstGenerator';
-import { useTypstLive } from '../hooks/useTypstLive';
 import {
   Sparkles,
   Download,
@@ -44,8 +42,6 @@ import {
   Cloud,
   GripVertical,
   ArrowLeft,
-  ChevronRight,
-  ChevronLeft,
   X
 } from 'lucide-react';
 
@@ -113,8 +109,6 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
   const [previewLoading, setPreviewLoading] = useState(false);
   const [lastDestinationFolderPath, setLastDestinationFolderPath] = useState<string | null>(null);
   const [useRelativeLinks, setUseRelativeLinks] = useState<boolean>(true);
-  const [showLivePreview, setShowLivePreview] = useState<boolean>(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(true);
 
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [currentImageTag, setCurrentImageTag] = useState<string | null>(null);
@@ -752,28 +746,9 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
         </div>
       )}
 
-      {/* Botón Flotante para expandir sidebar si está colapsada */}
-      {isSidebarCollapsed && !isFullScreen && (
-        <button
-          onClick={() => setIsSidebarCollapsed(false)}
-          className="absolute left-0 top-1/2 -translate-y-1/2 bg-white border border-gray-200 border-l-0 p-2 rounded-r-xl shadow-md z-40 hover:bg-indigo-50 text-indigo-600 transition-all"
-          title="Expandir navegación"
-        >
-          <ChevronRight size={20} />
-        </button>
-      )}
-
-      {/* Sidebar - Se oculta en full screen o si está colapsada */}
-      {!isFullScreen && !isSidebarCollapsed && (
-        <div className="w-80 bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col overflow-hidden shrink-0 animate-in slide-in-from-left duration-300 relative">
-          {/* Botón para colapsar */}
-          <button
-            onClick={() => setIsSidebarCollapsed(true)}
-            className="absolute right-2 top-2 p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600 transition-colors z-10"
-            title="Colapsar panel"
-          >
-            <ChevronLeft size={16} />
-          </button>
+      {/* Sidebar - Se oculta en full screen */}
+      {!isFullScreen && (
+        <div className="w-80 bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col overflow-hidden shrink-0 animate-in slide-in-from-left duration-300">
           <div className="bg-gray-50 border-b">
             <div className="flex p-1">
               <button onClick={() => setSidebarTab('text')} className={`flex-1 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 ${sidebarTab === 'text' ? 'bg-white shadow-sm text-indigo-700' : 'text-gray-400 hover:text-gray-600'}`}>
@@ -1081,16 +1056,6 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
                     <Eye size={14} /> Ver preview del resultado
                   </button>
                   <button
-                    onClick={() => setShowLivePreview(!showLivePreview)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-xs border transition-all ${showLivePreview
-                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-md'
-                      : 'bg-white text-indigo-600 border-indigo-200 hover:bg-indigo-50'
-                      }`}
-                  >
-                    {showLivePreview ? <EyeOff size={14} /> : <Sparkles size={14} />}
-                    {showLivePreview ? 'Cerrar Live Preview' : 'Live Preview (Real-time)'}
-                  </button>
-                  <button
                     onClick={handleBatchInject}
                     disabled={isProcessing || !batchText.trim()}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-medium text-xs hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -1200,36 +1165,22 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
               </div>
             )}
 
-            <div className={`flex-1 flex overflow-hidden ${showLivePreview ? 'flex-row' : 'flex-col'}`}>
-              {/* Editor Column */}
-              <div className={`${showLivePreview ? 'w-1/2 border-r border-gray-200' : 'w-full h-full'} flex flex-col overflow-hidden`}>
-                <MonacoEditor
-                  value={batchText}
-                  onChange={setBatchText}
-                  stories={stories}
-                  availableTags={availableTags}
-                  imageTags={imageTags}
-                  placeholder="Escribe aquí usando ##ETIQUETA para cada sección..."
-                  isFullScreen={isFullScreen}
-                  className="flex-1"
-                  inlineWordCounts={{
-                    counts: batchWordCounts,
-                    limits: batchLimits,
-                  }}
-                  onInject={handleBatchInject}
-                />
-              </div>
-
-              {/* Preview Column (Live) */}
-              {showLivePreview && (
-                <div className="w-1/2 h-full bg-gray-100 overflow-hidden flex flex-col">
-                  <TypstLivePreview
-                    batchText={batchText}
-                    stories={stories}
-                    spreads={spreads}
-                  />
-                </div>
-              )}
+            <div className="flex-1 flex flex-col relative overflow-hidden bg-white">
+              {/* Editor Monaco - implementación con resaltado y autocompletado */}
+              <MonacoEditor
+                value={batchText}
+                onChange={setBatchText}
+                stories={stories}
+                availableTags={availableTags}
+                imageTags={imageTags}
+                placeholder="Escribe aquí usando ##ETIQUETA para cada sección..."
+                isFullScreen={isFullScreen}
+                className="flex-1"
+                inlineWordCounts={{
+                  counts: batchWordCounts,
+                  limits: batchLimits,
+                }}
+              />
             </div>
           </div>
         ) : (
@@ -1604,154 +1555,3 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
 };
 
 export default StoryMapper;
-
-// Componente interno para la previsualización en vivo (Optimizado con Memo)
-const TypstLivePreview: React.FC<{ batchText: string, stories: IDMLStory[], spreads: IDMLSpread[] }> = React.memo(({ batchText, stories, spreads }) => {
-
-  // Función que genera el código Typst a demanda (dentro del hook)
-  const generateCode = useCallback(() => {
-    try {
-      // Simular la inyección para el previo
-      const storiesWithContent = injectBatchContentIntoStories(batchText, stories);
-
-      // Necesitamos los otros parámetros (styles, swatches, pageSettings)
-      return typstGenerator.generate(
-        storiesWithContent,
-        spreads,
-        idmlEngine.styles,
-        idmlEngine.swatches,
-        idmlEngine.pageSettings,
-        { debugOverflow: true, debugUnderflow: false, includeImages: false }
-      );
-    } catch (err) {
-      console.error("Error generating typst code for preview:", err);
-      return "";
-    }
-  }, [batchText, stories, spreads]);
-
-  // Usar el hook pasándole la función de generación y las dependencias
-  const { svg, isLoading, error } = useTypstLive(generateCode, [batchText, stories, spreads]);
-  const [zoom, setZoom] = useState(1);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [startY, setStartY] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-  const [scrollTop, setScrollTop] = useState(0);
-
-  const onMouseDown = (e: React.MouseEvent) => {
-    if (!scrollContainerRef.current) return;
-    setIsDragging(true);
-    setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
-    setStartY(e.pageY - scrollContainerRef.current.offsetTop);
-    setScrollLeft(scrollContainerRef.current.scrollLeft);
-    setScrollTop(scrollContainerRef.current.scrollTop);
-  };
-
-  const onMouseUp = () => setIsDragging(false);
-  const onMouseLeave = () => setIsDragging(false);
-
-  const onMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !scrollContainerRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - scrollContainerRef.current.offsetLeft;
-    const y = e.pageY - scrollContainerRef.current.offsetTop;
-    const walkX = (x - startX) * 1.5;
-    const walkY = (y - startY) * 1.5;
-    scrollContainerRef.current.scrollLeft = scrollLeft - walkX;
-    scrollContainerRef.current.scrollTop = scrollTop - walkY;
-  };
-
-  return (
-    <div className="flex-1 flex flex-col overflow-hidden bg-gray-200 p-4">
-      <div
-        ref={scrollContainerRef}
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
-        onMouseLeave={onMouseLeave}
-        onMouseMove={onMouseMove}
-        className={`bg-white rounded-xl shadow-inner flex-1 overflow-auto relative ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-      >
-        <div
-          className="p-16 flex items-start justify-center"
-          style={{
-            width: 'max-content',
-            minWidth: '100%',
-            height: 'max-content',
-            minHeight: '100%',
-          }}
-        >
-          {isLoading && (
-            <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-10 flex items-center justify-center">
-              <Loader2 className="animate-spin text-indigo-600" size={32} />
-            </div>
-          )}
-
-          {error ? (
-            <div className="p-8 text-center">
-              <AlertCircle className="mx-auto text-red-500 mb-2" size={32} />
-              <p className="text-xs font-bold text-red-600 uppercase">Error de Renderizado</p>
-              <p className="text-[10px] text-gray-500 mt-1">{error}</p>
-            </div>
-          ) : svg ? (
-            <div
-              className="shadow-2xl bg-white transition-transform duration-200"
-              style={{
-                width: 'fit-content',
-                transform: `scale(${zoom})`,
-                transformOrigin: 'top center',
-                marginBottom: zoom > 1 ? `${(zoom - 1) * 100}%` : 0,
-                marginRight: zoom > 1 ? `${(zoom - 1) * 50}%` : 0,
-                marginLeft: zoom > 1 ? `${(zoom - 1) * 50}%` : 0,
-              }}
-              dangerouslySetInnerHTML={{ __html: svg }}
-            />
-          ) : (
-            <div className="text-gray-400 text-xs font-medium uppercase tracking-widest animate-pulse">
-              Esperando cambios...
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="mt-2 flex justify-between items-center px-1">
-        <div className="flex items-center gap-3">
-          <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">
-            Typst WASM v0.11.0
-          </span>
-          <div className="flex items-center gap-2 bg-white/50 px-2 py-0.5 rounded-full border border-gray-300">
-            <span className="text-[9px] font-bold text-gray-500 uppercase">Zoom: {Math.round(zoom * 100)}%</span>
-            <input
-              type="range"
-              min="0.2"
-              max="3"
-              step="0.1"
-              value={zoom}
-              onChange={(e) => setZoom(parseFloat(e.target.value))}
-              className="w-20 h-1 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-indigo-600"
-            />
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <div className={`w-2 h-2 rounded-full ${isLoading ? 'bg-amber-400 animate-pulse' : 'bg-green-400'}`} />
-        </div>
-      </div>
-    </div>
-  );
-
-  // Función auxiliar para inyectar contenido (duplicada aquí por simplicidad o movida a utils)
-  function injectBatchContentIntoStories(batchTextInput: string, currentStories: IDMLStory[]): IDMLStory[] {
-    if (!batchTextInput.trim()) return currentStories;
-    const parsedUpdates = parseBatchText(batchTextInput);
-    return currentStories.map((story) => {
-      const storyLabel = normalizeTag(story.scriptLabel);
-      if (storyLabel) {
-        const newContent = parsedUpdates[storyLabel];
-        if (newContent !== undefined) {
-          return { ...story, content: newContent, isModified: true };
-        }
-      }
-      return story;
-    });
-  }
-});

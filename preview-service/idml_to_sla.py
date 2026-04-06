@@ -1085,7 +1085,11 @@ class IDMLToSLAConverter:
             applied_ps = psr.get('AppliedParagraphStyle', '')
             ps_name = applied_ps.replace('ParagraphStyle/', '').replace('$ID/', '')
 
-            # El espacio antes del intertítulo ya no se añade manualmente, se maneja por estilo
+            # Si es un INTERTITULO y no es el primero del story, asegurar línea en blanco antes
+            if not first_psr and "INTER" in ps_name.upper():
+                parts.append(f'                <para PARENT="{self._esc(ps_name)}"/>')
+                last_was_break = True
+
             first_psr = False
 
             for csr in psr.iter('CharacterStyleRange'):

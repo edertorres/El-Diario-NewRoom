@@ -1,4 +1,4 @@
-import { IDMLSpread, IDMLStory, TextFrame, ImageFrame, IDMLParagraph, IDMLCharacterRange, IDMLPage, GenericFrame } from '../types.ts';
+import { IDMLSpread, IDMLStory, TextFrame, ImageFrame, IDMLParagraph, IDMLCharacterRange, IDMLPage, GenericFrame } from '../types';
 
 const parser = typeof DOMParser !== 'undefined' ? new DOMParser() : null;
 const serializer = typeof XMLSerializer !== 'undefined' ? new XMLSerializer() : null;
@@ -683,7 +683,7 @@ export class IDMLEngine {
           }
           fullText += cr.content;
         });
-        if (idx < paragraphs.length - 1) fullText += "\n";
+        if (idx < paragraphs.length - 1) fullText += "\n\n";
       });
 
       return {
@@ -879,19 +879,14 @@ export class IDMLEngine {
         textRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/$ID/[No character style]");
       }
 
-      // Agregar el nuevo contenido de forma segura (sin saltos de línea adicionales al final)
+      // Agregar el nuevo contenido
       const lines = text.split(/\n/);
       lines.forEach((line, idx) => {
-        const content = doc.createElement("Content");
-        // Preservar la línea tal cual, y añadir \r al final de la última línea del párrafo
-        // para asegurar que InDesign reconozca el final del párrafo.
-        if (idx === lines.length - 1) {
-          content.textContent = line + '\r';
-        } else {
+        if (line.length > 0) {
+          const content = doc.createElement("Content");
           content.textContent = line;
+          textRange.appendChild(content);
         }
-        textRange.appendChild(content);
-
         if (idx < lines.length - 1) {
           textRange.appendChild(doc.createElement("Br"));
         }
@@ -917,12 +912,14 @@ export class IDMLEngine {
 
       const lines = text.split(/\n/);
       lines.forEach((line, idx) => {
-        const content = doc.createElement("Content");
-        // Agregar un retorno de carro (\r) al final de cada línea para asegurar el salto de párrafo
-        // Esto evita el símbolo de "rotated L" (soft return) y previene que los párrafos se amontonen.
-        // NO usamos trim() aquí para preservar sangrías manuales si existen.
-        content.textContent = line + '\r';
-        textRange.appendChild(content);
+        if (line.length > 0) {
+          const content = doc.createElement("Content");
+          content.textContent = line;
+          textRange.appendChild(content);
+        }
+        if (idx < lines.length - 1) {
+          textRange.appendChild(doc.createElement("Br"));
+        }
       });
 
 
@@ -939,9 +936,7 @@ export class IDMLEngine {
     const pRange = basePTemplate ? basePTemplate.cloneNode(false) as Element : doc.createElement("ParagraphStyleRange");
     const cRange = doc.createElement("CharacterStyleRange");
     cRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/$ID/[No character style]");
-    const content = doc.createElement("Content");
-    content.textContent = '\r';
-    cRange.appendChild(content);
+    cRange.appendChild(doc.createElement("Br"));
     pRange.appendChild(cRange);
     return pRange;
   }
@@ -1050,11 +1045,8 @@ export class IDMLEngine {
       return this.getSerializer().serializeToString(doc);
     }
 
-    // Normalizar saltos de línea (\r\n -> \n, \r -> \n)
-    const normalizedText = newText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-
     // Procesar texto con intertítulos
-    const segments = this.parseTextWithIntertitles(normalizedText);
+    const segments = this.parseTextWithIntertitles(newText);
 
     for (let segIdx = 0; segIdx < segments.length; segIdx++) {
       const segment = segments[segIdx];
@@ -1067,26 +1059,16 @@ export class IDMLEngine {
         cRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/$ID/[No character style]");
 
         const content = doc.createElement("Content");
-        content.textContent = segment.text + '\r';
+        content.textContent = segment.text;
         cRange.appendChild(content);
 
         pRange.appendChild(cRange);
         storyNode.appendChild(pRange);
       } else {
-        // Texto normal - dividir por párrafos sin filtrar las líneas vacías para preservar separaciones
-        let paragraphs = segment.text.split(/\n/);
-
-        // Evitar párrafo extra al final si el texto termina en salto de línea
-        if (paragraphs.length > 1 && paragraphs[paragraphs.length - 1].length === 0) {
-          paragraphs.pop();
-        }
+        // Texto normal - dividir por párrafos (doble salto de línea)
+        const paragraphs = segment.text.trim().split(/\n{2,}/).filter(p => p.trim().length > 0);
 
         for (const paraText of paragraphs) {
-          if (paraText.length === 0 || paraText.trim().length === 0) {
-            // Preservar líneas en blanco
-            storyNode.appendChild(this.createBlankParagraph(doc, basePTemplate));
-            continue;
-          }
           // Para LEYENDA: manejo especial de bala + texto + crédito
           if (isLeyenda) {
             // Separar crédito si hay @@
@@ -1094,8 +1076,8 @@ export class IDMLEngine {
             let creditText = '';
             if (paraText.includes('@@')) {
               const atIdx = paraText.indexOf('@@');
-              mainText = paraText.substring(0, atIdx);
-              creditText = paraText.substring(atIdx + 2);
+              mainText = paraText.substring(0, atIdx).trim();
+              creditText = paraText.substring(atIdx + 2).trim();
             }
 
             const pRange = basePTemplate ? basePTemplate.cloneNode(false) as Element : doc.createElement("ParagraphStyleRange");
@@ -1118,7 +1100,7 @@ export class IDMLEngine {
                 textRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/$ID/[No character style]");
               }
               const content = doc.createElement("Content");
-              content.textContent = (creditText.length > 0 ? mainText + ' ' : mainText) + (creditText.length === 0 ? '\r' : '');
+              content.textContent = creditText.length > 0 ? mainText + ' ' : mainText;
               textRange.appendChild(content);
               pRange.appendChild(textRange);
             }
@@ -1135,7 +1117,7 @@ export class IDMLEngine {
                 creditRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/CREDITOLEYENDA");
               }
               const content = doc.createElement("Content");
-              content.textContent = creditText + '\r';
+              content.textContent = creditText;
               creditRange.appendChild(content);
               pRange.appendChild(creditRange);
             }
