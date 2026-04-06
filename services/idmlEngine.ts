@@ -604,14 +604,14 @@ export class IDMLEngine {
   private parseStoryXML(filename: string, xmlString: string): IDMLStory | null {
     try {
       const doc = this.getParser().parseFromString(xmlString, "application/xml");
-      const storyNode = Array.from(doc.getElementsByTagName("*")).find(n => this.getLocalName(n) === "story");
+      const storyNode = (Array.from(doc.getElementsByTagName("*")) as Element[]).find(n => this.getLocalName(n) === "story");
       if (!storyNode) return null;
 
       const selfId = storyNode.getAttribute("Self") || storyNode.getAttribute("self");
       const paragraphs: IDMLParagraph[] = [];
       const paragraphRangeElems = Array.from(doc.getElementsByTagName("ParagraphStyleRange"));
 
-      for (const paraRange of paragraphRangeElems) {
+      for (const paraRange of paragraphRangeElems as Element[]) {
         const appliedStyle = paraRange.getAttribute("AppliedParagraphStyle") || "";
         const overrides: Record<string, string> = {};
         const attrNames = [
@@ -621,14 +621,14 @@ export class IDMLEngine {
         ];
 
         for (const attr of attrNames) {
-          const val = paraRange.getAttribute(attr);
+          const val = (paraRange as Element).getAttribute(attr);
           if (val) overrides[attr] = val;
         }
 
         const props = paraRange.getElementsByTagName('Properties')[0];
         if (props) {
           attrNames.forEach(attr => {
-            const pElem = props.getElementsByTagName(attr)[0];
+            const pElem = props.getElementsByTagName(attr)[0] as Element | undefined;
             if (pElem && pElem.textContent) overrides[attr] = pElem.textContent;
           });
         }
@@ -707,7 +707,7 @@ export class IDMLEngine {
     const charRanges: IDMLCharacterRange[] = [];
     const characterStyleRanges = Array.from(paraRange.getElementsByTagName('CharacterStyleRange'));
 
-    for (const charRange of characterStyleRanges) {
+    for (const charRange of characterStyleRanges as Element[]) {
       const appliedStyle = charRange.getAttribute('AppliedCharacterStyle') || "";
       let combinedContent = '';
       const children = charRange.childNodes;
@@ -800,35 +800,24 @@ export class IDMLEngine {
     let match;
 
     while ((match = intertitleRegex.exec(text)) !== null) {
-      // Texto antes del intertítulo
       if (match.index > lastIndex) {
-        const beforeText = text.slice(lastIndex, match.index);
-        if (beforeText.trim().length > 0) {
-          segments.push({
-            type: 'normal',
-            text: beforeText
-          });
-        }
+        segments.push({
+          type: 'normal',
+          text: text.slice(lastIndex, match.index)
+        });
       }
-
-      // Intertítulo
       segments.push({
         type: 'intertitle',
         text: match[1]
       });
-
       lastIndex = match.index + match[0].length;
     }
 
-    // Texto después del último intertítulo
     if (lastIndex < text.length) {
-      const afterText = text.slice(lastIndex);
-      if (afterText.trim().length > 0) {
-        segments.push({
-          type: 'normal',
-          text: afterText
-        });
-      }
+      segments.push({
+        type: 'normal',
+        text: text.slice(lastIndex)
+      });
     }
 
     return segments.length > 0 ? segments : [{ type: 'normal', text }];
@@ -936,10 +925,10 @@ export class IDMLEngine {
   private getUpdatedStoryXml(story: IDMLStory, newText: string): string {
     const doc = this.getParser().parseFromString(story.originalXml, "application/xml");
     const allElements = Array.from(doc.getElementsByTagName("*"));
-    const storyNode = allElements.find(n => {
+    const storyNode = (Array.from(doc.getElementsByTagName("*")) as Element[]).find(n => {
       const localName = this.getLocalName(n);
-      return localName === "story" && (n as Element).hasAttribute("Self");
-    }) as Element;
+      return localName === "story" && n.hasAttribute("Self");
+    });
 
     if (!storyNode) return this.getSerializer().serializeToString(doc);
 
@@ -1039,6 +1028,19 @@ export class IDMLEngine {
       const segment = segments[segIdx];
 
       if (segment.type === 'intertitle') {
+        // Asegurar línea en blanco antes del intertítulo si no es el primer elemento de la historia
+        const currentParaRanges = storyNode.getElementsByTagName("ParagraphStyleRange");
+        if (currentParaRanges.length > 0) {
+          // Verificar si el último párrafo ya es blanco para no duplicar
+          const lastChild = storyNode.lastChild as Element | null;
+          const isLastBlank = lastChild && this.getLocalName(lastChild) === 'paragraphstylerange' &&
+            lastChild.getElementsByTagName('Br').length > 0;
+
+          if (!isLastBlank) {
+            storyNode.appendChild(this.createBlankParagraph(doc, basePTemplate));
+          }
+        }
+
         const pRange = basePTemplate ? basePTemplate.cloneNode(false) as Element : doc.createElement("ParagraphStyleRange");
         pRange.setAttribute("AppliedParagraphStyle", "ParagraphStyle/INTERTITULO");
 
@@ -1046,40 +1048,51 @@ export class IDMLEngine {
         cRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/$ID/[No character style]");
 
         const content = doc.createElement("Content");
-        content.textContent = segment.text;
+        content.textContent = segment.text.trim();
         cRange.appendChild(content);
 
         pRange.appendChild(cRange);
         storyNode.appendChild(pRange);
       } else {
         // Texto normal - dividir por párrafos (CADA línea es un párrafo)
-        // Eliminamos líneas en blanco y recortamos espacios
-        const paragraphs = segment.text.split(/\r?\n/)
-          .map(p => p.trim())
-          .filter(p => p.length > 0);
+        // No eliminamos líneas en blanco, las convertimos en ParagraphStyleRange vacíos
+        const paragraphs = segment.text.split(/\r?\n/);
 
-        for (const paraText of paragraphs) {
+        for (let i = 0; i < paragraphs.length; i++) {
+          const paraText = paragraphs[i].trim();
+
+          // Si es una línea vacía en medio del texto, crear párrafo en blanco
+          if (paraText.length === 0) {
+            // Evitar duplicar líneas en blanco al inicio de un segmento si el anterior ya puso una (ej: después de intertítulo)
+            const lastChild = storyNode.lastChild as Element | null;
+            const isLastBlank = lastChild && this.getLocalName(lastChild) === 'paragraphstylerange' &&
+              lastChild.getElementsByTagName('Br').length > 0;
+
+            if (!isLastBlank) {
+              storyNode.appendChild(this.createBlankParagraph(doc, basePTemplate));
+            }
+            continue;
+          }
+
           // Para LEYENDA: manejo especial de bala + texto + crédito
           if (isLeyenda) {
-            // Separar crédito si hay @@
-            let mainText = paraText;
-            let creditText = '';
+            // ... (keep the same logic for legend)
+            let mText = paraText;
+            let cText = '';
             if (paraText.includes('@@')) {
               const atIdx = paraText.indexOf('@@');
-              mainText = paraText.substring(0, atIdx).trim();
-              creditText = paraText.substring(atIdx + 2).trim();
+              mText = paraText.substring(0, atIdx).trim();
+              cText = paraText.substring(atIdx + 2).trim();
             }
 
             const pRange = basePTemplate ? basePTemplate.cloneNode(false) as Element : doc.createElement("ParagraphStyleRange");
 
-            // 1. Clonar la bala (deep copy) si existe
             if (leyendaBulletNode) {
               const bulletClone = doc.importNode(leyendaBulletNode, true) as Element;
               pRange.appendChild(bulletClone);
             }
 
-            // 2. Rango de texto principal de la leyenda
-            if (mainText.length > 0) {
+            if (mText.length > 0) {
               let textRange: Element;
               if (firstCharTemplate) {
                 textRange = firstCharTemplate.cloneNode(false) as Element;
@@ -1090,13 +1103,12 @@ export class IDMLEngine {
                 textRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/$ID/[No character style]");
               }
               const content = doc.createElement("Content");
-              content.textContent = creditText.length > 0 ? mainText + ' ' : mainText;
+              content.textContent = cText.length > 0 ? mText + ' ' : mText;
               textRange.appendChild(content);
               pRange.appendChild(textRange);
             }
 
-            // 3. Rango de crédito con estilo CREDITOLEYENDA (solo si hay @@)
-            if (creditText.length > 0) {
+            if (cText.length > 0) {
               let creditRange: Element;
               if (creditoLeyendaTemplate) {
                 creditRange = creditoLeyendaTemplate.cloneNode(false) as Element;
@@ -1107,7 +1119,7 @@ export class IDMLEngine {
                 creditRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/CREDITOLEYENDA");
               }
               const content = doc.createElement("Content");
-              content.textContent = creditText;
+              content.textContent = cText;
               creditRange.appendChild(content);
               pRange.appendChild(creditRange);
             }
