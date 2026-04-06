@@ -1046,6 +1046,7 @@ export class IDMLEngine {
 
         const cRange = doc.createElement("CharacterStyleRange");
         cRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/$ID/[No character style]");
+        cRange.setAttribute("FontStyle", "Bold");
 
         const content = doc.createElement("Content");
         content.textContent = segment.text.trim();
