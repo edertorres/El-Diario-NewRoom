@@ -43,9 +43,9 @@ const callDeepSeek = async (prompt: string): Promise<string> => {
 };
 
 export const rewriteContent = async (
-  text: string, 
-  label: string, 
-  instructions: string, 
+  text: string,
+  label: string,
+  instructions: string,
   config?: AiConfig,
   provider: AiProvider = 'deepseek'
 ): Promise<string> => {
@@ -62,7 +62,7 @@ export const rewriteContent = async (
     
     INSTRUCCIONES ESPECÍFICAS: ${instructions}
     
-    RESTRICCIÓN CRÍTICA: Mantén una extensión de palabras similar al original (${text.split(/\s+/).length} palabras aprox) para evitar desbordamientos.
+    RESTRICCIÓN CRÍTICA: Mantén una extensión de caracteres similar al original (${text.length} caracteres aprox) para evitar desbordamientos del marco.
     Devuelve ÚNICAMENTE el texto reescrito final.
   `;
 
@@ -101,8 +101,8 @@ export const rewriteContent = async (
 };
 
 export const smartTrim = async (
-  text: string, 
-  maxWords: number, 
+  text: string,
+  maxChars: number,
   config?: AiConfig,
   provider: AiProvider = 'deepseek'
 ): Promise<string> => {
@@ -110,10 +110,10 @@ export const smartTrim = async (
     El siguiente texto para un documento de InDesign es demasiado largo y se desborda del marco.
     
     Texto: "${text}"
-    Límite máximo permitido: ${maxWords} palabras.
+    Límite máximo permitido: ${maxChars} caracteres.
     Tono a mantener: ${config?.tone || "Profesional"}
     
-    TAREA: Reduce la longitud del texto para que tenga exactamente o menos de ${maxWords} palabras, manteniendo el mensaje esencial y el tono.
+    TAREA: Reduce la longitud del texto para que tenga exactamente o menos de ${maxChars} caracteres, manteniendo el mensaje esencial y el tono.
     Devuelve ÚNICAMENTE el texto recortado.
   `;
 

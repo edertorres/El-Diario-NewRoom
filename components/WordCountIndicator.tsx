@@ -67,14 +67,14 @@ export const WordCountIndicator: React.FC<WordCountIndicatorProps> = ({
         )}
       </div>
       <div className="flex flex-col items-center">
-        <span className={`${sizeClasses.label} uppercase opacity-80`}>Actual</span>
+        <span className={`${sizeClasses.label} uppercase opacity-80`}>Caracteres</span>
         <span className={`${sizeClasses.number} font-black font-mono`}>{current}</span>
       </div>
       {current > original && (
         <div className="ml-2">
-          <AlertTriangle 
-            size={size === 'large' ? 20 : size === 'small' ? 12 : 16} 
-            className="animate-pulse" 
+          <AlertTriangle
+            size={size === 'large' ? 20 : size === 'small' ? 12 : 16}
+            className="animate-pulse"
           />
         </div>
       )}

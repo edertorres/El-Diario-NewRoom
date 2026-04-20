@@ -152,6 +152,7 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
   });
 
   const countWords = (text: string) => text.trim().split(/\s+/).filter(w => w.length > 0).length;
+  const countChars = (text: string) => text.trim().length;
   const getParentFolderName = (path?: string | null): string => {
     if (!path) return "";
     const parts = path.split('/').filter(Boolean);
@@ -171,14 +172,14 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
     return `${fallback}_${dateStr}.idml`;
   };
   // Utilidad: obtener mapa de words usados por bloque ##TAG en batchText
-  const getBatchWordCounts = () => {
+  const getBatchCharCounts = () => {
     const regex = /##([A-Za-z0-9_]+)\s*\n([\s\S]*?)(?=\n##|$)/g;
     const counts: Record<string, number> = {};
     let match;
     while ((match = regex.exec(batchText)) !== null) {
       const tag = match[1].trim().toUpperCase();
       const content = match[2] || '';
-      counts[tag] = countWords(content);
+      counts[tag] = countChars(content);
     }
     return counts;
   };
@@ -188,13 +189,13 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
     stories.forEach((s) => {
       if (s.scriptLabel) {
         const key = normalizeTag(s.scriptLabel);
-        limits[key] = s.initialWordCount || 0;
+        limits[key] = s.initialCharCount || 0;
       }
     });
     return limits;
   };
 
-  const batchWordCounts = getBatchWordCounts();
+  const batchCharCounts = getBatchCharCounts();
   const batchLimits = getBatchLimits();
 
 
@@ -235,7 +236,7 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
   };
 
   const storiesWithOverflow = useMemo(() =>
-    stories.filter(s => countWords(s.content) > (s.initialWordCount || 0)),
+    stories.filter(s => countChars(s.content) > (s.initialCharCount || 0)),
     [stories]
   );
 
@@ -352,7 +353,8 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
     setIsProcessing(true);
     const updatedStories = [...stories];
     for (const story of storiesWithOverflow) {
-      const trimmedText = await smartTrim(story.content, story.initialWordCount || 10, aiConfig);
+      // Usar el límite de caracteres original para el recorte inteligente
+      const trimmedText = await smartTrim(story.content, story.initialCharCount || 100, aiConfig);
       const idx = updatedStories.findIndex(s => s.id === story.id);
       if (idx !== -1) {
         updatedStories[idx] = { ...updatedStories[idx], content: trimmedText, isModified: true };
@@ -777,11 +779,11 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
             {sidebarTab === 'text' ? (
               <>
                 {filteredStories.map(story => {
-                  const currentWords = countWords(story.content);
-                  const originalWords = story.initialWordCount || 0;
+                  const currentCharCount = countChars(story.content);
+                  const originalCharCount = story.initialCharCount || 0;
                   const normalizedStoryLabel = normalizeTag(story.scriptLabel);
                   const isMissingFromBatch = batchLog && story.scriptLabel && !lastBatchLabels.has(normalizedStoryLabel) && normalizedStoryLabel !== "SOBRANTES";
-                  const statusColor = currentWords > originalWords ? 'text-red-600' : currentWords < originalWords ? 'text-amber-600' : 'text-green-600';
+                  const statusColor = currentCharCount > originalCharCount ? 'text-red-600' : currentCharCount < originalCharCount ? 'text-amber-600' : 'text-green-600';
 
                   return (
                     <button
@@ -807,8 +809,8 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
                             {story.scriptLabel || "SIN ETIQUETA"}
                           </span>
                           <div className={`mt-1 flex items-center gap-2 text-[8px] font-bold ${statusColor}`}>
-                            <span>{currentWords} / {originalWords} palabras</span>
-                            {currentWords > originalWords && <AlertTriangle size={10} className="animate-pulse" />}
+                            <span>{currentCharCount} / {originalCharCount} caracteres</span>
+                            {currentCharCount > originalCharCount && <AlertTriangle size={10} className="animate-pulse" />}
                           </div>
                           {isMissingFromBatch && (
                             <div className="mt-1 flex items-center gap-1 text-[7px] text-red-700 font-black uppercase tracking-wider bg-red-200/40 px-1.5 py-0.5 rounded inline-flex animate-pulse">
@@ -1176,8 +1178,8 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
                 placeholder="Escribe aquí usando ##ETIQUETA para cada sección..."
                 isFullScreen={isFullScreen}
                 className="flex-1"
-                inlineWordCounts={{
-                  counts: batchWordCounts,
+                inlineCharCounts={{
+                  counts: batchCharCounts,
                   limits: batchLimits,
                 }}
               />
@@ -1190,8 +1192,8 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
                 <div className="flex items-center gap-3"><div className="bg-indigo-600 p-2.5 rounded-xl text-white shadow-lg"><Tag size={18} /></div><div><h3 className="text-base font-bold text-gray-900">{selectedStory.scriptLabel || "Elemento"}</h3><div className="flex items-center gap-1.5 text-[10px] text-green-600 font-black uppercase mt-1"><RefreshCw size={10} className="animate-spin-slow" /> Sincronizado</div></div></div>
                 <div className="flex items-center gap-4">
                   <WordCountIndicator
-                    current={countWords(editedContent)}
-                    original={selectedStory.initialWordCount || 0}
+                    current={countChars(editedContent)}
+                    original={selectedStory.initialCharCount || 0}
                     showPercentage={true}
                   />
                 </div>

@@ -13,7 +13,7 @@ interface MonacoEditorProps {
   placeholder?: string;
   className?: string;
   isFullScreen?: boolean;
-  inlineWordCounts?: {
+  inlineCharCounts?: {
     counts: Record<string, number>;
     limits: Record<string, number>;
   };
@@ -66,7 +66,7 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
   placeholder = 'Escribe aquí usando ##ETIQUETA para cada sección...',
   className = '',
   isFullScreen = false,
-  inlineWordCounts
+  inlineCharCounts
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -75,7 +75,7 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
   const availableTagsRef = useRef<string[]>(availableTags);
   const imageTagsRef = useRef<string[]>(imageTags);
   const onChangeRef = useRef(onChange);
-  const inlineWordCountsRef = useRef<typeof inlineWordCounts>(inlineWordCounts);
+  const inlineCharCountsRef = useRef<typeof inlineCharCounts>(inlineCharCounts);
   const [missingInEditor, setMissingInEditor] = useState<string[]>([]);
   const internalValueRef = useRef<string>(value);
   const emittedQueueRef = useRef<string[]>([value]);
@@ -97,16 +97,16 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
   }, [onChange]);
 
   useEffect(() => {
-    inlineWordCountsRef.current = inlineWordCounts;
+    inlineCharCountsRef.current = inlineCharCounts;
     updateDecorations();
-  }, [inlineWordCounts]);
+  }, [inlineCharCounts]);
 
   // Reaplicar decoraciones si cambian historias, tags o valor externo
   useEffect(() => {
     updateDecorations();
   }, [stories, availableTags, imageTags, value, isFullScreen]);
 
-  const countWords = (text: string) => text.trim().split(/\s+/).filter(w => w.length > 0).length;
+  const countChars = (text: string) => text.trim().length;
 
   const updateDecorations = () => {
     const editor = editorRef.current;
@@ -132,18 +132,18 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
       });
     }
 
-    const countsMap = inlineWordCountsRef.current?.counts || {};
-    const limitsMap = inlineWordCountsRef.current?.limits || {};
+    const countsMap = inlineCharCountsRef.current?.counts || {};
+    const limitsMap = inlineCharCountsRef.current?.limits || {};
 
     for (let i = 0; i < matches.length; i++) {
       const { start, end, tagName } = matches[i];
       const nextStart = matches[i + 1]?.start ?? text.length;
       const blockText = text.substring(end, nextStart);
-      const usedWords = countsMap[tagName] ?? countWords(blockText);
+      const usedChars = countsMap[tagName] ?? countChars(blockText);
 
       const story = storiesRef.current.find((s) => normalizeTag(s.scriptLabel) === tagName);
-      const limit = limitsMap[tagName] ?? story?.initialWordCount ?? 0;
-      const diff = usedWords - limit;
+      const limit = limitsMap[tagName] ?? story?.initialCharCount ?? 0;
+      const diff = usedChars - limit;
 
       const startPos = model.getPositionAt(start);
       const endPos = model.getPositionAt(end);
@@ -158,18 +158,18 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
       }
 
       const badgeText = limit > 0
-        ? ` ${limit}  →  ${usedWords} ${diffText} ${inIdml ? '✓' : '!'} `
-        : ` —  →  ${usedWords} ${inIdml ? '✓' : '!'} `;
+        ? ` ${limit}  →  ${usedChars} ${diffText} ${inIdml ? '✓' : '!'} `
+        : ` —  →  ${usedChars} ${inIdml ? '✓' : '!'} `;
       const tooltip =
         limit > 0
-          ? `Palabras esperadas: ${limit}, escritas: ${usedWords}, diferencia: ${diff}`
-          : `Palabras escritas: ${usedWords}`;
+          ? `Caracteres esperados: ${limit}, escritos: ${usedChars}, diferencia: ${diff}`
+          : `Caracteres escritos: ${usedChars}`;
 
       const statusClass =
         !inIdml ? 'monaco-badge-miss' :
           limit === 0 ? 'monaco-badge-warn' :
-            usedWords > limit ? 'monaco-badge-over' :
-              usedWords < limit ? 'monaco-badge-warn' : 'monaco-badge-ok';
+            usedChars > limit ? 'monaco-badge-over' :
+              usedChars < limit ? 'monaco-badge-warn' : 'monaco-badge-ok';
 
       if (isValid) {
         const colorGroup = getColorGroup(tagName);

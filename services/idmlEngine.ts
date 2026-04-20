@@ -97,11 +97,11 @@ export class IDMLEngine {
   }
 
   async loadFile(file: File): Promise<{ stories: IDMLStory[]; spreads: IDMLSpread[] }> {
-    if (!window.JSZip) throw new Error("JSZip no cargado");
+    if ((window as any).JSZip === undefined) throw new Error("JSZip no cargado");
     this.originalFileName = file.name;
 
     try {
-      this.zip = new window.JSZip();
+      this.zip = new (window as any).JSZip();
       const buffer = await file.arrayBuffer();
       const zipContent = await this.zip.loadAsync(buffer);
 
@@ -114,7 +114,7 @@ export class IDMLEngine {
       const storyFiles: any[] = [];
       const spreadFiles: any[] = [];
 
-      zipContent.forEach((relativePath, zipEntry) => {
+      zipContent.forEach((relativePath: string, zipEntry: any) => {
         const lowerPath = relativePath.toLowerCase();
         if (lowerPath.includes("stories/") && lowerPath.endsWith(".xml")) storyFiles.push(zipEntry);
         if ((lowerPath.includes("spreads/") || lowerPath.includes("masterspreads/")) && lowerPath.endsWith(".xml")) spreadFiles.push(zipEntry);
@@ -132,7 +132,7 @@ export class IDMLEngine {
         const story = this.parseStoryXML(entry.name, xmlContent);
         if (story) {
           const normStoryId = normalizeId(story.id);
-          for (const spread of this.spreads.values()) {
+          for (const spread of Array.from(this.spreads.values())) {
             const frame = spread.frames.find(f => normalizeId(f.storyId) === normStoryId);
             if (frame && frame.scriptLabel) {
               story.scriptLabel = frame.scriptLabel;
@@ -298,18 +298,13 @@ export class IDMLEngine {
 
   private extractFileNameFromURI(uri: string): string {
     if (!uri) return "";
-    // Eliminar prefijo "file:" si existe para procesar la ruta limpia
     const cleanUri = uri.startsWith("file:") ? uri.substring(5) : uri;
-
-    // Decodificar URI para manejar espacios (%20) y otros caracteres especiales
     let decodedUri = cleanUri;
     try {
       decodedUri = decodeURIComponent(cleanUri);
     } catch (e) {
       console.warn(`[IDML Engine] No se pudo decodificar la URI: ${cleanUri}`, e);
     }
-
-    // Dividir por / o \ (Windows) y tomar el último componente
     const parts = decodedUri.split(/[/\\]/);
     const fileName = parts.pop() || "";
     return fileName.trim();
@@ -370,7 +365,6 @@ export class IDMLEngine {
             const geometry = this.extractGeometry(node, pages);
             const styles = this.extractStyles(node);
 
-            // Extraer preferencias de columnas de forma más robusta (como en idml2typst)
             let colCount = 1;
             let colGutter = 12;
             const tfPref = node.getElementsByTagName("TextFramePreference")[0];
@@ -413,7 +407,6 @@ export class IDMLEngine {
 
           if (imageContent) {
             const linkNode = Array.from(imageContent.getElementsByTagName("*")).find(n => this.getLocalName(n) === 'link');
-            // Nota: Permitimos imageFrames sin etiquetas para que aparezcan en el preview
             const uri = linkNode ? (linkNode as Element).getAttribute("LinkResourceURI") || "" : "";
             imageFrames.push({
               id: node.getAttribute("Self") || `img_${i}`,
@@ -437,7 +430,6 @@ export class IDMLEngine {
               attributes: this.extractAttributesFromElement(node)
             });
           } else {
-            // Es un elemento genérico (rectángulo de color, polígono, etc)
             genericFrames.push({
               id: node.getAttribute("Self") || `gen_${i}`,
               contentType: localName as any,
@@ -511,7 +503,6 @@ export class IDMLEngine {
       }
     }
 
-    // Identificar a qué página pertenece este frame basándose en su centro
     const centerX = x + (width / 2);
     let closestPage: IDMLPage = pages[0] || { id: 'default', offsetX: 0, offsetY: 0 };
     if (pages.length > 1) {
@@ -527,7 +518,6 @@ export class IDMLEngine {
       });
     }
 
-    // Ajustar coordenadas relativas a la página
     x = x - closestPage.offsetX;
     y = y - closestPage.offsetY;
 
@@ -566,7 +556,6 @@ export class IDMLEngine {
       }
     }
 
-    // Buscar en <Properties>
     const props = node.getElementsByTagName("Properties")[0];
     if (props) {
       const propMap: Record<string, string> = {
@@ -604,7 +593,8 @@ export class IDMLEngine {
   private parseStoryXML(filename: string, xmlString: string): IDMLStory | null {
     try {
       const doc = this.getParser().parseFromString(xmlString, "application/xml");
-      const storyNode = (Array.from(doc.getElementsByTagName("*")) as Element[]).find(n => this.getLocalName(n) === "story");
+      const storyNodes = Array.from(doc.getElementsByTagName("*")).filter(n => this.getLocalName(n) === "story");
+      const storyNode = storyNodes[0] as Element | undefined;
       if (!storyNode) return null;
 
       const selfId = storyNode.getAttribute("Self") || storyNode.getAttribute("self");
@@ -672,10 +662,8 @@ export class IDMLEngine {
       paragraphs.forEach((p, idx) => {
         p.characterRanges.forEach(cr => {
           if (isLeyendaStory) {
-            // Saltar la bala (ZapfDingbats) - se preserva internamente
             const font = cr.attributes?.['AppliedFont'] || '';
             if (font.toLowerCase().includes('zapfdingbats')) return;
-            // Insertar @@ antes del crédito para round-trip
             if (cr.appliedStyle && cr.appliedStyle.includes('CREDITOLEYENDA')) {
               fullText += '@@' + cr.content;
               return;
@@ -725,7 +713,7 @@ export class IDMLEngine {
           appliedStyle,
           content: combinedContent,
           attributes: this.extractCharacterRangeAttributes(charRange),
-          originalNode: charRange  // Guardar nodo completo para clonación exacta
+          originalNode: charRange
         });
       }
     }
@@ -755,91 +743,54 @@ export class IDMLEngine {
     return attrs;
   }
 
-  /**
-   * Detecta si un párrafo tiene bullets basándose en sus CharacterStyleRanges.
-   * Criterios: fuente ZapfDingbats, estilo con "bala", o primer rango muy corto.
-   */
   private isBulletParagraph(charRanges: IDMLCharacterRange[]): boolean {
     if (charRanges.length < 3) return false;
-
     const firstRange = charRanges[0];
-
-    // Detectar por fuente ZapfDingbats
     const font = firstRange.attributes?.['AppliedFont'] || '';
-    if (font.toLowerCase().includes('zapfdingbats')) {
-      return true;
-    }
-
-    // Detectar por estilo de carácter específico (ej: BALACHIMENEA)
-    if (firstRange.appliedStyle &&
-      firstRange.appliedStyle.toLowerCase().includes('bala')) {
-      return true;
-    }
-
-    // Detectar por longitud corta del primer rango (< 5 caracteres) y que tenga espaciado después
+    if (font.toLowerCase().includes('zapfdingbats')) return true;
+    if (firstRange.appliedStyle && firstRange.appliedStyle.toLowerCase().includes('bala')) return true;
     if (firstRange.content.length > 0 && firstRange.content.length < 5 && charRanges.length >= 2) {
       const secondRange = charRanges[1];
-      // El segundo rango debería ser espaciado (muy corto)
-      if (secondRange.content.trim().length === 0 && secondRange.content.length < 10) {
-        return true;
-      }
+      if (secondRange.content.trim().length === 0 && secondRange.content.length < 10) return true;
     }
-
     return false;
   }
 
-  /**
-   * Parsea el texto buscando intertítulos marcados con **texto**.
-   * Retorna segmentos alternando entre texto normal e intertítulos.
-   */
   private parseTextWithIntertitles(text: string): Array<{ type: 'normal' | 'intertitle', text: string }> {
     const segments: Array<{ type: 'normal' | 'intertitle', text: string }> = [];
     const intertitleRegex = /\*\*([^*]+)\*\*/g;
-
     let lastIndex = 0;
     let match;
-
     while ((match = intertitleRegex.exec(text)) !== null) {
       if (match.index > lastIndex) {
-        segments.push({
-          type: 'normal',
-          text: text.slice(lastIndex, match.index)
-        });
+        segments.push({ type: 'normal', text: text.slice(lastIndex, match.index) });
       }
-      segments.push({
-        type: 'intertitle',
-        text: match[1]
-      });
+      segments.push({ type: 'intertitle', text: match[1] });
       lastIndex = match.index + match[0].length;
     }
-
     if (lastIndex < text.length) {
-      segments.push({
-        type: 'normal',
-        text: text.slice(lastIndex)
-      });
+      segments.push({ type: 'normal', text: text.slice(lastIndex) });
     }
-
     return segments.length > 0 ? segments : [{ type: 'normal', text }];
   }
 
-  /**
-   * Crea un ParagraphStyleRange con o sin bullets.
-   * Si bulletTemplate está presente, clona los primeros 2 rangos (bullet + espaciado).
-   */
   private createParagraphRange(
     doc: Document,
     text: string,
     bulletTemplate: { ranges: IDMLCharacterRange[], paragraphStyle: string } | null,
     basePTemplate: Element | null,
-    charTemplate?: Element | null
+    charTemplate?: Element | null,
+    overrideStyle?: string
   ): Element {
     const pRange = basePTemplate ? basePTemplate.cloneNode(false) as Element : doc.createElement("ParagraphStyleRange");
 
-    if (bulletTemplate) {
+    if (overrideStyle) {
+      pRange.setAttribute("AppliedParagraphStyle", overrideStyle);
+    } else if (bulletTemplate) {
       pRange.setAttribute("AppliedParagraphStyle", bulletTemplate.paragraphStyle);
+    }
 
-      // Clonar bullet ranges (símbolo + espaciado) - primeros 2 rangos
+    if (bulletTemplate) {
       for (let i = 0; i < Math.min(2, bulletTemplate.ranges.length); i++) {
         const charRange = bulletTemplate.ranges[i];
         if (charRange.originalNode) {
@@ -848,13 +799,9 @@ export class IDMLEngine {
         }
       }
 
-      // Clonar el tercer rango completo (texto principal) usando Deep Clone para preservar TODO (Properties, etc)
       let textRange: Element;
       if (bulletTemplate.ranges.length >= 3 && bulletTemplate.ranges[2].originalNode) {
-        // Importar nodo completo con hijos (true)
         textRange = doc.importNode(bulletTemplate.ranges[2].originalNode, true) as Element;
-
-        // Limpiar SOLO el contenido existente (Content y Br), preservando Properties
         const children = Array.from(textRange.childNodes);
         for (const child of children) {
           const name = this.getLocalName(child);
@@ -863,26 +810,22 @@ export class IDMLEngine {
           }
         }
       } else {
-        // Fallback: crear uno nuevo
         textRange = doc.createElement("CharacterStyleRange");
         textRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/$ID/[No character style]");
       }
 
-      // Cada línea se convierte en su propio ParagraphStyleRange, así que aquí solo procesamos UNA línea
-      if (text.length > 0) {
-        const content = doc.createElement("Content");
-        content.textContent = text;
-        textRange.appendChild(content);
-      }
+      const content = doc.createElement("Content");
+      content.textContent = text || "";
+      textRange.appendChild(content);
+
+      const br = doc.createElement("Br");
+      textRange.appendChild(br);
 
       pRange.appendChild(textRange);
     } else {
-      // Párrafo sin bullet
       let textRange: Element;
       if (charTemplate) {
-        // Usar la plantilla de estilo de carácter (ej: LEYENDA)
         textRange = charTemplate.cloneNode(false) as Element;
-        // Copiar Properties del template si existen
         const templateProps = charTemplate.getElementsByTagName('Properties')[0];
         if (templateProps) {
           textRange.appendChild(doc.importNode(templateProps, true));
@@ -892,47 +835,59 @@ export class IDMLEngine {
         textRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/$ID/[No character style]");
       }
 
-      // Cada línea se convierte en su propio ParagraphStyleRange
-      if (text.length > 0) {
-        const content = doc.createElement("Content");
-        content.textContent = text;
-        textRange.appendChild(content);
-      }
+      const content = doc.createElement("Content");
+      content.textContent = text || "";
+      textRange.appendChild(content);
+
+      const br = doc.createElement("Br");
+      textRange.appendChild(br);
 
       pRange.appendChild(textRange);
     }
-
     return pRange;
   }
 
-  /**
-   * Crea un párrafo en blanco (ParagraphStyleRange vacío) usando la plantilla base.
-   */
   private createBlankParagraph(doc: Document, basePTemplate: Element | null): Element {
     const pRange = basePTemplate ? basePTemplate.cloneNode(false) as Element : doc.createElement("ParagraphStyleRange");
     const cRange = doc.createElement("CharacterStyleRange");
     cRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/$ID/[No character style]");
-    cRange.appendChild(doc.createElement("Br"));
+    const content = doc.createElement("Content");
+    content.textContent = ""; // Párrafo vacío solo con Br
+    cRange.appendChild(content);
+
+    const br = doc.createElement("Br");
+    cRange.appendChild(br);
+
     pRange.appendChild(cRange);
     return pRange;
   }
 
-  /**
-   * Genera el XML actualizado para una historia específica basándose en su contenido actual.
-   * Detecta y preserva bullets automáticamente.
-   * Detecta patrones **texto** y los convierte a párrafos con estilo INTERTITULO con líneas en blanco.
-   */
+  private resolveParagraphStyle(styleName: string): string {
+    const normalize = (s: string) => s ? s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toUpperCase() : "";
+    const target = normalize(styleName);
+
+    for (const [key, style] of Object.entries(this.styles)) {
+      if ((style as any).type === 'paragraph') {
+        const name = (style as any).name || "";
+        const self = (style as any).self || "";
+        if (normalize(name) === target) return self;
+        const decodedSelf = decodeURIComponent(self);
+        const parts = decodedSelf.split(/[:/]/);
+        const lastName = parts.pop();
+        if (normalize(lastName) === target) return self;
+      }
+    }
+    return `ParagraphStyle/${styleName}`;
+  }
+
   private getUpdatedStoryXml(story: IDMLStory, newText: string): string {
     const doc = this.getParser().parseFromString(story.originalXml, "application/xml");
-    const allElements = Array.from(doc.getElementsByTagName("*"));
     const storyNode = (Array.from(doc.getElementsByTagName("*")) as Element[]).find(n => {
       const localName = this.getLocalName(n);
       return localName === "story" && n.hasAttribute("Self");
     });
-
     if (!storyNode) return this.getSerializer().serializeToString(doc);
 
-    // Guardar plantilla del primer párrafo para estructura básica
     const firstPRange = storyNode.getElementsByTagName("ParagraphStyleRange")[0] as Element | null;
     const cloneRangeWithProperties = (source: Element | null): Element | null => {
       if (!source) return null;
@@ -949,14 +904,11 @@ export class IDMLEngine {
     };
 
     const basePTemplate = cloneRangeWithProperties(firstPRange);
-
-    // Detectar si es LEYENDA
     const isLeyenda = story.scriptLabel && story.scriptLabel.toUpperCase().startsWith('LEYENDA');
 
-    // Para LEYENDA: capturar las 3 partes por separado (bala, texto, crédito)
     let firstCharTemplate: Element | null = null;
     let creditoLeyendaTemplate: Element | null = null;
-    let leyendaBulletNode: Element | null = null;  // Nodo completo de la bala para clonar con deep copy
+    let leyendaBulletNode: Element | null = null;
     let bulletTemplate: { ranges: IDMLCharacterRange[], paragraphStyle: string } | null = null;
 
     if (isLeyenda && firstPRange) {
@@ -964,14 +916,10 @@ export class IDMLEngine {
       for (let i = 0; i < allCSR.length; i++) {
         const csr = allCSR[i] as Element;
         const style = csr.getAttribute('AppliedCharacterStyle') || '';
-
-        // Detectar CREDITOLEYENDA
         if (style.includes('CREDITOLEYENDA')) {
           creditoLeyendaTemplate = cloneRangeWithProperties(csr);
           continue;
         }
-
-        // Detectar bala (ZapfDingbats o fuente decorativa con contenido corto)
         const fontAttr = csr.getAttribute('AppliedFont') || '';
         const propsEl = csr.getElementsByTagName('Properties')[0];
         const appliedFontEl = propsEl?.getElementsByTagName('AppliedFont')[0];
@@ -979,30 +927,23 @@ export class IDMLEngine {
         const font = fontAttr || fontFromProps;
         const contentEl = csr.getElementsByTagName('Content')[0];
         const contentText = contentEl?.textContent || '';
-
         if (font.toLowerCase().includes('zapfdingbats') && contentText.trim().length <= 3) {
-          // Es la bala - guardar nodo completo para deep clone
           leyendaBulletNode = csr;
           continue;
         }
-
-        // El primer CSR que NO sea bala ni CREDITOLEYENDA es la plantilla de texto
         if (!firstCharTemplate) {
           firstCharTemplate = cloneRangeWithProperties(csr);
         }
       }
     } else {
-      // Para stories normales (no LEYENDA): detectar bullets con la lógica original
       const hasBullets = story.paragraphs && story.paragraphs.length > 0 &&
         this.isBulletParagraph(story.paragraphs[0].characterRanges);
-
       bulletTemplate = hasBullets ? {
         ranges: story.paragraphs[0].characterRanges,
         paragraphStyle: story.paragraphs[0].appliedStyle
       } : null;
     }
 
-    // Limpiar contenido previo preservando <Properties> si existe
     const children = Array.from(storyNode.childNodes);
     for (const child of children) {
       const name = this.getLocalName(child);
@@ -1011,88 +952,37 @@ export class IDMLEngine {
       }
     }
 
-    // Caso especial: texto vacío
     if (newText.trim().length === 0) {
-      const pRange = basePTemplate ? basePTemplate.cloneNode(false) as Element : doc.createElement("ParagraphStyleRange");
-      const cRange = doc.createElement("CharacterStyleRange");
-      cRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/$ID/[No character style]");
-      pRange.appendChild(cRange);
-      storyNode.appendChild(pRange);
+      storyNode.appendChild(this.createBlankParagraph(doc, basePTemplate));
       return this.getSerializer().serializeToString(doc);
     }
 
-    // Procesar texto con intertítulos
     const segments = this.parseTextWithIntertitles(newText);
-
     for (let segIdx = 0; segIdx < segments.length; segIdx++) {
       const segment = segments[segIdx];
-
       if (segment.type === 'intertitle') {
-        // Asegurar línea en blanco antes del intertítulo si no es el primer elemento de la historia
-        const currentParaRanges = storyNode.getElementsByTagName("ParagraphStyleRange");
-        if (currentParaRanges.length > 0) {
-          // Verificar si el último párrafo ya es blanco para no duplicar
-          const lastChild = storyNode.lastChild as Element | null;
-          const isLastBlank = lastChild && this.getLocalName(lastChild) === 'paragraphstylerange' &&
-            lastChild.getElementsByTagName('Br').length > 0;
-
-          if (!isLastBlank) {
-            storyNode.appendChild(this.createBlankParagraph(doc, basePTemplate));
-          }
-        }
-
-        const pRange = basePTemplate ? basePTemplate.cloneNode(false) as Element : doc.createElement("ParagraphStyleRange");
-        pRange.setAttribute("AppliedParagraphStyle", "ParagraphStyle/INTERTITULO");
-
-        const cRange = doc.createElement("CharacterStyleRange");
-        cRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/$ID/[No character style]");
-        cRange.setAttribute("FontStyle", "Bold");
-
-        const content = doc.createElement("Content");
-        content.textContent = segment.text.trim();
-        cRange.appendChild(content);
-
-        pRange.appendChild(cRange);
+        const intertitleStyle = this.resolveParagraphStyle("INTERTITULO");
+        const pRange = this.createParagraphRange(doc, segment.text.trim(), null, basePTemplate, null, intertitleStyle);
         storyNode.appendChild(pRange);
       } else {
-        // Texto normal - dividir por párrafos (CADA línea es un párrafo)
-        // No eliminamos líneas en blanco, las convertimos en ParagraphStyleRange vacíos
         const paragraphs = segment.text.split(/\r?\n/);
-
         for (let i = 0; i < paragraphs.length; i++) {
-          const paraText = paragraphs[i].trim();
+          const line = paragraphs[i].trimEnd();
+          if (line.trim().length === 0) continue;
 
-          // Si es una línea vacía en medio del texto, crear párrafo en blanco
-          if (paraText.length === 0) {
-            // Evitar duplicar líneas en blanco al inicio de un segmento si el anterior ya puso una (ej: después de intertítulo)
-            const lastChild = storyNode.lastChild as Element | null;
-            const isLastBlank = lastChild && this.getLocalName(lastChild) === 'paragraphstylerange' &&
-              lastChild.getElementsByTagName('Br').length > 0;
-
-            if (!isLastBlank) {
-              storyNode.appendChild(this.createBlankParagraph(doc, basePTemplate));
-            }
-            continue;
-          }
-
-          // Para LEYENDA: manejo especial de bala + texto + crédito
           if (isLeyenda) {
-            // ... (keep the same logic for legend)
-            let mText = paraText;
+            let mText = line;
             let cText = '';
-            if (paraText.includes('@@')) {
-              const atIdx = paraText.indexOf('@@');
-              mText = paraText.substring(0, atIdx).trim();
-              cText = paraText.substring(atIdx + 2).trim();
+            if (line.includes('@@')) {
+              const atIdx = line.indexOf('@@');
+              mText = line.substring(0, atIdx).trimEnd();
+              cText = line.substring(atIdx + 2).trim();
             }
-
             const pRange = basePTemplate ? basePTemplate.cloneNode(false) as Element : doc.createElement("ParagraphStyleRange");
-
             if (leyendaBulletNode) {
               const bulletClone = doc.importNode(leyendaBulletNode, true) as Element;
               pRange.appendChild(bulletClone);
             }
-
             if (mText.length > 0) {
               let textRange: Element;
               if (firstCharTemplate) {
@@ -1106,9 +996,12 @@ export class IDMLEngine {
               const content = doc.createElement("Content");
               content.textContent = cText.length > 0 ? mText + ' ' : mText;
               textRange.appendChild(content);
+
+              const br = doc.createElement("Br");
+              textRange.appendChild(br);
+
               pRange.appendChild(textRange);
             }
-
             if (cText.length > 0) {
               let creditRange: Element;
               if (creditoLeyendaTemplate) {
@@ -1121,41 +1014,36 @@ export class IDMLEngine {
               }
               const content = doc.createElement("Content");
               content.textContent = cText;
+              const br = doc.createElement("Br");
               creditRange.appendChild(content);
+              creditRange.appendChild(br);
               pRange.appendChild(creditRange);
             }
-
             storyNode.appendChild(pRange);
           } else {
-            const pRange = this.createParagraphRange(doc, paraText, bulletTemplate, basePTemplate, firstCharTemplate);
+            const pRange = this.createParagraphRange(doc, line, bulletTemplate, basePTemplate, firstCharTemplate);
             storyNode.appendChild(pRange);
           }
         }
       }
     }
-
     return this.getSerializer().serializeToString(doc);
   }
 
   async updateImage(imageTag: string, file: File): Promise<void> {
     if (!this.zip) return;
-
     for (const spread of this.spreads.values()) {
       const frame = spread.imageFrames.find(f => f.scriptLabel === imageTag);
       if (!frame) continue;
-
       const linkPath = `Links/${file.name}`;
       const fileData = await file.arrayBuffer();
       this.zip.file(linkPath, fileData);
-
       const doc = (this.getParser() as DOMParser).parseFromString(spread.originalXml, "application/xml");
       const allRects = Array.from(doc.getElementsByTagName("*")).filter(n => ['rectangle', 'oval', 'polygon'].includes(this.getLocalName(n as Node)));
-
       for (const rect of allRects) {
         if (this.findScriptLabel(rect as Element) === imageTag) {
           const imageNode = Array.from((rect as Element).getElementsByTagName("*")).find(n => ['image', 'pdf', 'eps', 'importedpage'].includes(this.getLocalName(n as Node)));
           const linkNode = imageNode ? Array.from((imageNode as Element).getElementsByTagName("*")).find(n => ['link', 'Link'].includes(this.getLocalName(n as Node))) : null;
-
           if (linkNode) {
             const destFolder = this.automaticRelink.destinationFolder || "Links";
             const relativeBase = destFolder === "." || destFolder === "" ? "file:" : `file:${destFolder}/`;
@@ -1169,19 +1057,11 @@ export class IDMLEngine {
     }
   }
 
-  /**
-   * Actualiza múltiples imágenes en una sola pasada sobre los spreads.
-   * Útil para sincronizar las imágenes subidas en el sidebar antes de exportar.
-   */
   async bulkUpdateImages(imageUpdates: Array<{ tag: string, file: File }>): Promise<void> {
     if (!this.zip || imageUpdates.length === 0) return;
-
     console.log(`[IDML Engine] Bulk update started for ${imageUpdates.length} images`);
-
-    // Pre-procesar archivos a ArrayBuffer y normalizar nombres a TAG.ext
     const imageData = await Promise.all(imageUpdates.map(async u => {
       const extension = u.file.name.includes('.') ? u.file.name.split('.').pop() : 'jpg';
-      // Normalizar el tag para usarlo como nombre de archivo seguro
       const safeTagName = u.tag.trim().replace(/[^a-zA-Z0-9_]/g, '_').toUpperCase();
       return {
         tag: u.tag,
@@ -1189,57 +1069,35 @@ export class IDMLEngine {
         data: await u.file.arrayBuffer()
       };
     }));
-
-    // Escribir todos los archivos al ZIP en la carpeta Links/
     for (const img of imageData) {
       this.zip.file(`Links/${img.name}`, img.data);
     }
-
-    // Mapa para búsqueda rápida por etiqueta (scriptLabel)
     const updateMap = new Map<string, string>();
     for (const img of imageData) {
-      // Normalizar el tag para asegurar coincidencia
-      const normTag = normalizeTag(img.tag);
-      updateMap.set(normTag, img.name);
+      updateMap.set(normalizeTag(img.tag), img.name);
     }
-
-    // Iterar sobre todos los spreads cargados
     for (const spread of this.spreads.values()) {
       if (!spread || !spread.imageFrames) continue;
-
-      // Optimizacion: verificar si este spread tiene alguno de los tags que estamos actualizando
       const hasUpdates = spread.imageFrames.some(f => f.scriptLabel && updateMap.has(normalizeTag(f.scriptLabel)));
       if (!hasUpdates) continue;
-
       const doc = (this.getParser() as DOMParser).parseFromString(spread.originalXml, "application/xml");
-      const allRects = Array.from(doc.getElementsByTagName("*")).filter(n =>
-        ['rectangle', 'oval', 'polygon'].includes(this.getLocalName(n as Node))
-      );
-
+      const allRects = Array.from(doc.getElementsByTagName("*")).filter(n => ['rectangle', 'oval', 'polygon'].includes(this.getLocalName(n as Node)));
       let modified = false;
       for (const rect of allRects) {
         const tag = this.findScriptLabel(rect as Element);
         const normTag = tag ? normalizeTag(tag) : null;
-
         if (normTag && updateMap.has(normTag)) {
           const fileName = updateMap.get(normTag)!;
-          const imageNode = Array.from((rect as Element).getElementsByTagName("*")).find(n =>
-            ['image', 'pdf', 'eps', 'importedpage'].includes(this.getLocalName(n as Node))
-          );
-          const linkNode = imageNode ? Array.from((imageNode as Element).getElementsByTagName("*")).find(n =>
-            ['link', 'Link'].includes(this.getLocalName(n as Node))
-          ) : null;
-
+          const imageNode = Array.from((rect as Element).getElementsByTagName("*")).find(n => ['image', 'pdf', 'eps', 'importedpage'].includes(this.getLocalName(n as Node)));
+          const linkNode = imageNode ? Array.from((imageNode as Element).getElementsByTagName("*")).find(n => ['link', 'Link'].includes(this.getLocalName(n as Node))) : null;
           if (linkNode) {
             const destFolder = this.automaticRelink.destinationFolder || "Links";
             const relativeBase = destFolder === "." || destFolder === "" ? "file:" : `file:${destFolder}/`;
             (linkNode as Element).setAttribute("LinkResourceURI", `${relativeBase}${fileName}`);
             modified = true;
-            console.log(`  - Actualizando link XML: ${tag} -> ${fileName}`);
           }
         }
       }
-
       if (modified) {
         const newXml = this.getSerializer().serializeToString(doc);
         spread.originalXml = newXml;
@@ -1249,79 +1107,40 @@ export class IDMLEngine {
     console.log(`[IDML Engine] Bulk update finished`);
   }
 
-  /**
-   * Configura el relinkeo automático para el IDML final.
-   * @param enabled Si debe activarse el relinkeo
-   * @param destinationFolder Nombre de la carpeta donde estarán las fotos (opcional)
-   */
   setAutomaticRelink(enabled: boolean, destinationFolder?: string) {
     this.automaticRelink = { enabled, destinationFolder };
   }
 
-  /**
-   * Genera el Blob del IDML final inyectando el contenido de las historias.
-   * REGLA 1: Si un marco no tiene etiqueta, se preserva su contenido original.
-   * REGLA 2: Si un marco tiene etiqueta, se limpia su contenido previo y se inyecta el nuevo 
-   * (o se deja vacío si no hay contenido nuevo).
-   */
   async generateBlob(currentStories: IDMLStory[]): Promise<Blob> {
     if (!this.zip) throw new Error("No hay archivo IDML cargado");
-
-    // Crear un mapa de historias actualizadas por su ID normalizado para acceso rápido
     const updatesMap = new Map<string, IDMLStory>();
     for (const story of currentStories) {
-      const normId = normalizeId(story.id);
-      updatesMap.set(normId, story);
+      updatesMap.set(normalizeId(story.id), story);
     }
-
-    // Iterar sobre TODAS las historias cargadas originalmente desde el IDML
-    for (const originalStory of this.stories.values()) {
-      // REGLA 1: Si no tiene scriptLabel, no tocamos el archivo en el ZIP (se preserva el original)
-      if (!originalStory.scriptLabel) {
-        continue;
-      }
-
-      // REGLA 2: Tiene etiqueta -> Control total de limpieza e inyección
-      const normId = normalizeId(originalStory.id);
-      const update = updatesMap.get(normId);
-
-      // Si existe una actualización en currentStories Y ha sido modificada, usamos su contenido.
-      // Si no ha sido modificada, la tratamos como vacía para cumplir la Regla 2 (limpieza de contenido antiguo).
+    for (const originalStory of Array.from(this.stories.values())) {
+      if (!originalStory.scriptLabel) continue;
+      const update = updatesMap.get(normalizeId(originalStory.id));
       const newContent = (update && update.isModified) ? (update.content || "") : "";
-
-      console.log(`[IDML Engine] Procesando story etiquetada '${originalStory.scriptLabel}': ${newContent.length} chars (isModified: ${update?.isModified || false})`);
-
       const updatedXml = this.getUpdatedStoryXml(originalStory, newContent);
       this.zip.file(originalStory.name, updatedXml);
     }
-
-    // APLICAR RELINKEO AUTOMÁTICO (Si está activo)
     if (this.automaticRelink.enabled) {
-      // Si hay nombre de carpeta, usarlo. Si no, "." es el comportamiento por defecto (mismo nivel que IDML).
       const destFolder = this.automaticRelink.destinationFolder || ".";
       const relativeBase = destFolder === "." || destFolder === "" ? "file:" : `file:${destFolder}/`;
-
-      console.log(`[IDML Engine] Aplicando relinkeo automático relativo a: '${relativeBase}'`);
-
       for (const spread of this.spreads.values()) {
         const doc = (this.getParser() as DOMParser).parseFromString(spread.originalXml, "application/xml");
         const links = Array.from(doc.getElementsByTagName("Link"));
         let modified = false;
-
         for (const link of links) {
           const uri = (link as Element).getAttribute("LinkResourceURI");
           if (uri) {
-            // Extraer el nombre del archivo de forma robusta
             const fileName = this.extractFileNameFromURI(uri);
             if (fileName) {
-              const newUri = `${relativeBase}${fileName}`;
-              (link as Element).setAttribute("LinkResourceURI", newUri);
+              (link as Element).setAttribute("LinkResourceURI", `${relativeBase}${fileName}`);
               modified = true;
-              console.log(`  - Relink relativo: ${uri} -> ${newUri}`);
             }
           }
         }
-
         if (modified) {
           const newXml = this.getSerializer().serializeToString(doc);
           spread.originalXml = newXml;
@@ -1329,45 +1148,28 @@ export class IDMLEngine {
         }
       }
     }
-
-    const content = await this.zip.generateAsync({ type: "blob" });
-    return content;
+    return await this.zip.generateAsync({ type: "blob" });
   }
 
   async generateDownload(currentStories: IDMLStory[], customFileName?: string): Promise<void> {
     let url: string | null = null;
     let link: HTMLAnchorElement | null = null;
-
     try {
       const blob = await this.generateBlob(currentStories);
       url = URL.createObjectURL(blob);
       link = document.createElement("a");
       link.href = url;
-      const baseName = (customFileName && customFileName.trim())
-        ? customFileName.trim()
-        : this.originalFileName.replace(".idml", "_updated.idml");
-      link.download = baseName;
+      link.download = (customFileName && customFileName.trim()) ? customFileName.trim() : this.originalFileName.replace(".idml", "_updated.idml");
       link.style.display = "none";
       document.body.appendChild(link);
       link.click();
-
-      // Limpiar después de un breve delay para asegurar que el navegador procese el click
       setTimeout(() => {
-        if (link && link.parentNode) {
-          link.parentNode.removeChild(link);
-        }
-        if (url) {
-          URL.revokeObjectURL(url);
-        }
+        if (link && link.parentNode) link.parentNode.removeChild(link);
+        if (url) URL.revokeObjectURL(url);
       }, 100);
     } catch (error) {
-      // Limpiar en caso de error
-      if (link && link.parentNode) {
-        link.parentNode.removeChild(link);
-      }
-      if (url) {
-        URL.revokeObjectURL(url);
-      }
+      if (link && link.parentNode) link.parentNode.removeChild(link);
+      if (url) URL.revokeObjectURL(url);
       console.error("Error en generateDownload:", error);
       throw error;
     }
@@ -1399,9 +1201,7 @@ export class IDMLEngine {
         { id: "f1", storyId: "mock1", bounds: [0, 0, 0, 0], scriptLabel: "INTRO_TEXT", pageId: "p1" },
         { id: "f2", storyId: "mockSobrantes", bounds: [0, 0, 0, 0], scriptLabel: "SOBRANTES", pageId: "p1" }
       ],
-      imageFrames: [],
-      genericFrames: [],
-      pages: [{ id: "p1", offsetX: 0, offsetY: 0 }],
+      imageFrames: [], genericFrames: [], pages: [{ id: "p1", offsetX: 0, offsetY: 0 }],
       originalXml: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Spread Self="u456"><TextFrame Self="tf1" ParentStory="u123"><Properties><Label><KeyValuePair Key="label" Value="INTRO_TEXT"/></Label></Properties></TextFrame><TextFrame Self="tf2" ParentStory="u999"><Properties><Label><KeyValuePair Key="label" Value="SOBRANTES"/></Label></Properties></TextFrame></Spread>`
     };
     this.stories.set("mock1", mockStory);
@@ -1412,56 +1212,19 @@ export class IDMLEngine {
 
   exportToJSON(currentStories: IDMLStory[]) {
     return {
-      metadata: {
-        originalFileName: this.originalFileName,
-        pageSettings: this.pageSettings,
-        fonts: this.fonts,
-        swatches: this.swatches,
-        styles: this.styles
-      },
+      metadata: { originalFileName: this.originalFileName, pageSettings: this.pageSettings, fonts: this.fonts, swatches: this.swatches, styles: this.styles },
       stories: currentStories.map(s => ({
-        id: s.id,
-        scriptLabel: s.scriptLabel,
+        id: s.id, scriptLabel: s.scriptLabel,
         paragraphs: s.paragraphs?.map(p => ({
-          appliedStyle: p.appliedStyle,
-          overrides: p.overrides,
-          characterRanges: p.characterRanges.map(cr => ({
-            content: cr.content,
-            appliedStyle: cr.appliedStyle,
-            attributes: cr.attributes
-          }))
+          appliedStyle: p.appliedStyle, overrides: p.overrides,
+          characterRanges: p.characterRanges.map(cr => ({ content: cr.content, appliedStyle: cr.appliedStyle, attributes: cr.attributes }))
         }))
       })),
       spreads: Array.from(this.spreads.values()).map(spread => ({
-        id: spread.id,
-        type: spread.type,
-        pages: spread.pages,
-        frames: spread.frames.map(f => ({
-          id: f.id,
-          storyId: f.storyId,
-          bounds: f.bounds,
-          pageId: f.pageId,
-          scriptLabel: f.scriptLabel,
-          columnCount: f.columnCount,
-          columnGutter: f.columnGutter,
-          styles: f.styles
-        })),
-        imageFrames: spread.imageFrames.map(f => ({
-          id: f.id,
-          scriptLabel: f.scriptLabel,
-          fileName: f.fileName,
-          bounds: f.bounds,
-          pageId: f.pageId,
-          styles: f.styles
-        })),
-        genericFrames: spread.genericFrames.map(f => ({
-          id: f.id,
-          contentType: f.contentType,
-          scriptLabel: f.scriptLabel,
-          bounds: f.bounds,
-          pageId: f.pageId,
-          styles: f.styles
-        }))
+        id: spread.id, type: spread.type, pages: spread.pages,
+        frames: spread.frames.map(f => ({ id: f.id, storyId: f.storyId, bounds: f.bounds, pageId: f.pageId, scriptLabel: f.scriptLabel, columnCount: f.columnCount, columnGutter: f.columnGutter, styles: f.styles })),
+        imageFrames: spread.imageFrames.map(f => ({ id: f.id, scriptLabel: f.scriptLabel, fileName: f.fileName, bounds: f.bounds, pageId: f.pageId, styles: f.styles })),
+        genericFrames: spread.genericFrames.map(f => ({ id: f.id, contentType: f.contentType, scriptLabel: f.scriptLabel, bounds: f.bounds, pageId: f.pageId, styles: f.styles }))
       }))
     };
   }
