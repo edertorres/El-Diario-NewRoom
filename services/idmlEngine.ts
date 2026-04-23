@@ -746,6 +746,11 @@ export class IDMLEngine {
   private isBulletParagraph(charRanges: IDMLCharacterRange[]): boolean {
     if (charRanges.length < 3) return false;
     const firstRange = charRanges[0];
+
+    // Si el primer rango contiene un objeto anclado, no lo tratamos como bala de texto
+    // para evitar duplicidad, ya que los objetos anclados se manejan globalmente.
+    if (firstRange.content.includes('\uFFFC')) return false;
+
     const font = firstRange.attributes?.['AppliedFont'] || '';
     if (font.toLowerCase().includes('zapfdingbats')) return true;
     if (firstRange.appliedStyle && firstRange.appliedStyle.toLowerCase().includes('bala')) return true;
@@ -888,6 +893,86 @@ export class IDMLEngine {
     });
     if (!storyNode) return this.getSerializer().serializeToString(doc);
 
+    const anchoredObjects: Element[] = [];
+    const allOriginalCSR = Array.from(storyNode.getElementsByTagName('CharacterStyleRange'));
+    allOriginalCSR.forEach(csr => {
+      let containsObject = false;
+      const children = Array.from(csr.childNodes);
+
+      // Check if this CSR has an anchored object
+      for (const child of children) {
+        if (child.nodeType === 1) {
+          const lName = this.getLocalName(child);
+          if (!['properties', 'content', 'br'].includes(lName)) {
+            containsObject = true;
+            break;
+          }
+        }
+      }
+
+      if (containsObject) {
+        // Clone the whole CSR to preserve all its attributes (Tracking, font, size, etc.)
+        const newCsr = csr.cloneNode(false) as Element;
+        let objectMarkerFound = false;
+
+        children.forEach(child => {
+          if (child.nodeType === 1) {
+            const lName = this.getLocalName(child);
+            if (!['properties', 'content', 'br'].includes(lName)) {
+              // It's the anchored object itself (Rectangle, Group, etc.)
+              newCsr.appendChild(child.cloneNode(true));
+            } else if (lName === 'properties') {
+              // Preserve properties
+              newCsr.appendChild(child.cloneNode(true));
+            } else if (lName === 'content') {
+              // Preserve ONLY special markers, not actual line text
+              const text = child.textContent || '';
+              let preserved = '';
+              for (let i = 0; i < text.length; i++) {
+                const code = text.charCodeAt(i);
+                // 0xFFFC (Object Replacement), 8 (Anchored record)
+                if (code === 0xFFFC || code === 8) {
+                  preserved += text[i];
+                  objectMarkerFound = true;
+                }
+              }
+              if (preserved.length > 0) {
+                const clonedContent = child.cloneNode(false) as Element;
+                clonedContent.textContent = preserved;
+                newCsr.appendChild(clonedContent);
+              }
+            }
+          }
+        });
+
+        // Ensure at least one marker exists if we found an object
+        if (!objectMarkerFound) {
+          const c = doc.createElement("Content");
+          c.textContent = "\uFFFC";
+          newCsr.appendChild(c);
+        }
+
+        // --- LAYOUT RESET TO REMOVE INVISIBLE SPACES ---
+        // We clear attributes that affect spacing between the marker and the next character
+        const attributesToRemove = ['Tracking', 'KerningValue', 'KerningMethod', 'BaselineShift', 'HorizontalScale'];
+        attributesToRemove.forEach(attr => newCsr.removeAttribute(attr));
+
+        // Force a very small point size for the marker to minimize its width
+        newCsr.setAttribute('PointSize', '0.1');
+
+        const props = newCsr.getElementsByTagName('Properties')[0];
+        if (props) {
+          const tagsToRemove = ['Tracking', 'KerningValue', 'KerningMethod', 'BaselineShift', 'HorizontalScale', 'PointSize'];
+          tagsToRemove.forEach(tagName => {
+            const el = props.getElementsByTagName(tagName)[0];
+            if (el) props.removeChild(el);
+          });
+        }
+
+        anchoredObjects.push(newCsr);
+      }
+    });
+
     const firstPRange = storyNode.getElementsByTagName("ParagraphStyleRange")[0] as Element | null;
     const cloneRangeWithProperties = (source: Element | null): Element | null => {
       if (!source) return null;
@@ -954,6 +1039,14 @@ export class IDMLEngine {
 
     if (newText.trim().length === 0) {
       storyNode.appendChild(this.createBlankParagraph(doc, basePTemplate));
+      if (anchoredObjects.length > 0) {
+        const firstP = storyNode.getElementsByTagName("ParagraphStyleRange")[0];
+        if (firstP) {
+          anchoredObjects.reverse().forEach(ao => {
+            firstP.insertBefore(ao, firstP.firstChild);
+          });
+        }
+      }
       return this.getSerializer().serializeToString(doc);
     }
 
@@ -967,8 +1060,8 @@ export class IDMLEngine {
       } else {
         const paragraphs = segment.text.split(/\r?\n/);
         for (let i = 0; i < paragraphs.length; i++) {
-          const line = paragraphs[i].trimEnd();
-          if (line.trim().length === 0) continue;
+          const line = paragraphs[i].trim();
+          if (line.length === 0) continue;
 
           if (isLeyenda) {
             let mText = line;
@@ -994,7 +1087,7 @@ export class IDMLEngine {
                 textRange.setAttribute("AppliedCharacterStyle", "CharacterStyle/$ID/[No character style]");
               }
               const content = doc.createElement("Content");
-              content.textContent = cText.length > 0 ? mText + ' ' : mText;
+              content.textContent = mText;
               textRange.appendChild(content);
 
               const br = doc.createElement("Br");
@@ -1027,6 +1120,21 @@ export class IDMLEngine {
         }
       }
     }
+
+    if (anchoredObjects.length > 0) {
+      const firstP = storyNode.getElementsByTagName("ParagraphStyleRange")[0];
+      if (firstP) {
+        // Invertimos el orden para insertarlos al principio conservando el orden original
+        [...anchoredObjects].reverse().forEach(ao => {
+          firstP.insertBefore(ao, firstP.firstChild);
+        });
+      } else {
+        const pRange = basePTemplate ? basePTemplate.cloneNode(false) as Element : doc.createElement("ParagraphStyleRange");
+        anchoredObjects.forEach(ao => pRange.appendChild(ao));
+        storyNode.appendChild(pRange);
+      }
+    }
+
     return this.getSerializer().serializeToString(doc);
   }
 
