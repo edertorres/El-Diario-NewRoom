@@ -46,6 +46,7 @@ COPY app.py .
 COPY idml_to_sla.py .
 COPY export_sla.py .
 COPY idml_to_high_fidelity_typst.py .
+COPY migrate_sheets.py .
 COPY ISOnewspaper26v4.icc .
 
 # Configuración Scribus (evitar diálogos interactivos)
