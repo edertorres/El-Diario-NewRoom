@@ -7,7 +7,7 @@ from pathlib import Path
 
 # Configuración
 BASE_DIR = Path(__file__).parent
-DB_PATH = BASE_DIR / "logs.db"
+DB_PATH = BASE_DIR / "database" / "logs.db"
 ENV_PATH = BASE_DIR.parent / ".env"
 
 def load_env():
@@ -17,16 +17,18 @@ def load_env():
             for line in f:
                 if "=" in line and not line.startswith("#"):
                     key, value = line.strip().split("=", 1)
-                    env[key] = value
+                    env[key] = value.strip("'\"") # Limpiar comillas si las hay
     return env
 
 def migrate():
     env = load_env()
-    spreadsheet_id = env.get("VITE_GOOGLE_SHEETS_LOG_ID")
-    api_key = env.get("VITE_GOOGLE_DRIVE_API_KEY")
+    # Priorizar variables de entorno del sistema (Docker/Coolify) sobre el archivo .env
+    spreadsheet_id = os.getenv("VITE_GOOGLE_SHEETS_LOG_ID") or env.get("VITE_GOOGLE_SHEETS_LOG_ID")
+    api_key = os.getenv("VITE_GOOGLE_DRIVE_API_KEY") or env.get("VITE_GOOGLE_DRIVE_API_KEY")
 
     if not spreadsheet_id or not api_key:
-        print("Error: VITE_GOOGLE_SHEETS_LOG_ID o VITE_GOOGLE_DRIVE_API_KEY no encontrados en .env")
+        print("Error: VITE_GOOGLE_SHEETS_LOG_ID o VITE_GOOGLE_DRIVE_API_KEY no encontrados.")
+        print("Asegúrate de configurarlos en las variables de entorno de Coolify.")
         return
 
     print(f"Iniciando migración desde Spreadsheet: {spreadsheet_id}")
