@@ -12,9 +12,13 @@ import time
 from pathlib import Path
 from typing import List, Optional
 import uuid
+import sqlite3
+import csv
+import io
+from fastapi.responses import FileResponse, Response, StreamingResponse
+from pydantic import BaseModel
 
 from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks, Request, Form
-from fastapi.responses import FileResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 import threading
@@ -54,6 +58,36 @@ SCRIBUS_TIMEOUT = 180  # segundos - Incrementado de 120 para evitar timeouts err
 _scribus_lock = threading.Semaphore(1)
 _jobs_lock = threading.Lock()
 _jobs: dict = {}
+
+# ── Base de Datos SQLite para Logs ───────────────────────────────────────────
+DB_PATH = BASE_DIR / "database" / "logs.db"
+DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+def init_db():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp TEXT NOT NULL,
+            user_email TEXT,
+            category TEXT,
+            template TEXT,
+            destination TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
+    logger.info(f"Base de datos inicializada en {DB_PATH}")
+
+init_db()
+
+class LogEntry(BaseModel):
+    timestamp: Optional[str] = None
+    user_email: str
+    category: str
+    template: str
+    destination: str
 
 
 def cleanup_temp_dir(temp_dir: str):
@@ -724,3 +758,121 @@ def compile_typst(request: Request, background_tasks: BackgroundTasks, payload: 
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+# ── Endpoints de Logs ────────────────────────────────────────────────────────
+
+@app.post("/logs")
+async def create_log(entry: LogEntry):
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        
+        # Si no viene timestamp, generarlo
+        ts = entry.timestamp
+        if not ts:
+            ts = time.strftime('%Y-%m-%d %H:%M:%S')
+            
+        cursor.execute(
+            "INSERT INTO logs (timestamp, user_email, category, template, destination) VALUES (?, ?, ?, ?, ?)",
+            (ts, entry.user_email, entry.category, entry.template, entry.destination)
+        )
+        conn.commit()
+        conn.close()
+        return {"status": "success"}
+    except Exception as e:
+        logger.error(f"Error guardando log: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/logs")
+async def get_logs(limit: int = 100, offset: int = 0, start_date: Optional[str] = None, end_date: Optional[str] = None):
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        query = "SELECT * FROM logs"
+        count_query = "SELECT COUNT(*) FROM logs"
+        params = []
+        where_clauses = []
+        
+        if start_date:
+            where_clauses.append("timestamp >= ?")
+            params.append(f"{start_date} 00:00:00")
+        
+        if end_date:
+            where_clauses.append("timestamp <= ?")
+            params.append(f"{end_date} 23:59:59")
+            
+        if where_clauses:
+            query += " WHERE " + " AND ".join(where_clauses)
+            count_query += " WHERE " + " AND ".join(where_clauses)
+            
+        query += " ORDER BY id DESC LIMIT ? OFFSET ?"
+        params.extend([limit, offset])
+        
+        cursor.execute(query, params)
+        rows = cursor.fetchall()
+        
+        total_cursor = conn.cursor()
+        total_cursor.execute(count_query, params[:-2] if where_clauses else [])
+        total = total_cursor.fetchone()[0]
+        
+        conn.close()
+        
+        result = [dict(row) for row in rows]
+        return {"total": total, "logs": result}
+    except Exception as e:
+        logger.error(f"Error obteniendo logs: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/logs/export")
+async def export_logs(start_date: Optional[str] = None, end_date: Optional[str] = None):
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        query = "SELECT * FROM logs"
+        params = []
+        where_clauses = []
+        
+        if start_date:
+            where_clauses.append("timestamp >= ?")
+            params.append(f"{start_date} 00:00:00")
+        
+        if end_date:
+            where_clauses.append("timestamp <= ?")
+            params.append(f"{end_date} 23:59:59")
+            
+        if where_clauses:
+            query += " WHERE " + " AND ".join(where_clauses)
+            
+        query += " ORDER BY id DESC"
+        
+        cursor.execute(query, params)
+        rows = cursor.fetchall()
+        conn.close()
+
+        output = io.StringIO()
+        writer = csv.writer(output)
+        
+        # Header
+        writer.writerow(["ID", "Fecha/Hora", "Usuario", "Categoría", "Plantilla", "Carpeta Destino"])
+        
+        for row in rows:
+            writer.writerow([row["id"], row["timestamp"], row["user_email"], row["category"], row["template"], row["destination"]])
+        
+        output.seek(0)
+        
+        filename = f"reporte_logs_{time.strftime('%Y%m%d_%H%M%S')}.csv"
+        
+        return StreamingResponse(
+            iter([output.getvalue()]),
+            media_type="text/csv",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+    except Exception as e:
+        logger.error(f"Error exportando logs: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+

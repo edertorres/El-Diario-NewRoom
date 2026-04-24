@@ -36,6 +36,7 @@ services:
     volumes:
       - preview-data:/app/uploads
       - preview-output:/app/output
+      - preview-logs:/app/database
     environment:
       - NODE_ENV=production
     restart: always
@@ -46,6 +47,8 @@ volumes:
   preview-data:
     driver: local
   preview-output:
+    driver: local
+  preview-logs:
     driver: local
 
 networks:

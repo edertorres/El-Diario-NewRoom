@@ -11,6 +11,8 @@ import DestinationFolderSelector from './DestinationFolderSelector';
 import { MonacoEditor } from './MonacoEditor';
 import { WordCountIndicator } from './WordCountIndicator';
 import { PreviewModal } from './PreviewModal';
+import LogViewer from './LogViewer';
+import { logService } from '../services/logService';
 import { normalizeTag, parseBatchText } from '../utils/tagUtils';
 import {
   Sparkles,
@@ -144,6 +146,8 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
     images: [],
     folderPath: null
   });
+
+  const [showLogs, setShowLogs] = useState(false);
 
   const [showAiSettings, setShowAiSettings] = useState(false);
   const [aiConfig, setAiConfig] = useState<AiConfig>({
@@ -1070,7 +1074,6 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
                       disabled={isUploading}
                       className="flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-lg font-medium text-xs hover:bg-purple-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative"
                     >
-                      <Cloud size={14} /> Enviar a {storageManager.activeProvider.name}
                       {uploadedImages.length > 0 && (
                         <span className="absolute -top-1 -right-1 bg-green-500 text-white text-[10px] font-medium rounded-full w-4 h-4 flex items-center justify-center">
                           {uploadedImages.length}
@@ -1078,6 +1081,13 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
                       )}
                     </button>
                   )}
+                  <button
+                    onClick={() => setShowLogs(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-700 rounded-lg font-medium text-xs hover:bg-amber-100 border border-amber-200 transition-colors"
+                    title="Ver historial de operaciones"
+                  >
+                    <ClipboardList size={14} /> Historial
+                  </button>
                   <button
                     onClick={async () => {
                       try {
@@ -1290,84 +1300,52 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
                     };
                   });
 
-                  // Registrar log en Google Sheets (solo si estamos en modo Google y hay ID)
+                  // Registrar log localmente (SQLite)
                   try {
-                    const sheetsLogId = import.meta.env.VITE_GOOGLE_SHEETS_LOG_ID;
-                    if (storageManager.activeProvider.id === 'google-drive' && sheetsLogId && sheetsLogId.trim() !== '') {
-                      // Importación dinámica para evitar problemas de carga inicial
-                      const sheetsApi = await import('../services/sheetsApi');
+                    // Obtener usuario - intentar desde el estado primero
+                    let user = googleAuth.getUser();
 
-                      // Obtener usuario - intentar desde el estado primero
-                      let user = googleAuth.getUser();
-                      console.log('[Log] Usuario desde getUser():', user);
+                    // Si no hay usuario, intentar obtenerlo directamente de la API si tenemos token
+                    if (!user || !user.email) {
+                      const accessToken = googleAuth.getAccessToken();
+                      if (accessToken) {
+                        try {
+                          const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+                            headers: { 'Authorization': `Bearer ${accessToken}` }
+                          });
 
-                      // Si no hay usuario, intentar obtenerlo directamente de la API
-                      if (!user || !user.email) {
-                        const accessToken = googleAuth.getAccessToken();
-                        if (accessToken) {
-                          try {
-                            console.log('[Log] Obteniendo usuario desde API...');
-                            const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-                              headers: {
-                                'Authorization': `Bearer ${accessToken}`
-                              }
-                            });
-
-                            if (userInfoResponse.ok) {
-                              const userData = await userInfoResponse.json();
-                              console.log('[Log] Datos del usuario desde API:', userData);
-                              user = {
-                                email: userData.email || '',
-                                name: userData.name || '',
-                                picture: userData.picture || ''
-                              };
-                            } else {
-                              console.error('[Log] Error obteniendo usuario desde API:', userInfoResponse.status, userInfoResponse.statusText);
-                            }
-                          } catch (error) {
-                            console.error('[Log] Error en fetch de userinfo:', error);
+                          if (userInfoResponse.ok) {
+                            const userData = await userInfoResponse.json();
+                            user = {
+                              email: userData.email || '',
+                              name: userData.name || '',
+                              picture: userData.picture || ''
+                            };
                           }
-                        } else {
-                          console.warn('[Log] No hay access token disponible');
+                        } catch (error) {
+                          console.error('[Log] Error obteniendo usuario:', error);
                         }
                       }
-
-                      const userEmail = user?.email || 'Usuario desconocido';
-                      console.log('[Log] Email final a usar:', userEmail);
-
-                      // Formatear fecha/hora en español
-                      const now = new Date();
-                      const fechaHora = now.toLocaleString('es-ES', {
-                        dateStyle: 'long',
-                        timeStyle: 'medium'
-                      });
-
-                      // Usar folderPath como carpeta de destino
-                      const carpetaDestino = folderPath || 'Carpeta no especificada';
-                      const nombrePlantilla = templateName || 'Carga manual';
-                      const categoriaPlantilla = templateCategory || 'Sin categoría';
-
-                      console.log('[Log] Intentando escribir log:', { fechaHora, userEmail, carpetaDestino, nombrePlantilla, categoriaPlantilla });
-
-                      await sheetsApi.appendLogRow(sheetsLogId, [fechaHora, userEmail, categoriaPlantilla, nombrePlantilla, carpetaDestino]);
-
-                      console.log('[Log] Log escrito exitosamente');
-                    } else {
-                      console.warn('[Log] VITE_GOOGLE_SHEETS_LOG_ID no está configurado o está vacío');
                     }
-                  } catch (logError: any) {
-                    // No interrumpir el flujo si falla el log, pero mostrar un mensaje útil
-                    console.error('[Log] Error al registrar log en Google Sheets:', logError);
-                    console.error('[Log] Detalles del error:', {
-                      message: logError.message,
-                      stack: logError.stack,
-                      name: logError.name
+
+                    const userEmail = user?.email || 'Usuario desconocido';
+                    const nombrePlantilla = templateName || 'Carga manual';
+                    const categoriaPlantilla = templateCategory || 'Sin categoría';
+                    const carpetaDestino = folderPath || 'Carpeta no especificada';
+
+                    console.log('[Log] Registrando operación local...', { userEmail, nombrePlantilla, carpetaDestino });
+
+                    await logService.appendLog({
+                      user_email: userEmail,
+                      template: nombrePlantilla,
+                      category: categoriaPlantilla,
+                      destination: carpetaDestino
                     });
 
-                    // Si el error es sobre la API no habilitada, mostrar alerta al usuario
-                    if (logError.message && (logError.message.includes('has not been used') || logError.message.includes('is disabled') || logError.message.includes('Enable it'))) {
-                      alert('⚠️ La API de Google Sheets no está habilitada.\n\n' + logError.message.split('\n\n')[1] || logError.message);
-                    }
+                    console.log('[Log] Log registrado con éxito en SQLite');
+                  } catch (logError: any) {
+                    // No interrumpir el flujo si falla el log
+                    console.error('[Log] Error al registrar log en SQLite:', logError);
                   }
 
                   // Limpiar imágenes después de subir exitosamente
@@ -1552,6 +1530,7 @@ const StoryMapper: React.FC<Props> = ({ stories, setStories, spreads, imagesFold
         imagesFolderId={imagesFolderId}
         uploadedImages={uploadedImages}
       />
+      {showLogs && <LogViewer onClose={() => setShowLogs(false)} />}
     </div>
   );
 };
